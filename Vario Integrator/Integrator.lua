@@ -21,10 +21,6 @@ local function getTranslation(map)
     return map[locale] or map["en"]
 end
 
-local function toBoolean(str)
-    if (str == "true") then return true else return false end
-end
-
 local switchOff     -- true if a switch is assigned and in off position
 local mode          -- current mode (1 or 2)
 local sensors       -- list of all sensor labels (sensors with param 0)
@@ -238,7 +234,7 @@ local function init(code)
     selectedAltitudeValue = system.pLoad(altValueKey, 0)    -- default index for sensor values: 0 (NONE)
     selectedVarioValue = system.pLoad(varioValueKey, 0)
     selectedSwitch = system.pLoad(switchKey)
-    varioLabelActive = toBoolean(system.pLoad(varioLabelKey, "false"))
+    varioLabelActive = (system.pLoad(varioLabelKey, "false") == "true")
     altUnit = system.pLoad(altUnitKey)
     varUnit = system.pLoad(varUnitKey)
     resetValues()
