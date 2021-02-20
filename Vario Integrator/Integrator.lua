@@ -14,7 +14,7 @@ local varioValueText = {en = "Vario EX", de = "Vario EX"}
 local switchText = {en = "Switch", de = "Schalter"}
 local intervalText = {en = "Interval", de = "Intervall"}
 local decimalsText = {en = "Decimal places", de = "Dezimalstellen"}
-local varioSpeechText = {en = "Announcement", de = "Ankündigung"}
+local varioLabelText = {en = "Label", de = "Ankündigung"}
 
 -- get translation from the given map, default is English
 local function getTranslation(map)
@@ -39,7 +39,7 @@ local selectedSensorID      -- id of the selected sensor or nil if none isselect
 local selectedAltitudeValue -- index of the selected altitude sensor value or 0 if none is selected
 local selectedVarioValue    -- index of the selected vario sensor value or 0 if none is selected
 local selectedSwitch        -- SwitchItem that describes the selected switch or nil if none is selected
-local varioSpeechActive     -- true if "vario" should be announced
+local varioLabelActive     -- true if "vario" should be announced
 local altUnit, varUnit      -- units for vario and altitude
 local checkboxIndex
 local selValueIndex
@@ -54,7 +54,7 @@ local sensorKey = "integrator_sensorID"
 local altValueKey = "integrator_altValue"
 local varioValueKey = "integrator_varioValue"
 local switchKey = "integrator_switch"
-local varioSpeechKey = "integrator_varioSpeech"
+local varioLabelKey = "integrator_varioLabel"
 local altUnitKey = "integrator_altUnit"
 local varUnitKey = "integrator_varioUnit"
 
@@ -163,10 +163,10 @@ local function onSwitchChanged(value)
 end
 
 -- vario speech active means that the speech output begins with "vario"
-local function onVarioSpeechChanged(value)
-    varioSpeechActive = not value -- invert current value
-    form.setValue(checkboxIndex, varioSpeechActive) -- set checkbox value
-    system.pSave(varioSpeechKey, tostring(varioSpeechActive))
+local function onVarioLabelChanged(value)
+    varioLabelActive = not value -- invert current value
+    form.setValue(checkboxIndex, varioLabelActive) -- set checkbox value
+    system.pSave(varioLabelKey, tostring(varioLabelActive))
 end
 
 
@@ -225,8 +225,8 @@ local function initForm(formId)
     form.addIntbox(decimals, 0, 2, 1, 0, 1, onDecimalsChanged, { alignRight = true })
 
     form.addRow(2)
-    form.addLabel({ label = getTranslation(varioSpeechText), width = 270 })
-    checkboxIndex = form.addCheckbox(varioSpeechActive, onVarioSpeechChanged)
+    form.addLabel({ label = getTranslation(varioLabelText), width = 270 })
+    checkboxIndex = form.addCheckbox(varioLabelActive, onVarioLabelChanged)
 end
 
 
@@ -238,7 +238,7 @@ local function init(code)
     selectedAltitudeValue = system.pLoad(altValueKey, 0)    -- default index for sensor values: 0 (NONE)
     selectedVarioValue = system.pLoad(varioValueKey, 0)
     selectedSwitch = system.pLoad(switchKey)
-    varioSpeechActive = toBoolean(system.pLoad(varioSpeechKey, "false"))
+    varioLabelActive = toBoolean(system.pLoad(varioLabelKey, "false"))
     altUnit = system.pLoad(altUnitKey)
     varUnit = system.pLoad(varUnitKey)
     resetValues()
@@ -259,7 +259,7 @@ local function loop()
         if (selectedSensorID and selectedAltitudeValue > 0 and time >= interval + lastTime) then
             local altitude = system.getSensorValueByID(selectedSensorID, selectedAltitudeValue)
             if (lastAltitude and (not (selectedSwitch) or system.getInputsVal(selectedSwitch) == 1) and altitude.valid) then
-                if (varioSpeechActive) then
+                if (varioLabelActive) then
                     system.playNumber((altitude.value - lastAltitude) / interval, decimals, altUnit, "Vario")
                 else
                     system.playNumber((altitude.value - lastAltitude) / interval, decimals, altUnit)
@@ -274,7 +274,7 @@ local function loop()
             local timeMillis = system.getTimeCounter()
             altDifference = altDifference + (timeMillis - lastTimeMillis) * vario.value * 0.001 -- add the altitude difference since the last loop call
             if (time >= interval + lastTime) then
-                if (varioSpeechActive) then
+                if (varioLabelActive) then
                     system.playNumber(altDifference / interval, decimals, varUnit, "Vario")
                 else
                     system.playNumber(altDifference / interval, decimals, varUnit)
