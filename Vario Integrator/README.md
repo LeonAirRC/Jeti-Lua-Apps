@@ -1,6 +1,6 @@
 ## Vario Integrator
 This app calculates the average climb based on telemetry values.\
-In an adjustable interval it announces the average climb within the last interval.
+In an adjustable interval it announces the average climb within the last interval.\
 \
 **Mode**\
 There are two calculation methods:\
