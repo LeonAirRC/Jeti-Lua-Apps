@@ -1,7 +1,7 @@
 ## Audio Player
 Audio player is similar to the built-in player.\
 It can play a user-defined playlist of all soundfiles on the transmitter.\
-
+\
 **stop/previous**\
 If a file is being played currently, this switch stops the playback.\
 Otherwise the previous file is selected.\
