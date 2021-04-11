@@ -11,7 +11,7 @@ Each element has the attributes *time* [s] and *type*.
 - type 2 features an audio file
 
 **Up/Down**\
-Moves the focused element to the row above/below.
+Moves the focused element to the row above/below. \
 \
 **Add/Delete**\
 Add a new element below the focused row or delete the focused element.
