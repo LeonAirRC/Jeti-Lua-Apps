@@ -11,6 +11,6 @@ announces average climb rates
 ### Audio Player
 create playlists of audio files
 ### Timer Beep Editor
-edit the beep/audiofile patterns that are used for timer signailzation
+edit the beep/audiofile patterns that are used for timer signalization
 ### DJM Timer
 speaking timer for the glider competitions at German youth championships - your tx is the judge
