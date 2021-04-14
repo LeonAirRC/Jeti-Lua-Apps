@@ -3,5 +3,9 @@
 \
 Lua applications for JETI DC/DS transmitters
 
-The JETI Duplex DC and DS transmitters can execute lua code.
-The files can be moved into the Apps folder on the transmitter.
+#### Overview
+Thermal Assist: constantly guides you to the best thermals on your path
+Vario Integrator: announces average climb rates
+Audio Player: create playlists of audio files
+Timer Beep Editor: edit the beep/audiofile patterns that are used for timer signailzation
+DJM Timer: speaking timer for the glider competitions at German youth champoinships - your tx is the judge
