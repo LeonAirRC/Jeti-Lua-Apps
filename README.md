@@ -10,6 +10,8 @@ constantly guides you to the best thermals on your path
 announces average climb rates
 ### Audio Player
 create playlists of audio files
+### Virtual Sensor
+calculates virtual sensor values from one or many real sensor values and switch inputs
 ### Timer Beep Editor
 edit the beep/audiofile patterns that are used for timer signalization
 ### DJM Timer
