@@ -3,9 +3,14 @@
 \
 Lua applications for JETI DC/DS transmitters
 
-#### Overview
-**Thermal Assist:** constantly guides you to the best thermals on your path\
-**Vario Integrator:** announces average climb rates\
-**Audio Player:** create playlists of audio files\
-**Timer Beep Editor:** edit the beep/audiofile patterns that are used for timer signailzation\
-**DJM Timer:** speaking timer for the glider competitions at German youth champoinships - your tx is the judge
+## Overview
+### Thermal Assist
+constantly guides you to the best thermals on your path
+### Vario Integrator
+announces average climb rates
+### Audio Player
+create playlists of audio files
+### Timer Beep Editor
+edit the beep/audiofile patterns that are used for timer signailzation
+### DJM Timer
+speaking timer for the glider competitions at German youth championships - your tx is the judge
