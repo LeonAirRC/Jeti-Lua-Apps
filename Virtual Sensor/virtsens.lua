@@ -35,6 +35,7 @@ local sensorText = {en = "Sensor", de = "Sensor"}
 local operandText = {en = "Parameter", de = "Parameter"}
 local inputText = {en = "Input", de = "Eingabe"}
 local valueText = {en = "Value", de = "Wert"}
+local levelText = {en = "level", de = "Ebene"}
 
 local function getTranslation(table)
     return table[locale] or table["en"]
@@ -250,8 +251,7 @@ local function getLogVariableValue(logVariableID)
             -- calculate value
             local value = evaluate(sensor)
             if value then
-                local decimals = #(tostring(value):match("%.(%d+)") or "") -- match returns nil of no match was found [no decimals]
-                return math.floor(value * 10^decimals), decimals
+                return math.floor(value * 10^sensor["decimals"]), sensor["decimals"]
             else
                 return nil,0
             end
@@ -271,7 +271,7 @@ end
 
 local function initForm()
     if #nodeStack > 0 then
-        form.setTitle(nodeStack[#nodeStack]["label"])
+        form.setTitle(string.format("%s - %s %d", nodeStack[#nodeStack]["label"], getTranslation(levelText), #nodeStack))
         form.addRow(1)
         form.addSelectbox(nodeTypes, nodeStack[1]["type"], true, onNodeTypeChanged)
         if nodeStack[1]["type"] == 1 then
@@ -279,7 +279,7 @@ local function initForm()
             form.addIntbox(nodeStack[1]["const"], -32768, 32767, 0, 0, 1, onConstChanged)
         elseif nodeStack[1]["type"] == 2 then
             form.addRow(1)
-            form.addSelectbox(sensorLabels, nodeStack[1]["sensor"] - 1, true, onSensorChanged)
+            form.addSelectbox(sensorLabels, nodeStack[1]["sensor"] + 1, true, onSensorChanged)
         elseif nodeStack[1]["type"] == 3 then
             form.addRow(1)
             form.addSelectbox(inputs, nodeStack[1]["input"], true, onInputChanged)
