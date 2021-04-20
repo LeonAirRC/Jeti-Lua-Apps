@@ -1,7 +1,7 @@
 # Algorithms
 ## Best Subsequence
 This algorithm searches for the subsequence of length 'bestSequenceLength' with the highest sum of variometer values.\
-In a scenario like this, the numbers representing the climb rate at their positions,\
+In a scenario like this, with numbers representing the climb rate at their positions,\
 \
 <img src="https://user-images.githubusercontent.com/57962936/115403853-14031700-a1ed-11eb-989a-be5743f78519.png" width=300>\
 \
