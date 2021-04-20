@@ -54,5 +54,4 @@ Hence it is useful when the air does not go up anywhere and the pilot wants to s
 
 
 # Math
-![Screenshot_2021-04-20 StackEdit(1)](https://user-images.githubusercontent.com/57962936/115428708-f3de5280-a202-11eb-828f-7d8457d5fb8c.png)
-
+![Screenshot_2021-04-20 StackEdit(2)](https://user-images.githubusercontent.com/57962936/115458458-061db800-a226-11eb-9292-44ab3dee70d3.png)
