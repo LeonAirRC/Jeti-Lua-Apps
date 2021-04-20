@@ -1,3 +1,25 @@
+--[[
+Copyright (c) 2021 LeonAirRC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+]]
+
 local filepath = "Apps/VirtualSensor/sensors.json"
 local units = {"", "Wmi", "F", "°C", "°", "W", "s", "min", "h", "mAh", "Ah", "A", "V", "%", "hPa", "kPa", "psi", "atm", "b", "m/s", "km/h", "kt.", "mph",
                 "m", "ft", "km", "mi.", "yd.", "ml", "l", "hl", "floz", "gal", "ml/m", "l/m", "oz/m", "gpm"}
@@ -20,7 +42,8 @@ local activeTelemetryIndex
 local sensorIDs
 local sensorParams
 local sensorLabels
-local logVariableIDs
+local logVariableIDs -- Saves the log variable id for all sensor labels that existed at app initialization as a mapping label -> id.
+                     -- This approach is required to keep track of all log variables when sensors are deleted and the sensor with a requested log id has to be evaluated.
 
 -- translations
 local locale = system.getLocale()
@@ -44,101 +67,9 @@ end
 -- type:           1                             2                           3                           4      5      6      7      8      9      10     11       12       13      14      15     16     17      18     19      20
 local nodeTypes = {getTranslation(constantText), getTranslation(sensorText), getTranslation(inputText), "ADD", "SUB", "MUL", "DIV", "MIN", "MAX", "ABS", "ROUND", "FLOOR", "CEIL", "SQRT", "SIN", "COS", "TAN", "ASIN", "ACOS", "ATAN"}
 
-local function save()
-    if sensors then
-        local file = io.open(filepath, "w")
-        if file then
-            if not io.write(file, json.encode(sensors)) then
-                system.messageBox(getTranslation(fileInexistentText))
-            end
-            io.close(file)
-        else
-            system.messageBox(getTranslation(fileInexistentText))
-        end
-    end
-end
-
-local function close()
-    save()
-    collectgarbage()
-end
-
-local function evaluate(node)
-    local type = node["type"]
-    if not node then
-        return nil
-    elseif type == 1 then -- CONST
-        return node["const"]
-    elseif type == 2 then -- SENSOR
-        local id,param = sensorIDs[node["sensor"]], sensorParams[node["sensor"]]
-        if id and param then
-            local val = system.getSensorValueByID(id, param)
-            return (val and val.valid) and val.value or nil
-        else
-            return nil
-        end
-    elseif type == 3 then -- INPUT
-        return node["input"] ~= 1 and system.getInputs(inputs[node["input"]]) or nil
-    elseif type <= twoOpTypes then
-        local firstVal = evaluate(node["p1"])
-        local secondVal = evaluate(node["p2"])
-        if type == 4 then -- ADD
-            return (firstVal and secondVal) and (firstVal + secondVal) or nil
-        elseif type == 5 then -- SUB
-            return (firstVal and secondVal) and (firstVal - secondVal) or nil
-        elseif type == 6 then -- MUL
-            return (firstVal and secondVal) and (firstVal * secondVal) or nil
-        elseif type == 7 then -- DIV
-            return (firstVal and secondVal and secondVal ~= 0.0) and (firstVal / secondVal) or nil
-        elseif type == 8 then
-            if firstVal then
-                return secondVal and math.min(firstVal, secondVal) or firstVal
-            else
-                return secondVal
-            end
-        else -- MAX (9)
-            if firstVal then
-                return secondVal and math.max(firstVal, secondVal) or firstVal
-            else
-                return secondVal
-            end
-        end
-    elseif type == 10 then -- ABS
-        local val = evaluate(node["p1"])
-        return val and math.abs(val) or nil
-    elseif type == 11 then -- ROUND
-        local val = evaluate(node["p1"])
-        return val and math.floor(val + 0.5) or nil
-    elseif type == 12 then -- FLOOR
-        local val = evaluate(node["p1"])
-        return val and math.floor(val) or nil
-    elseif type == 13 then -- CEIL
-        local val = evaluate(node["p1"])
-        return val and math.ceil(val) or nil
-    elseif type == 14 then -- ROOT
-        local val = evaluate(node["p1"])
-        return (val and val >= 0) and math.sqrt(val) or nil
-    elseif type == 15 then -- SIN
-        local val = evaluate(node["p1"])
-        return val and math.sin(math.rad(val)) or nil
-    elseif type == 16 then -- COS
-        local val = evaluate(node["p1"])
-        return val and math.cos(math.rad(val)) or nil
-    elseif type == 17 then -- TAN
-        local val = evaluate(node["p1"])
-        return val and math.tan(math.rad(val)) or nil
-    elseif type == 18 then -- ASIN
-        local val = evaluate(node["p1"])
-        return val and math.deg(math.asin(val)) or nil
-    elseif type == 19 then -- ACOS
-        local val = evaluate(node["p1"])
-        return val and math.deg(math.acos(val)) or nil
-    else                   -- ATAN (20)
-        local val = evaluate(node["p1"])
-        return val and math.deg(math.atan(val)) or nil
-    end
-end
-
+-------------------
+-- callback methods
+-------------------
 local function onSensorLabelChanged(index, value)
     sensors[index]["label"] = value
 end
@@ -151,6 +82,9 @@ local function onSensorUnitChanged(index, value)
     sensors[index]["unit"] = value
 end
 
+----------------------------------------------------------------------------------
+-- Changes the type of the current node. All properties are set to default values.
+----------------------------------------------------------------------------------
 local function onNodeTypeChanged(value)
     if nodeStack[1]["type"] ~= value then
         local node = nodeStack[1]
@@ -192,6 +126,100 @@ end
 local function onOperandSelected(opNum)
     table.insert(nodeStack, 1, opNum == 1 and nodeStack[1]["p1"] or nodeStack[1]["p2"])
     form.reinit()
+end
+
+-------------------------------------------------------------------------
+-- saves the 'sensors' table in json format
+-------------------------------------------------------------------------
+local function save()
+    if sensors then
+        local file = io.open(filepath, "w")
+        if file then
+            if not io.write(file, json.encode(sensors)) then
+                system.messageBox(getTranslation(fileInexistentText))
+            end
+            io.close(file)
+        else
+            system.messageBox(getTranslation(fileInexistentText))
+        end
+    end
+end
+
+-- close function registered with the main form
+local function close()
+    save()
+    collectgarbage()
+end
+
+-------------------------------------------------------------------------
+-- recursively evaluates the specified node, according to it's type
+-------------------------------------------------------------------------
+local function evaluate(node)
+    local type = node["type"]
+    if not node then
+        return nil
+    elseif type == 1 then -- CONST
+        return node["const"]
+    elseif type == 2 then -- SENSOR
+        local id,param = sensorIDs[node["sensor"]], sensorParams[node["sensor"]]
+        if id and param then
+            local val = system.getSensorValueByID(id, param)
+            return (val and val.valid) and val.value or nil
+        else
+            return nil
+        end
+    elseif type == 3 then -- INPUT
+        return node["input"] ~= 1 and system.getInputs(inputs[node["input"]]) or nil
+    elseif type <= twoOpTypes then
+        local firstVal = evaluate(node["p1"])
+        local secondVal = evaluate(node["p2"])
+        if type == 4 then     -- ADD
+            return (firstVal and secondVal) and (firstVal + secondVal) or nil
+        elseif type == 5 then -- SUB
+            return (firstVal and secondVal) and (firstVal - secondVal) or nil
+        elseif type == 6 then -- MUL
+            return (firstVal and secondVal) and (firstVal * secondVal) or nil
+        elseif type == 7 then -- DIV
+            return (firstVal and secondVal and secondVal ~= 0.0) and (firstVal / secondVal) or nil
+        elseif type == 8 then -- MIN
+            if firstVal then
+                return secondVal and math.min(firstVal, secondVal) or firstVal
+            else
+                return secondVal
+            end
+        else -- MAX (9)
+            if firstVal then
+                return secondVal and math.max(firstVal, secondVal) or firstVal
+            else
+                return secondVal
+            end
+        end
+    else
+        local val = evaluate(node["p1"])
+        if type == 10 then     -- ABS
+            return val and math.abs(val) or nil
+        elseif type == 11 then -- ROUND
+            return val and math.floor(val + 0.5) or nil
+        elseif type == 12 then -- FLOOR
+            return val and math.floor(val) or nil
+        elseif type == 13 then -- CEIL
+            return val and math.ceil(val) or nil
+        elseif type == 14 then -- ROOT
+            return (val and val >= 0) and math.sqrt(val) or nil
+        elseif type == 15 then -- SIN
+            return val and math.sin(math.rad(val)) or nil
+        elseif type == 16 then -- COS
+            return val and math.cos(math.rad(val)) or nil
+        elseif type == 17 then -- TAN
+            return val and math.tan(math.rad(val)) or nil
+        elseif type == 18 then -- ASIN
+            return val and math.deg(math.asin(val)) or nil
+        elseif type == 19 then -- ACOS
+            return val and math.deg(math.acos(val)) or nil
+        else                   -- ATAN (20)
+            return val and math.deg(math.atan(val)) or nil
+        end
+    end
 end
 
 local function onKeyPressed(keyCode)
@@ -245,6 +273,9 @@ local function onKeyPressed(keyCode)
     end
 end
 
+--------------------------------------------------------------------------------------------------------
+-- Request method for log variables. Evaluates the sensor whose label is mapped to the requested log id.
+--------------------------------------------------------------------------------------------------------
 local function getLogVariableValue(logVariableID)
     for _,sensor in pairs(sensors) do
         if logVariableIDs[sensor["label"]] == logVariableID then -- if the log variable id registered for the current sensor is equal to the requested id
@@ -260,6 +291,9 @@ local function getLogVariableValue(logVariableID)
     return nil,0
 end
 
+---------------------------------------------------------------------------------------------------
+-- prints the current value of the selected virtual sensor, correspondent to the amount of decimals
+---------------------------------------------------------------------------------------------------
 local function printTelemetry(width, height)
     if activeTelemetryIndex then
         local font = height > 30 and FONT_MAXI or FONT_BOLD
@@ -352,6 +386,9 @@ local function init()
     system.registerTelemetry(2, getTranslation(appName), 0, printTelemetry)
 end
 
+-------------------------------------------------------------------------
+-- the loop updates the value preview of node forms
+-------------------------------------------------------------------------
 local function loop()
     local time = system.getTimeCounter()
     if time >= lastTime + refreshInterval then
