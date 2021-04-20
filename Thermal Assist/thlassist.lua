@@ -20,6 +20,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]
 
+local MAIN_FORM = 1
+local SENSORS_FORM = 2
+local ALGORITHM_FORM = 3
+local TELEMETRY_FORM = 4
+local currFormID
+
 local minSequenceLengthKey = "ta_minsequence"
 local maxSequenceLengthKey = "ta_maxsequence"
 local bestSequenceLengthKey = "ta_best"
@@ -44,7 +50,7 @@ local maxSequenceLength     -- the maximum amount of gps points. This limit prev
 local bestSequenceLength    -- length of the subsequences that are examined to get the highest climb rate on the path
 local enableSwitch          -- sensor reading and speech output are disabled if this switch is defined and in off position
 local zoomSwitch            -- switch that can be used for manual zoom. When in -1 position, the autozoom is used.
-local latSensorIndex        -- selected lattitude sensor
+local latSensorIndex        -- selected latitude sensor
 local lonSensorIndex        -- selected longitude sensor
 local sensorIndices         -- index 1: selected vario sensor index | index 2: selected altitude sensor index
 local sensorMode            -- mode 1: vario, mode 2: altitude difference
@@ -75,13 +81,16 @@ local lastAltitude      -- last altitude, only used in sensor mode 2
 -- translations
 local locale = system.getLocale()
 local appName = {en = "Thermal Assistant", de = "Thermikassistent"}
+local sensorsFormTitle = {en = "Sensors", de = "Sensoren"}
+local algorithmsFormTitle = {en = "Algorithm", de = "Algorithmus"}
+local telemetryFormTitle = {en = "Telemetry Frame", de = "Telemetriefenster"}
 local minSequenceLengthText = {en = "Minimum Sequence Length", de = "Minimale Sequenzlänge"}
 local maxSequenceLengthText = {en = "Maximum Sequence Length", de = "Maximale Sequenzlänge"}
 local bestSequenceLengthText = {en = "Optimal Subsequence Length", de = "Länge optimale Teilsequenz"}
 local enableSwitchText = {en = "Switch", de = "Switch"}
 local zoomSwitchText = {en = "Zoom", de = "Zoom"}
 local lonInputText = {en = "Longitude", de = "Längengrad"}
-local latInputText = {en = "Lattitude", de = "Breitengrad"}
+local latInputText = {en = "Latitude", de = "Breitengrad"}
 local sensorModeText = {en = "Mode", de = "Modus"}
 local sensorInputText = {{en = "Vario EX", de = "Vario EX"}, {en = "Altitude EX", de = "Höhe EX"}}
 local modeSelectionText = {en = {"Vario", "Altitude difference"}, de = {"Variometer", "Höhendifferenz"}}
@@ -89,8 +98,8 @@ local algorithmText = {en = "Algorithm", de = "Algorithmus"}
 local algorithSelectionText = {en = {"Best subsequence", "Weighted vectors", "Weighted vectors [bias]"}, de = {"Beste Teilsequenz", "Gewichtete Vektoren", "Gewichtete Vektoren [Bias]"}}
 local readingsText = {en = "Reading Interval", de = "Messintervall"}
 local intervalText = {en = "Interval", de = "Intervall"}
-local circleRadiusText = {en = "Circle Radius[px / m/s]", de = "Kreisradius[px / m/s]"}
-local telemetryLabel = {en = "Thermal Assistant Map", de = "Termikassistent Karte"}
+local circleRadiusText = {en = "Circle Radius [px / m/s]", de = "Kreisradius [px / m/s]"}
+local telemetryLabel = {en = "Thermal Assistant", de = "Termikassistent"}
 local zoomRangeText = {en = "Zoom Range", de = "Zoombereich"}
 
 local function getTranslation(table)
@@ -232,11 +241,10 @@ local function filterReadings()
     end
 end
 
--------------------------------------------------------------------------
+-------------------------------------------------------------------------------------------------------
 -- Announcement of the bearing and distance to the optimal point.
--- The expected climb rate at that point is also annouced,
--- if the best-subsequnce algorith is selected.
--------------------------------------------------------------------------
+-- The expected climb rate at that point is also annouced, if the best-subsequence algorith is selected.
+-------------------------------------------------------------------------------------------------------
 local function speechOutput()
     if avgPoint and bestPoint and #sensorReadings >= minSequenceLength and (algorithm ~= 1 or #sensorReadings >= bestSequenceLength) then
         local relocationBearing = gps.getBearing(avgPoint, bestPoint) -- bearing from the current center point towards the optimal point
@@ -317,14 +325,14 @@ end
 -----------------------------------------------------------------------------------------------
 local function calcAutozoom(width, height)
     local centerLat, centerLon = gps.getValue(avgPoint)
-    local maxLatPoint = gpsReadings[1] -- finding points with the highest lattitude/longitude deviation relative to the average point
+    local maxLatPoint = gpsReadings[1] -- finding points with the highest latitude/longitude deviation relative to the average point
     local maxLonPoint = gpsReadings[1]
     local maxLatVal, maxLonVal = gps.getValue(gpsReadings[1])
     maxLatVal = abs(maxLatVal - centerLat)
     maxLonVal = abs(maxLonVal - centerLon)
     for i = 2, #gpsReadings do
         local lat,lon = gps.getValue(gpsReadings[i])
-        if abs(lat - centerLat) > maxLatVal then -- new point with highest lattitude deviation
+        if abs(lat - centerLat) > maxLatVal then -- new point with highest latitude deviation
             maxLatPoint = gpsReadings[i]
             maxLatVal = abs(lat - centerLat)
         end
@@ -392,6 +400,16 @@ local function printTelemetry(width, height)
 end
 
 --------------------------------------------------------------------------------------
+-- key event callback function
+--------------------------------------------------------------------------------------
+local function onKeyPressed(keyCode)
+    if currFormID ~= MAIN_FORM and (keyCode == KEY_ESC or keyCode == KEY_5) then
+        form.preventDefault()
+        form.reinit(MAIN_FORM)
+    end
+end
+
+--------------------------------------------------------------------------------------
 
 local function loop()
     if enableSwitch and system.getInputsVal(enableSwitch) < 1 then
@@ -446,50 +464,73 @@ local function loop()
     collectgarbage()
 end
 
-local function initForm()
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(latInputText) })
-    form.addSelectbox(gpsSensorLabels, latSensorIndex + 1, true, onLatSensorChanged)
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(lonInputText) })
-    form.addSelectbox(gpsSensorLabels, lonSensorIndex + 1, true, onLonSensorChanged)
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(sensorModeText) })
-    form.addSelectbox(getTranslation(modeSelectionText), sensorMode, false, onSensorModeChanged)
-    form.addRow(2)
-    sensorLabelIndex = form.addLabel({ label = getTranslation(sensorInputText[sensorMode]) })
-    sensorInputIndex = form.addSelectbox(otherSensorLabels, sensorIndices[sensorMode] + 1, true, onOtherSensorChanged)
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(algorithmText), width = 100 })
-    form.addSelectbox(getTranslation(algorithSelectionText), algorithm, true, onAlgorithmChanged, {width = 220})
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(enableSwitchText) })
-    form.addInputbox(enableSwitch, false, onEnableSwitchChanged)
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(zoomSwitchText) })
-    form.addInputbox(zoomSwitch, true, onZoomSwitchChanged)
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(minSequenceLengthText), width = 250 })
-    form.addIntbox(minSequenceLength, 5, 60, 5, 0, 1, onMinSequenceLengthChanged)
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(maxSequenceLengthText), width = 250 })
-    form.addIntbox(maxSequenceLength, 5, 60, 20, 0, 1, onMaxSequenceLengthChanged)
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(bestSequenceLengthText), width = 250 })
-    form.addIntbox(bestSequenceLength, 1, 20, 3, 0, 1, onBestSequenceLengthChanged)
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(readingsText) })
-    form.addIntbox(readingInterval, 500, 5000, 1000, 0, 100, onReadingIntervalChanged)
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(intervalText) })
-    form.addIntbox(interval, 3, 30, 10, 0, 1, onIntervalChanged)
-    form.addRow(2)
-    form.addLabel({ label = getTranslation(circleRadiusText), width = 250 })
-    form.addIntbox(circleRadius, 1, 50, 15, 0, 1, onCircleRadiusChanged)
-    form.addRow(3)
-    form.addLabel({ label = getTranslation(zoomRangeText), width = 200 })
-    minZoomIndex = form.addIntbox(minZoom, 1, 21, 15, 0, 1, onMinZoomChanged, {width = 50})
-    maxZoomIndex = form.addIntbox(maxZoom, 1, 21, 21, 0, 1, onMaxZoomChanged, {width = 50})
+local function initForm(formID)
+    currFormID = formID
+    if not formID or formID == MAIN_FORM then
+
+        form.setTitle(getTranslation(appName))
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(enableSwitchText) })
+        form.addInputbox(enableSwitch, false, onEnableSwitchChanged)
+        form.addRow(1)
+        form.addLink(function () form.reinit(SENSORS_FORM) end, { label = getTranslation(sensorsFormTitle) .. " >>" })
+        form.addRow(1)
+        form.addLink(function () form.reinit(ALGORITHM_FORM) end, { label = getTranslation(algorithmsFormTitle) .. " >>" })
+        form.addRow(1)
+        form.addLink(function () form.reinit(TELEMETRY_FORM) end, { label = getTranslation(telemetryFormTitle) .. " >>" })
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(readingsText) })
+        form.addIntbox(readingInterval, 500, 5000, 1000, 0, 100, onReadingIntervalChanged)
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(intervalText) })
+        form.addIntbox(interval, 3, 30, 10, 0, 1, onIntervalChanged)
+
+    elseif formID == SENSORS_FORM then
+
+        form.setTitle(getTranslation(sensorsFormTitle))
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(latInputText) })
+        form.addSelectbox(gpsSensorLabels, latSensorIndex + 1, true, onLatSensorChanged)
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(lonInputText) })
+        form.addSelectbox(gpsSensorLabels, lonSensorIndex + 1, true, onLonSensorChanged)
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(sensorModeText) })
+        form.addSelectbox(getTranslation(modeSelectionText), sensorMode, false, onSensorModeChanged)
+        form.addRow(2)
+        sensorLabelIndex = form.addLabel({ label = getTranslation(sensorInputText[sensorMode]) })
+        sensorInputIndex = form.addSelectbox(otherSensorLabels, sensorIndices[sensorMode] + 1, true, onOtherSensorChanged)
+
+    elseif formID == ALGORITHM_FORM then
+
+        form.setTitle(getTranslation(algorithmsFormTitle))
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(algorithmText), width = 100 })
+        form.addSelectbox(getTranslation(algorithSelectionText), algorithm, true, onAlgorithmChanged, {width = 220})
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(minSequenceLengthText), width = 250 })
+        form.addIntbox(minSequenceLength, 5, 60, 5, 0, 1, onMinSequenceLengthChanged)
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(maxSequenceLengthText), width = 250 })
+        form.addIntbox(maxSequenceLength, 5, 60, 20, 0, 1, onMaxSequenceLengthChanged)
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(bestSequenceLengthText), width = 250 })
+        form.addIntbox(bestSequenceLength, 1, 20, 3, 0, 1, onBestSequenceLengthChanged)
+
+    else
+
+        form.setTitle(getTranslation(telemetryFormTitle))
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(zoomSwitchText) })
+        form.addInputbox(zoomSwitch, true, onZoomSwitchChanged)
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(circleRadiusText), width = 250 })
+        form.addIntbox(circleRadius, 1, 50, 15, 0, 1, onCircleRadiusChanged)
+        form.addRow(3)
+        form.addLabel({ label = getTranslation(zoomRangeText), width = 210 })
+        minZoomIndex = form.addIntbox(minZoom, 1, 21, 15, 0, 1, onMinZoomChanged, {width = 50})
+        maxZoomIndex = form.addIntbox(maxZoom, 1, 21, 21, 0, 1, onMaxZoomChanged, {width = 50})
+    end
     collectgarbage()
 end
 
@@ -531,7 +572,7 @@ local function init()
     circleRadius = system.pLoad(circleRadiusKey, 15)
     minZoom = system.pLoad(minZoomKey, 15)
     maxZoom = system.pLoad(maxZoomKey, 21)
-    system.registerForm(1, MENU_APPS, getTranslation(appName), initForm)
+    system.registerForm(1, MENU_APPS, getTranslation(appName), initForm, onKeyPressed)
     system.registerTelemetry(2, getTranslation(telemetryLabel), 4, printTelemetry)
     reset()
     collectgarbage()
