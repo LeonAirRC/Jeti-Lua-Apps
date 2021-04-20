@@ -41,12 +41,12 @@ For legitimate use cases see the section 'Use cases' below.
 
 ### Best subsequence
 This algorithm is ideal for early flights with punctual and inconsistent thermals (case 1) since it will always navigate the pilot to the border of the recorded circle.\
-However once the thermals become wider and the full circle has nearly the same climb rates, it still recommends to shift the center point.\
+However once the thermals become wider, the app still recommends to shift the center point.\
 For example in case 1 the best point would be the "2" in the top right corner, which clearly is the best option. In scenario 2 the "3" would be chosen, although it is obviously closer to falling air and worse than the middle of the right half.
 
 ### Weighted vectors
 Wider thermals are where weighted vectors turn out to be better. Since the resulting points are averages, it's advantageous if there are distinct areas of better/worse climb rates. Also once the perfect spot is found, the app will basically recommend to stay there.\
-In scenario 1 the "best" point would be very close to the current center point. Therefore the app would recommend to move to the east in scenario 2.
+In scenario 1 the calculated "best" point would be very close to the current center point. Though the app would recommend to move to the east in scenario 2 which is definitely the best choice.
 
 ### Bias
 With bias enabled, even negative climb rates are still considered "positive" by how much better they are than the worst point.
