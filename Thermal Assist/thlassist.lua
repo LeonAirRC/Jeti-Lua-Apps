@@ -283,7 +283,7 @@ local function calcBestPoint()
 
         local varioSum = 0 -- sum of the absolute values of all weights (climb rates)
         for i = 1, #sensorReadings do varioSum = varioSum + abs(sensorReadings[i]) end
-        if varioSum == 0 then bestPoint = avgPoint -- all numbers in 'sensorReadings' are zeros, thus no better point can be determined
+        if varioSum == 0.0 then bestPoint = avgPoint -- all numbers in 'sensorReadings' are zeros, thus no better point can be determined
         else
             local latSum, lonSum = 0,0
             local centerLat, centerLon = gps.getValue(avgPoint)
@@ -303,18 +303,19 @@ local function calcBestPoint()
             if sensorReadings[i] < bias then bias = sensorReadings[i] end
             varioSum = varioSum + sensorReadings[i]
         end
-        if varioSum == 0 then bestPoint = avgPoint -- all numbers in 'sensorReadings' are equal, thus no better point can be determined
+        if varioSum == 0.0 then bestPoint = avgPoint -- all numbers in 'sensorReadings' are equal, thus no better point can be determined
         else
             bias = -bias -- invert bias to a positive number
             varioSum = varioSum + #sensorReadings * bias -- modify the sum of all values to get an overall weight of 1
             local latSum, lonSum = 0,0
+            local centerLat, centerLon = gps.getValue(avgPoint)
             for i = 1, #gpsReadings do
                 local lat,lon = gps.getValue(gpsReadings[i])
                 local weight = sensorReadings[i] + bias
-                latSum = latSum + lat * weight
-                lonSum = lonSum + lon * weight
+                latSum = latSum + (lat - centerLat) * weight -- avg point coordinates have to be taken into account here due to floating point precision
+                lonSum = lonSum + (lon - centerLon) * weight -- mathematically it can be reduced
             end
-            bestPoint = gps.newPoint(latSum / varioSum, lonSum / varioSum) -- best point is the weighted average
+            bestPoint = gps.newPoint(centerLat + latSum / varioSum, centerLon + lonSum / varioSum) -- best point is the weighted average
         end
     end
     collectgarbage()
