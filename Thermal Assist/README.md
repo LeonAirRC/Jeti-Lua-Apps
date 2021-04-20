@@ -6,8 +6,20 @@ Therefore a gps and a vario or altitude sensor are required.
 The GPS position and the vario values are queried at regular intervals.\
 Every point is displayed in the telemetry frame with the circle radius being proportional to the climb value if it is positive.\
 At every time the flight path is shortened to contain a turn of at most 360°, thus it always represents the last circle.\
-Based on the climb values along the path the best point is determined.\
-The announcement then contains the bearing and distance of the best point relative to the center point of the last circle as well as the climb rate at that point.
+Based on the climb values along the path and the selected algorithm, the best point is determined.\
+The announcement then contains the bearing and distance of the best point relative to the center point of the last circle as well as the climb rate at that point if available.
+
+### Algorithm
+Currently there are three different algorithms to calculate the best point:
+- Best subsequence
+- Weighted vectors
+- Weighted vectors with bias
+
+For details on their usecases and how they work click [here](doc/algorithms.md).
+
+#### Enable Switch
+If no switch is selected, it is considered to be in on-position.\
+When a switch is selected and in off-position, no more data points are added and the speech output is disabled.
 
 #### Zoom switch
 The pilot can define a zoom switch for the 'map' of gps points.\
