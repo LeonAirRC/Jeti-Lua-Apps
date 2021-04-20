@@ -1,3 +1,25 @@
+--[[
+Copyright (c) 2021 LeonAirRC
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+]]
+
 local modeKey = "int_mode"
 local intervalKey = "int_int"
 local decimalsKey = "int_dec"
@@ -7,9 +29,9 @@ local varioSensorIndexKey = "int_vars"
 local altitudeSensorIndexKey = "int_alts"
 
 local switchOn
-local mode
-local interval
-local decimals
+local mode              -- 1: vario integrated, 2: altitude difference
+local interval          -- speech interval [s]
+local decimals          -- decimals of the announcement
 local varioLabelActive
 local lastTime
 local lastSpeech
@@ -58,6 +80,10 @@ local function reset()
     end
 end
 
+-------------------
+-- callback methods
+-------------------
+
 local function onModeChanged(value)
     mode = value
     form.setProperties(sensorLabelIndex, { label = getTranslation(mode == 1 and varioSensorText or altitudeSensorText) })
@@ -102,6 +128,8 @@ local function onVarioLabelActiveChanged(value)
     form.setValue(checkboxIndex, varioLabelActive)
     system.pSave(varioLabelActiveKey, varioLabelActive and "true" or "false")
 end
+
+-------------------------------------------------------------------------
 
 local function loop()
     if enableSwitch and system.getInputsVal(enableSwitch) ~= 1 then
