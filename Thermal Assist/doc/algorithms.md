@@ -16,12 +16,12 @@ Calculates a weighted average of all vectors from the average (center) point to 
 \
 <img src="https://user-images.githubusercontent.com/57962936/115405333-71e42e80-a1ee-11eb-8937-439e753f6a5b.png" width=300>\
 \
-Then every vector is multiplied with it's weight (climb rate/absolute climb sum) where 'abolute climb sum' equals the sum of the absolute of all vario values. That results in this optimal point:\
+Then every vector is multiplied with it's weight (climb rate/absolute climb sum) where 'absolute climb sum' equals the sum of the absolute of all vario values. That results in this optimal point:\
 \
 <img src="https://user-images.githubusercontent.com/57962936/115410878-4d3e8580-a1f3-11eb-812f-87bdbb663b0b.png" width=400>
 
 ## Bias
-This algorithm only adds a bias to all variometer values. The bias is the smallest value of those, but not bigger than zero:\
+This algorithm only adds a bias to all variometer values. The bias is the smallest climb rate, but never bigger than zero:\
 \
 <img src="https://user-images.githubusercontent.com/57962936/115411702-fdac8980-a1f3-11eb-8d7d-fe058b2f7a55.png" width=400>\
 \
@@ -29,7 +29,7 @@ Resulting in this optimal point:\
 \
 <img src="https://user-images.githubusercontent.com/57962936/115411827-1c128500-a1f4-11eb-818d-bd7b54fc2b09.png" width=400>\
 \
-In this simple scenario the vector with bias is a bit shorter, but hardly different from the one without bias. Regardless the bias makes this "guess" worse.\
+In this simple scenario the vector is a bit shorter, but hardly different from the one without bias. Regardless the bias obviously makes this "guess" worse.\
 For legitimate use cases see the section 'Use cases' below.
 
 # Use cases
@@ -41,11 +41,18 @@ For legitimate use cases see the section 'Use cases' below.
 
 ### Best subsequence
 This algorithm is ideal for early flights with punctual and inconsistent thermals (case 1) since it will always navigate the pilot to the border of the recorded circle.\
-However once the thermals become wider and the full circle has nearly the same climb rates, it still recommends to shift the center point.
+However once the thermals become wider and the full circle has nearly the same climb rates, it still recommends to shift the center point.\
+For example in case 1 the best point would be the "2" in the top right corner, which clearly is the best option. In scenario 2 the "3" would be chosen, although it is obviously closer to falling air and worse than the middle of the right half.
 
 ### Weighted vectors
-Wider thermals are where weighted vectors turn out to be better. Since the resulting points are averages, it's advantageous if there are distinct areas of better/worse climb rates. Also once the perfect spot is found, the app will basically recommend to stay there.
+Wider thermals are where weighted vectors turn out to be better. Since the resulting points are averages, it's advantageous if there are distinct areas of better/worse climb rates. Also once the perfect spot is found, the app will basically recommend to stay there.\
+In scenario 1 the "best" point would be very close to the current center point. Therefore the app would recommend to move to the east in scenario 2.
 
 ### Bias
 With bias enabled, even negative climb rates are still considered "positive" by how much better they are than the worst point.
 Hence it is useful when the air does not go up anywhere and the pilot wants to stay airborne as long as possible.
+
+
+# Math
+![Screenshot_2021-04-20 StackEdit(1)](https://user-images.githubusercontent.com/57962936/115428708-f3de5280-a202-11eb-828f-7d8457d5fb8c.png)
+
