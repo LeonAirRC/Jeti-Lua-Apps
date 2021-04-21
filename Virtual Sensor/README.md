@@ -8,6 +8,12 @@ Although constants can only be integers, floating point constants can be created
 \
 **F4** select the sensor value that is displayed in the telemetry frame
 
+## Example
+This sensor calculates the glide ratio:\
+\
+<img src="https://user-images.githubusercontent.com/57962936/115624339-c70d6680-a2fa-11eb-9853-4edf9fe20384.png" width=500/>
+
+
 ### Output specification
 | Input | Output |
 | :---- | :----: |
