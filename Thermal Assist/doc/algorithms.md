@@ -30,7 +30,8 @@ Resulting in this optimal point:\
 <img src="https://user-images.githubusercontent.com/57962936/115411827-1c128500-a1f4-11eb-818d-bd7b54fc2b09.png" width=400>\
 \
 In this simple scenario the vector is a bit shorter, but hardly different from the one without bias. Regardless the bias obviously makes this "guess" worse.\
-For legitimate use cases see the section 'Use cases' below.
+For legitimate use cases see the section 'Use cases' below.\
+As a side-effect of this approach the recommended shifts often are less aggressive.
 
 # Use cases
 <p>
