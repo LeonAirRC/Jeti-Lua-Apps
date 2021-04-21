@@ -42,7 +42,7 @@ local circleRadiusKey = "ta_radius"
 local minZoomKey = "ta_minzoom"
 local maxZoomKey = "ta_maxzoom"
 
-local sensorLabelIndex, sensorInputIndex, minZoomIndex, maxZoomIndex
+local sensorLabelIndex, sensorInputIndex, minZoomIndex, maxZoomIndex, zoomInputboxIndex
 local abs = math.abs -- minimizes calls to math lib
 
 local minSequenceLength     -- the minimal amount of gps points required for a speech output
@@ -160,7 +160,13 @@ local function onEnableSwitchChanged(value)
 end
 
 local function onZoomSwitchChanged(value)
-    zoomSwitch = value
+    local switchVal = system.getInputsVal(value)
+    if switchVal and switchVal ~= 0.0 then
+        zoomSwitch = value
+    else
+        zoomSwitch = nil
+        system.setValue(zoomInputboxIndex, nil)
+    end
     system.pSave(zoomSwitchKey, zoomSwitch)
 end
 
@@ -219,6 +225,7 @@ end
 
 -------------------------------------------------------------------------
 -- shortens the sequence of gps points and the associated sensor readings
+-- returns true if and only if a turn of at least 360° was detected
 -------------------------------------------------------------------------
 local function filterReadings()
     while #sensorReadings > maxSequenceLength do -- remove excessive values
@@ -239,6 +246,7 @@ local function filterReadings()
         table.remove(gpsReadings)
         table.remove(sensorReadings)
     end
+    return sum >= 360
 end
 
 -------------------------------------------------------------------------------------------------------
@@ -261,22 +269,33 @@ end
 -------------------------------------------------------------------------
 -- sets 'bestPoint' according to the selected algorithm
 -------------------------------------------------------------------------
-local function calcBestPoint()
+local function calcBestPoint(fullTurn)
     bestPoint = nil
     if algorithm == 1 and #sensorReadings >= minSequenceLength and #sensorReadings >= bestSequenceLength then
 
         local sums = {} -- finding the best subsequence, sums[i] is the sum of the following 'bestSequenceLength' vario values
         sums[1] = 0 -- calculating the first sum
-        for i = 1, math.min(bestSequenceLength, #sensorReadings) do sums[1] = sums[1] + sensorReadings[i] end
-        for i = 2, #sensorReadings - bestSequenceLength + 1 do
-            sums[i] = sums[i - 1] + sensorReadings[i + bestSequenceLength - 1] - sensorReadings[i - 1] -- calculating all other sums
+        for i = 1, bestSequenceLength do sums[1] = sums[1] + sensorReadings[i] end
+        if fullTurn then
+            for i = 2, #sensorReadings do
+                sums[i] = sums[i - 1] + sensorReadings[(i + bestSequenceLength - 2) % #sensorReadings + 1] - sensorReadings[i - 1]
+            end
+        else
+            for i = 2, #sensorReadings - bestSequenceLength + 1 do
+                sums[i] = sums[i - 1] + sensorReadings[i + bestSequenceLength - 1] - sensorReadings[i - 1]
+            end
         end
         -- find best index
         local best = 1
         for i = 2, #sums do
             if sums[i] > sums[best] then best = i end
         end
-        bestPoint = gpsReadings[best + (bestSequenceLength - 1) // 2] -- center point of the best subsequence
+        -- get center point of the best subsequence
+        if fullTurn then
+            bestPoint = gpsReadings[((best + ((bestSequenceLength - 1) // 2) - 1) % bestSequenceLength) + 1]
+        else
+            bestPoint = gpsReadings[best + (bestSequenceLength - 1) // 2]
+        end
         bestClimb = sums[best] / bestSequenceLength
 
     elseif algorithm == 2 and #sensorReadings >= minSequenceLength then -- weighted vectors
@@ -312,10 +331,10 @@ local function calcBestPoint()
             for i = 1, #gpsReadings do
                 local lat,lon = gps.getValue(gpsReadings[i])
                 local weight = sensorReadings[i] + bias
-                latSum = latSum + (lat - centerLat) * weight -- avg point coordinates have to be taken into account here due to floating point precision
-                lonSum = lonSum + (lon - centerLon) * weight -- mathematically it can be reduced
+                latSum = latSum + lat * weight
+                lonSum = lonSum + lon * weight
             end
-            bestPoint = gps.newPoint(centerLat + latSum / varioSum, centerLon + lonSum / varioSum) -- best point is the weighted average
+            bestPoint = gps.newPoint(latSum / varioSum, lonSum / varioSum) -- best point is the weighted average
         end
     end
     collectgarbage()
@@ -438,7 +457,7 @@ local function loop()
                     lastAltitude = sensorReading.value
                 end
                 if #gpsReadings > 0 then -- #gps points can be 0 if the first altitude after a reset was measured
-                    filterReadings()
+                    local fullTurn = filterReadings()
                     local latSum, lonSum = gps.getValue(gpsReadings[1]) -- calculate the average point
                     for i = 2, #gpsReadings do
                         local lat, lon = gps.getValue(gpsReadings[i])
@@ -446,7 +465,7 @@ local function loop()
                         lonSum = lonSum + lon
                     end
                     avgPoint = gps.newPoint(latSum / #gpsReadings, lonSum / #gpsReadings)
-                    calcBestPoint()
+                    calcBestPoint(fullTurn)
                 end
             elseif #gpsReadings > 0 then -- delete readings if not valid
                 reset()
@@ -523,7 +542,7 @@ local function initForm(formID)
         form.setTitle(getTranslation(telemetryFormTitle))
         form.addRow(2)
         form.addLabel({ label = getTranslation(zoomSwitchText) })
-        form.addInputbox(zoomSwitch, true, onZoomSwitchChanged)
+        zoomInputboxIndex = form.addInputbox(zoomSwitch, true, onZoomSwitchChanged)
         form.addRow(2)
         form.addLabel({ label = getTranslation(circleRadiusText), width = 250 })
         form.addIntbox(circleRadius, 1, 50, 15, 0, 1, onCircleRadiusChanged)
@@ -584,4 +603,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.13", name = getTranslation(appName) }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.14", name = getTranslation(appName) }
