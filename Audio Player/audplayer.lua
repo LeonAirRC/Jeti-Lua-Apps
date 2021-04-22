@@ -43,13 +43,13 @@ local playedFiles -- array of the files of the selected playlist, contains strin
 
 -- translations
 local locale = system.getLocale()
-local appName = {en = "Audio Player", de = "Audio Player"}
-local previousText = {en = "stop/previous", de = "Stop/zurück"}
-local nextText = {en = "play/next", de = "Play/weiter"}
-local playlistsText = {en = "Playlists", de = "Wiedergabelisten"}
-local deletePlaylistText = {en = "Delete playlist?", de = "Wirlich löschen?"}
-local equalNamesText = {en = "Playlist labels cannot be equal", de = "Bezeichnungen müssen verschieden sein"}
-local controlText = {en = "Switches", de = "Schalter"}
+local appName = {en = "Audio Player", de = "Audio Player", cz = "Audio přehrávač"}
+local previousText = {en = "stop/previous", de = "Stop/zurück", cz = "stop/zpět"}
+local nextText = {en = "play/next", de = "Play/weiter", cz = "hrát/další"}
+local playlistsText = {en = "Playlists", de = "Wiedergabelisten", cz = "seznamy skladeb"}
+local deletePlaylistText = {en = "Delete playlist?", de = "Wirlich löschen?", cz = "Odstranění seznamu skladeb?"}
+local equalNamesText = {en = "Playlist labels cannot be equal", de = "Bezeichnungen müssen verschieden sein", cz = "seznam skladeb štítky\nnemohou být stejné"}
+local controlText = {en = "Switches", de = "Schalter", cz = "spínače"}
 
 local function getTranslation(table)
     return table[locale] or table["en"]
@@ -150,7 +150,10 @@ local function onPlaylistNameChanged(index, value)
     savePlaylistNames()
 end
 
-local function swapFiles(index) -- swaps files at indices [index] and [index+1]
+-----------------------------------------------------------------------
+-- swaps files at indices [index] and [index+1]
+-----------------------------------------------------------------------
+local function swapFiles(index)
     local temp = openedFiles[index]
     openedFiles[index] = openedFiles[index + 1]
     openedFiles[index + 1] = temp
@@ -158,6 +161,9 @@ local function swapFiles(index) -- swaps files at indices [index] and [index+1]
     form.setValue(audioboxIndices[index + 1], openedFiles[index + 1])
 end
 
+-----------------------------------------------------------------------
+-- stops current playback, loads and starts the new playlist
+-----------------------------------------------------------------------
 local function selectPlaylist(index)
     stopPlayback()
     playedPlaylistIndex = index
@@ -166,7 +172,10 @@ local function selectPlaylist(index)
     savePlayedPlaylistIndex()
 end
 
-local function updatePlayingFiles() -- called when the opened playlist is the playing playlist, updates the playedFiles array
+-----------------------------------------------------------------------------------------
+-- called when the opened playlist is the playing playlist, updates the playedFiles array
+-----------------------------------------------------------------------------------------
+local function updatePlayingFiles()
     playedFiles = openedFiles
     playlistFiles[playedPlaylistIndex] = table.concat(playedFiles, ";")
     savePlaylistFiles()
@@ -182,7 +191,7 @@ local function onKeyPressed(keyCode)
         end
         local focused = form.getFocusedRow()
 
-        if (keyCode == KEY_1 and #openedFiles < 32) then
+        if (keyCode == KEY_1 and #openedFiles < 32) then -- add file
 
             table.insert(openedFiles, math.min(focused, #openedFiles) + 1, "")
             saveOpenedFiles()
@@ -194,7 +203,7 @@ local function onKeyPressed(keyCode)
             end
             form.reinit(math.min(focused + 1, #openedFiles))
 
-        elseif (keyCode == KEY_2 and focused > 0) then
+        elseif (keyCode == KEY_2 and focused > 0) then -- remove file
 
             if (playedPlaylistIndex == openedPlaylistIndex and currPlaybackFile == focused) then
                 stopPlayback()
@@ -211,7 +220,7 @@ local function onKeyPressed(keyCode)
             end
             form.reinit(focused)
 
-        elseif (keyCode == KEY_3 and focused > 1 and #openedFiles > 1) then
+        elseif (keyCode == KEY_3 and focused > 1 and #openedFiles > 1) then -- move file up
 
             if (playedPlaylistIndex == openedPlaylistIndex and (currPlaybackFile == focused or currPlaybackFile == focused - 1)) then
                 stopPlayback()
@@ -223,7 +232,7 @@ local function onKeyPressed(keyCode)
                 updatePlayingFiles()
             end
 
-        elseif (keyCode == KEY_4 and focused > 0 and focused < #openedFiles and #openedFiles > 1) then
+        elseif (keyCode == KEY_4 and focused > 0 and focused < #openedFiles and #openedFiles > 1) then -- move file down
 
             if (playedPlaylistIndex == openedPlaylistIndex and (currPlaybackFile == focused or currPlaybackFile == focused + 1)) then
                 stopPlayback()
@@ -237,7 +246,7 @@ local function onKeyPressed(keyCode)
         end
     else
         local focused = form.getFocusedRow()
-        if (keyCode == KEY_1 and #playlistNames < 32) then
+        if (keyCode == KEY_1 and #playlistNames < 32) then -- add playlist
 
             local n = 1 -- create "playlist *" so that no name collision occurs
             while table_contains(playlistNames, "playlist " .. tostring(n)) do
@@ -249,7 +258,7 @@ local function onKeyPressed(keyCode)
             savePlaylistFiles()
             form.reinit(#playlistNames)
 
-        elseif (keyCode == KEY_2 and focused > 0 and focused <= #playlistNames) then
+        elseif (keyCode == KEY_2 and focused > 0 and focused <= #playlistNames) then -- remove playlist
 
             if (form.question(getTranslation(deletePlaylistText), nil, nil, 10000, false, 500) ~= 1) then
                 return
@@ -269,14 +278,14 @@ local function onKeyPressed(keyCode)
             savePlaylistFiles()
             form.reinit()
 
-        elseif (keyCode == KEY_3 and focused > 0 and focused <= #playlistNames) then
+        elseif (keyCode == KEY_3 and focused > 0 and focused <= #playlistNames) then -- select focused playlist to be the playing one
 
             if (focused ~= playedPlaylistIndex) then
                 selectPlaylist(focused)
                 form.reinit(form.getFocusedRow())
             end
 
-        elseif (keyCode == KEY_4 and focused > 0 and focused <= #playlistNames) then
+        elseif (keyCode == KEY_4 and focused > 0 and focused <= #playlistNames) then -- open the focused playlist for editing
 
             openedPlaylistIndex = focused
             openedFiles = splitString(playlistFiles[openedPlaylistIndex], ";")
@@ -330,7 +339,7 @@ local function loop()
     if (playedPlaylistIndex) then -- playlist selected (and possibly playing)
         if (playing() and (system.getTimeCounter() - audioStartTime) > 1000 and not system.isPlayback()) then   -- file has ended or was stopped by immediate audio
                                                                                                                 -- Audio playback sometimes starts with a big enough delay that the next loop
-                                                                                                                -- immediately executes this block, therefore a 1000ms time difference is required
+                                                                                                                -- immediately executes this block, therefore a certain time difference is required
                                                                                                                 -- to prevent the program thinking that the playback has already stopped
             audioStartTime = nil
             currPlaybackFile = currPlaybackFile == #playedFiles and 1 or (currPlaybackFile + 1) -- go to next file
