@@ -21,16 +21,16 @@ SOFTWARE.
 ]]
 
 local locale = system.getLocale()
-local appName = {en = "Beep Editor", de = "Beep Editor"}
-local selectFileText = {en = "Select file", de = "Datei auswählen"}
-local fileErrorText = {en = "The file could not be read", de = "Die Datei konnte nicht gelesen werden"}
-local cannotInsertText = {en = "Cannot insert a row here", de = "Hier kann keine Zeile eingefügt werden"}
-local saveErrorText = {en = "The changes could\nnot be saved", de = "Die Änderungen konnten nicht\ngespeichert werden"}
-local restartText = {en = "Restart the transmitter for the\nchanges to take effect", de = "Die Änderungen werden erst nach\neinem Neustart wirksam"}
-local tableHeader = {en = {"Time", "Type", "Freq", "#", "Length"}, de = {"Zeit", "Typ", "Freq", "#", "Länge"}}
-local tableHeader2 = {en = "File", de = "Datei"}
-local tableHeaderWidth = {70, 40, 75, 45, 80}
-local saveChangesText = {en = "Save Changes?", de = "Änderungen speichern?"}
+local appName = {en = "Beep Editor", de = "Beep Editor", cz = "Zvukový editor"}
+local selectFileText = {en = "Select file", de = "Datei auswählen", cz = "Zvolte soubor"}
+local fileErrorText = {en = "The file could not be read", de = "Die Datei konnte nicht gelesen werden", cz = "Soubor nelze přečíst"}
+local cannotInsertText = {en = "Cannot insert a row here", de = "Hier kann keine Zeile eingefügt werden", cz = "Nelze vložit řádek zde"}
+local saveErrorText = {en = "The changes could\nnot be saved", de = "Die Änderungen konnten nicht\ngespeichert werden", cz = "Změny nelze uložit"}
+local restartText = {en = "Restart the transmitter for the\nchanges to take effect", de = "Die Änderungen werden erst nach\neinem Neustart wirksam", cz = "Změny se projeví až po restartu"}
+local tableHeader = {en = {"Time", "Type", "Freq", "#", "Length"}, de = {"Zeit", "Typ", "Freq", "#", "Länge"}, cz = {"čas", "typ", "frek", "#", "trvání"}}
+local tableHeader2 = {en = "File", de = "Datei", cz = "Soubor"}
+local tableHeaderWidth = {60, 50, 75, 45, 80}
+local saveChangesText = {en = "Save Changes?", de = "Änderungen speichern?", cz = "uložit změny?"}
 
 local DEFAULT_TIME = 0
 local DEFAULT_TYPE = 1
@@ -42,7 +42,7 @@ local MIN_INT = -32768 -- min and max values for intboxes
 local MAX_INT = 32767
 
 
-local files = {"TimerB1", "TimerB2", "TimerV"}
+local files = {"TimerB1.jsn", "TimerB2.jsn", "TimerV.jsn"}
 local file -- number of selected file (1-3) or nil if the form shows the file selection
 local elements -- list
 local changed
@@ -58,6 +58,10 @@ local function toRange(value, lowest, highest)
     return math.min(highest, math.max(lowest, value)) -- returned value is never higher than 'highest' but can be smaller than 'lowest' if lowest > highest
 end
 
+------------------------------------------------------------------------------
+-- Callback function if the timestemp of an element has changed.
+-- Change is not applied if the time exceeds the previous or following element
+------------------------------------------------------------------------------
 local function timeChanged(index, value)
     if (index > 1 and value <= elements[index - 1]["Time"]) then
         form.setValue(timeIndices[index], elements[index]["Time"])
@@ -107,12 +111,14 @@ local function fileChanged(index, value)
     changed = true
 end
 
+---------------------------------------------------------------------------------------
 -- Saves the current file. json.encode is not used to allow a readable multiline output
+---------------------------------------------------------------------------------------
 local function save()
     if (not file or not changed) then
         return
     end
-    local fileObject = io.open("/Config/" .. files[file] .. ".jsn", "w")
+    local fileObject = io.open("/Config/" .. files[file], "w")
     if (not fileObject) then
         system.messageBox(getTranslation(saveErrorText))
         return
@@ -201,13 +207,16 @@ local function keyPressed(keyCode)
     collectgarbage()
 end
 
--- formID: 0, 1, 2 as specified by the Lua API, focused row for formID > 2
--- if formID is <= 2 then the file selection is displayed, otherwise the list of elements is displayed as a table and the row 'formID - 2' is focused
+--------------------------------------------------------------------------------
+-- formID: focused row for formID > 2
+-- if formID is <= 2 then the file selection is displayed, otherwise the
+-- list of elements is displayed as a table and the row 'formID - 2' is focused
+--------------------------------------------------------------------------------
 local function initForm(formID)
     form.setTitle("")
     if (file and formID > 2) then -- a file is selected
         if (not elements) then -- load elements from file if not yet loaded
-            local content = io.readall("/Config/" .. files[file] .. ".jsn") -- read content of file
+            local content = io.readall("Config/" .. files[file]) -- read content of file
             if (not content) then
                 system.messageBox(getTranslation(fileErrorText))
                 form.reinit(1)
