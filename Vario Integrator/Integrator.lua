@@ -50,15 +50,15 @@ local sensorUnits
 
 local locale = system.getLocale()
 -- translation maps for all text elements
-local appName = {en = "Vario Integrator", de = "Vario Integrator"}
-local modeNames = {en = {"Vario integrated", "Alt difference"}, de = {"Vario integriert", "Höhendifferenz"}}
-local modeText = {en = "Mode", de = "Mode"}
-local varioSensorText = {en = "Vario EX", de = "Vario EX"}
-local altitudeSensorText = {en = "Altitude EX", de = "Höhe EX"}
-local enableSwitchText = {en = "Switch", de = "Schalter"}
-local intervalText = {en = "Interval", de = "Intervall"}
-local decimalsText = {en = "Decimal places", de = "Dezimalstellen"}
-local varioLabelActiveText = {en = "Label", de = "Ankündigung"}
+local appName = {en = "Vario Integrator", de = "Vario Integrator", cz = "Vario integrátor"}
+local modeNames = {en = {"Vario integrated", "Alt difference"}, de = {"Vario integriert", "Höhendifferenz"}, cz = {"vario integrovaný", "výškový rozdíl"}}
+local modeText = {en = "Mode", de = "Mode", cz = "Režim"}
+local varioSensorText = {en = "Vario EX", de = "Vario EX", cz = "vario EX"}
+local altitudeSensorText = {en = "Altitude EX", de = "Höhe EX", cz = "výška EX"}
+local enableSwitchText = {en = "Switch", de = "Schalter", cz = "vypínač"}
+local intervalText = {en = "Interval", de = "Intervall", cz = "Interval"}
+local decimalsText = {en = "Decimal places", de = "Dezimalstellen", cz = "Desetinná místa"}
+local varioLabelActiveText = {en = "Label", de = "Ankündigung", cz = "oznámení"}
 
 -- get translation from the given map, default is English
 local function getTranslation(map)
@@ -83,7 +83,6 @@ end
 -------------------
 -- callback methods
 -------------------
-
 local function onModeChanged(value)
     mode = value
     form.setProperties(sensorLabelIndex, { label = getTranslation(mode == 1 and varioSensorText or altitudeSensorText) })
@@ -183,8 +182,8 @@ local function initForm()
     form.addLabel({ label = getTranslation(modeText) })
     form.addSelectbox(getTranslation(modeNames), mode, false, onModeChanged)
     form.addRow(2)
-    sensorLabelIndex = form.addLabel({ label = getTranslation(mode == 1 and varioSensorText or altitudeSensorText) })
-    sensorSelectboxIndex = form.addSelectbox(sensorLabels, mode == 1 and varioSensorIndex + 1 or altitudeSensorIndex + 1, true, onSensorIndexChanged)
+    sensorLabelIndex = form.addLabel({ label = getTranslation(mode == 1 and varioSensorText or altitudeSensorText), width = 100 })
+    sensorSelectboxIndex = form.addSelectbox(sensorLabels, mode == 1 and varioSensorIndex + 1 or altitudeSensorIndex + 1, true, onSensorIndexChanged, {width = 220})
     form.addRow(2)
     form.addLabel({ label = getTranslation(enableSwitchText) })
     form.addInputbox(enableSwitch, false, onEnableSwitchChanged)
