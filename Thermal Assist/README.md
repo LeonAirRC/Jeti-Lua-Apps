@@ -3,7 +3,7 @@ Inspired by a system used on manned gliders, this app helps to determine the opt
 A periodic speech output tells the pilot the bearing and distance to the point where the center of the circle should be shifted to.\
 Therefore a gps and a vario or altitude sensor are required.
 ## How it works
-The GPS position and the vario values are queried at regular intervals.\
+The GPS position and the vario values are queried in regular intervals.\
 Every point is displayed in the telemetry frame with the circle radius being proportional to the climb value if it is positive.\
 At every time the flight path is shortened to contain a turn of at most 360°, thus it always represents the last circle.\
 Based on the climb values along the path and the selected algorithm, the best point is determined.\
