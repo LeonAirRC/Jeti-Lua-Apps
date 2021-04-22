@@ -42,7 +42,7 @@ local circleRadiusKey = "ta_radius"
 local minZoomKey = "ta_minzoom"
 local maxZoomKey = "ta_maxzoom"
 
-local sensorLabelIndex, sensorInputIndex, minZoomIndex, maxZoomIndex, zoomInputboxIndex
+local sensorLabelIndex, sensorInputIndex, minZoomIndex, maxZoomIndex
 local abs = math.abs -- minimizes calls to math lib
 
 local minSequenceLength     -- the minimal amount of gps points required for a speech output
@@ -80,27 +80,27 @@ local lastAltitude      -- last altitude, only used in sensor mode 2
 
 -- translations
 local locale = system.getLocale()
-local appName = {en = "Thermal Assistant", de = "Thermikassistent"}
-local sensorsFormTitle = {en = "Sensors", de = "Sensoren"}
-local algorithmsFormTitle = {en = "Algorithm", de = "Algorithmus"}
-local telemetryFormTitle = {en = "Telemetry Frame", de = "Telemetriefenster"}
-local minSequenceLengthText = {en = "Minimum Sequence Length", de = "Minimale Sequenzlänge"}
-local maxSequenceLengthText = {en = "Maximum Sequence Length", de = "Maximale Sequenzlänge"}
-local bestSequenceLengthText = {en = "Optimal Subsequence Length", de = "Länge optimale Teilsequenz"}
-local enableSwitchText = {en = "Switch", de = "Switch"}
-local zoomSwitchText = {en = "Zoom", de = "Zoom"}
-local lonInputText = {en = "Longitude", de = "Längengrad"}
-local latInputText = {en = "Latitude", de = "Breitengrad"}
-local sensorModeText = {en = "Mode", de = "Modus"}
-local sensorInputText = {{en = "Vario EX", de = "Vario EX"}, {en = "Altitude EX", de = "Höhe EX"}}
-local modeSelectionText = {en = {"Vario", "Altitude difference"}, de = {"Variometer", "Höhendifferenz"}}
-local algorithmText = {en = "Algorithm", de = "Algorithmus"}
-local algorithSelectionText = {en = {"Best subsequence", "Weighted vectors", "Weighted vectors [bias]"}, de = {"Beste Teilsequenz", "Gewichtete Vektoren", "Gewichtete Vektoren [Bias]"}}
-local readingsText = {en = "Reading Interval", de = "Messintervall"}
-local intervalText = {en = "Interval", de = "Intervall"}
-local circleRadiusText = {en = "Circle Radius [px / m/s]", de = "Kreisradius [px / m/s]"}
-local telemetryLabel = {en = "Thermal Assistant", de = "Termikassistent"}
-local zoomRangeText = {en = "Zoom Range", de = "Zoombereich"}
+local appName = {en = "Thermal Assistant", de = "Thermikassistent", cz = "Tepelný asistent"}
+local sensorsFormTitle = {en = "Sensors", de = "Sensoren", cz = "Senzory"}
+local algorithmsFormTitle = {en = "Algorithm", de = "Algorithmus", cz = "algoritmus"}
+local telemetryFormTitle = {en = "Telemetry frame", de = "Telemetriefenster", cz = "okno telemetrie"}
+local minSequenceLengthText = {en = "Minimum sequence length", de = "Minimale Sequenzlänge", cz = "minimální délka sekvence"}
+local maxSequenceLengthText = {en = "Maximum sequence length", de = "Maximale Sequenzlänge", cz = "maximální délka sekvence"}
+local bestSequenceLengthText = {en = "Optimal subsequence length", de = "Länge optimale Teilsequenz", cz = "Optimální délka subsekvence"}
+local enableSwitchText = {en = "Switch", de = "Switch", cz = "vypínač"}
+local zoomSwitchText = {en = "Zoom", de = "Zoom", cz = "Zvětšení"}
+local lonInputText = {en = "Longitude", de = "Längengrad", cz = "zeměpisná délka"}
+local latInputText = {en = "Latitude", de = "Breitengrad", cz = "zeměpisná šířka"}
+local sensorModeText = {en = "Mode", de = "Modus", cz = "Režim"}
+local sensorInputText = {{en = "Vario EX", de = "Vario EX", cz = "vario EX"}, {en = "Altitude EX", de = "Höhe EX", cz = "výška EX"}}
+local modeSelectionText = {en = {"Vario", "Altitude difference"}, de = {"Variometer", "Höhendifferenz"}, cz = {"variometr", "výškový rozdíl"}}
+local algorithmText = {en = "Algorithm", de = "Algorithmus", cz = "algoritmus"}
+local algorithSelectionText = {en = {"Best subsequence", "Weighted vectors", "Weighted vectors [bias]"}, de = {"Beste Teilsequenz", "Gewichtete Vektoren", "Gewichtete Vektoren [Bias]"},
+                                cz = {"nejlepší dílčí sekvence", "vážené vektory", "vážené vektory [zaujatost]"}}
+local readingsText = {en = "Reading interval", de = "Messintervall", cz = "Interval měření"}
+local intervalText = {en = "Announcement interval", de = "Ansageintervall", cz = "Interval oznámení"}
+local circleRadiusText = {en = "Circle radius [px / m/s]", de = "Kreisradius [px / m/s]", cz = "Poloměr kruhu [px / ms]"}
+local zoomRangeText = {en = "Zoom range", de = "Zoombereich", cz = "rozsah zvětšení"}
 
 local function getTranslation(table)
     return table[locale] or table["en"]
@@ -160,13 +160,7 @@ local function onEnableSwitchChanged(value)
 end
 
 local function onZoomSwitchChanged(value)
-    local switchVal = system.getInputsVal(value)
-    if switchVal and switchVal ~= 0.0 then
-        zoomSwitch = value
-    else
-        zoomSwitch = nil
-        system.setValue(zoomInputboxIndex, nil)
-    end
+    zoomSwitch = value
     system.pSave(zoomSwitchKey, zoomSwitch)
 end
 
@@ -291,8 +285,8 @@ local function calcBestPoint(fullTurn)
             if sums[i] > sums[best] then best = i end
         end
         -- get center point of the best subsequence
-        if fullTurn then
-            bestPoint = gpsReadings[((best + ((bestSequenceLength - 1) // 2) - 1) % bestSequenceLength) + 1]
+        if fullTurn and best + (bestSequenceLength - 1 // 2) > #sensorReadings then
+            bestPoint = gpsReadings[best + (bestSequenceLength - 1) // 2 - #sensorReadings]
         else
             bestPoint = gpsReadings[best + (bestSequenceLength - 1) // 2]
         end
@@ -381,7 +375,7 @@ end
 local function printTelemetry(width, height)
     if gpsReadings and avgPoint and #gpsReadings > 0 then
         local zoomSwitchVal = system.getInputsVal(zoomSwitch)
-        if not zoomSwitch or zoomSwitchVal == -1.0 then
+        if not zoomSwitch or zoomSwitchVal == -1.0 or zoomSwitchVal == 0.0 then
             calcAutozoom(width, height)
         else
             zoom = math.floor(zoomSwitchVal * abs(maxZoom - minZoom) / 2 + (minZoom + maxZoom) / 2 + 0.5) -- round zoom to integer
@@ -392,7 +386,7 @@ local function printTelemetry(width, height)
         for i = 1, #gpsReadings do -- draw points
             if sensorReadings[i] > 0 then -- positive climb
                 local x,y = gps.getLcdXY(gpsReadings[i], topleft, zoom)
-                local radius = math.floor(0.5 + circleRadius * sensorReadings[i]) -- round radius to integer
+                local radius = math.floor(circleRadius * sensorReadings[i]) + 1
                 if algorithm == 1 and gpsReadings[i] == bestPoint then -- draw square at optimal position
                     lcd.drawRectangle(x - radius, y - radius, 2 * radius, 2 * radius)
                 else -- draw circle with the specified radius
@@ -485,7 +479,6 @@ local function loop()
 end
 
 local function initForm(formID)
-    currFormID = formID
     if not formID or formID == MAIN_FORM then
 
         form.setTitle(getTranslation(appName))
@@ -502,8 +495,9 @@ local function initForm(formID)
         form.addLabel({ label = getTranslation(readingsText) })
         form.addIntbox(readingInterval, 500, 5000, 1000, 0, 100, onReadingIntervalChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(intervalText) })
+        form.addLabel({ label = getTranslation(intervalText), width = 250 })
         form.addIntbox(interval, 3, 30, 10, 0, 1, onIntervalChanged)
+        form.setFocusedRow(currFormID or 1)
 
     elseif formID == SENSORS_FORM then
 
@@ -518,8 +512,9 @@ local function initForm(formID)
         form.addLabel({ label = getTranslation(sensorModeText) })
         form.addSelectbox(getTranslation(modeSelectionText), sensorMode, false, onSensorModeChanged)
         form.addRow(2)
-        sensorLabelIndex = form.addLabel({ label = getTranslation(sensorInputText[sensorMode]) })
-        sensorInputIndex = form.addSelectbox(otherSensorLabels, sensorIndices[sensorMode] + 1, true, onOtherSensorChanged)
+        sensorLabelIndex = form.addLabel({ label = getTranslation(sensorInputText[sensorMode]), width = 100 })
+        sensorInputIndex = form.addSelectbox(otherSensorLabels, sensorIndices[sensorMode] + 1, true, onOtherSensorChanged, {width = 220})
+        form.setFocusedRow(1)
 
     elseif formID == ALGORITHM_FORM then
 
@@ -536,13 +531,14 @@ local function initForm(formID)
         form.addRow(2)
         form.addLabel({ label = getTranslation(bestSequenceLengthText), width = 250 })
         form.addIntbox(bestSequenceLength, 1, 20, 3, 0, 1, onBestSequenceLengthChanged)
+        form.setFocusedRow(1)
 
     else
 
         form.setTitle(getTranslation(telemetryFormTitle))
         form.addRow(2)
         form.addLabel({ label = getTranslation(zoomSwitchText) })
-        zoomInputboxIndex = form.addInputbox(zoomSwitch, true, onZoomSwitchChanged)
+        form.addInputbox(zoomSwitch, true, onZoomSwitchChanged)
         form.addRow(2)
         form.addLabel({ label = getTranslation(circleRadiusText), width = 250 })
         form.addIntbox(circleRadius, 1, 50, 15, 0, 1, onCircleRadiusChanged)
@@ -550,7 +546,9 @@ local function initForm(formID)
         form.addLabel({ label = getTranslation(zoomRangeText), width = 210 })
         minZoomIndex = form.addIntbox(minZoom, 1, 21, 15, 0, 1, onMinZoomChanged, {width = 50})
         maxZoomIndex = form.addIntbox(maxZoom, 1, 21, 21, 0, 1, onMaxZoomChanged, {width = 50})
+        form.setFocusedRow(1)
     end
+    currFormID = formID
     collectgarbage()
 end
 
@@ -593,7 +591,7 @@ local function init()
     minZoom = system.pLoad(minZoomKey, 15)
     maxZoom = system.pLoad(maxZoomKey, 21)
     system.registerForm(1, MENU_APPS, getTranslation(appName), initForm, onKeyPressed)
-    system.registerTelemetry(2, getTranslation(telemetryLabel), 4, printTelemetry)
+    system.registerTelemetry(2, getTranslation(appName), 4, printTelemetry)
     reset()
     collectgarbage()
 end
