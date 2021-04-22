@@ -47,18 +47,18 @@ local logVariableIDs -- Saves the log variable id for all sensor labels that exi
 
 -- translations
 local locale = system.getLocale()
-local appName = {en = "Virtual Sensor", de = "Virtueller Sensor"}
-local sensorsTitle = {en = "Sensors", de = "Sensoren"}
-local sensorLabelText = {en = "Sensor Label", de = "Bezeichner"}
-local decimalsText = {en = "Decimals", de = "Dezimalstellen"}
-local unitText = {en = "Unit", de = "Einheit"}
-local fileInexistentText = {en = "Sensors could not be saved", de = "Speichern fehlgeschlagen"}
-local constantText = {en = "constant", de = "konstant"}
-local sensorText = {en = "Sensor", de = "Sensor"}
-local operandText = {en = "Parameter", de = "Parameter"}
-local inputText = {en = "Input", de = "Eingabe"}
-local valueText = {en = "Value", de = "Wert"}
-local levelText = {en = "level", de = "Ebene"}
+local appName = {en = "Virtual Sensor", de = "Virtueller Sensor", cz = "Virtuální senzor"}
+local sensorsTitle = {en = "Sensors", de = "Sensoren", cz = "Senzory"}
+local sensorLabelText = {en = "Sensor label", de = "Bezeichner", cz = "název"}
+local decimalsText = {en = "Decimals", de = "Dezimalstellen", cz = "Desetinná místa"}
+local unitText = {en = "Unit", de = "Einheit", cz = "Jednotka měření"}
+local fileInexistentText = {en = "Sensors could not be saved", de = "Speichern fehlgeschlagen", cz = "Uložení se nezdařilo"}
+local constantText = {en = "constant", de = "konstant", cz = "konstantní"}
+local sensorText = {en = "sensor", de = "Sensor", cz = "senzor"}
+local operandText = {en = "Parameter", de = "Parameter", cz = "parametr"}
+local inputText = {en = "input", de = "Eingabe", cz = "vstup"}
+local valueText = {en = "Value", de = "Wert", cz = "hodnota"}
+local levelText = {en = "level", de = "Ebene", cz = "úroveň"}
 
 local function getTranslation(table)
     return table[locale] or table["en"]
@@ -89,7 +89,7 @@ local function onNodeTypeChanged(value)
     if nodeStack[1]["type"] ~= value then
         local node = nodeStack[1]
         node["type"] = value
-        node["const"] = nil -- delete old entries
+        node["const"] = nil -- delete old attributes
         node["sensor"] = nil
         node["input"] = nil
         node["p1"] = nil
@@ -384,6 +384,7 @@ local function init()
     end
     system.registerForm(1, MENU_APPS, getTranslation(appName), initForm, onKeyPressed, nil, close)
     system.registerTelemetry(2, getTranslation(appName), 0, printTelemetry)
+    system.registerTelemetry(3, getTranslation(appName) .. " 2", 0, printTelemetry)
 end
 
 -------------------------------------------------------------------------
