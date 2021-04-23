@@ -2,6 +2,9 @@
 Audio player is similar to the built-in player.\
 It can play a user-defined playlist of all soundfiles on the transmitter.\
 \
+<img src="https://user-images.githubusercontent.com/57962936/115938657-c102bb80-a49b-11eb-9fe3-a8f5ec7f7699.png" width=320/>
+<img src="https://user-images.githubusercontent.com/57962936/115938658-c2cc7f00-a49b-11eb-97ec-94fefa2ec925.png" width=320/>\
+\
 **stop/previous**\
 If a file is being played currently, this switch stops the playback.\
 Otherwise the previous file is selected.\
