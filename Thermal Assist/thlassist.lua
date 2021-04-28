@@ -42,7 +42,7 @@ local circleRadiusKey = "ta_radius"
 local minZoomKey = "ta_minzoom"
 local maxZoomKey = "ta_maxzoom"
 
-local sensorLabelIndex, sensorInputIndex, minZoomIndex, maxZoomIndex
+local sensorLabelIndex, sensorInputIndex, minZoomIndex, maxZoomIndex, zoomInputboxIndex
 local abs = math.abs -- minimizes calls to math lib
 
 local minSequenceLength     -- the minimal amount of gps points required for a speech output
@@ -111,6 +111,7 @@ local function reset() -- clear all values, go to initial state
     sensorReadings = {}
     avgPoint = nil
     bestPoint = nil
+    bestClimb = nil
     lastTime = system.getTimeCounter()
     lastSpeech = lastTime
     lastAltitude = nil
@@ -253,7 +254,7 @@ local function speechOutput()
         local relocationDistance = gps.getDistance(avgPoint, bestPoint) -- distance from the current center point to the optimal point
         system.playNumber(relocationBearing, 0, string.char(176)) -- ° char as unicode
         system.playNumber(relocationDistance, 0, "m")
-        if algorithm == 1 then
+        if bestClimb then
             system.playNumber(bestClimb, 1, "m/s") -- play optimal climb (average over the best subsequence)
         end
     end
@@ -265,18 +266,18 @@ end
 -------------------------------------------------------------------------
 local function calcBestPoint(fullTurn)
     bestPoint = nil
+    bestClimb = nil
     if algorithm == 1 and #sensorReadings >= minSequenceLength and #sensorReadings >= bestSequenceLength then
 
         local sums = {} -- finding the best subsequence, sums[i] is the sum of the following 'bestSequenceLength' vario values
         sums[1] = 0 -- calculating the first sum
         for i = 1, bestSequenceLength do sums[1] = sums[1] + sensorReadings[i] end
+        for i = 2, #sensorReadings - bestSequenceLength + 1 do
+            table.insert(sums, i, sums[i - 1] + sensorReadings[i + bestSequenceLength - 1] - sensorReadings[i - 1])
+        end
         if fullTurn then
-            for i = 2, #sensorReadings do
-                sums[i] = sums[i - 1] + sensorReadings[(i + bestSequenceLength - 2) % #sensorReadings + 1] - sensorReadings[i - 1]
-            end
-        else
-            for i = 2, #sensorReadings - bestSequenceLength + 1 do
-                sums[i] = sums[i - 1] + sensorReadings[i + bestSequenceLength - 1] - sensorReadings[i - 1]
+            for i = #sensorReadings - bestSequenceLength + 2, #sensorReadings do
+                table.insert(sums, i, sums[i - 1] + sensorReadings[(i + bestSequenceLength - 2) % #sensorReadings + 1] - sensorReadings[i - 1])
             end
         end
         -- find best index
@@ -321,7 +322,6 @@ local function calcBestPoint(fullTurn)
             bias = -bias -- invert bias to a positive number
             varioSum = varioSum + #sensorReadings * bias -- modify the sum of all values to get an overall weight of 1
             local latSum, lonSum = 0,0
-            local centerLat, centerLon = gps.getValue(avgPoint)
             for i = 1, #gpsReadings do
                 local lat,lon = gps.getValue(gpsReadings[i])
                 local weight = sensorReadings[i] + bias
@@ -420,6 +420,9 @@ local function onKeyPressed(keyCode)
     if currFormID ~= MAIN_FORM and (keyCode == KEY_ESC or keyCode == KEY_5) then
         form.preventDefault()
         form.reinit(MAIN_FORM)
+    elseif currFormID == TELEMETRY_FORM and keyCode == KEY_1 then
+        onZoomSwitchChanged(nil)
+        form.setValue(zoomInputboxIndex, nil)
     end
 end
 
@@ -538,7 +541,7 @@ local function initForm(formID)
         form.setTitle(getTranslation(telemetryFormTitle))
         form.addRow(2)
         form.addLabel({ label = getTranslation(zoomSwitchText) })
-        form.addInputbox(zoomSwitch, true, onZoomSwitchChanged)
+        zoomInputboxIndex = form.addInputbox(zoomSwitch, true, onZoomSwitchChanged)
         form.addRow(2)
         form.addLabel({ label = getTranslation(circleRadiusText), width = 250 })
         form.addIntbox(circleRadius, 1, 50, 15, 0, 1, onCircleRadiusChanged)
@@ -547,6 +550,7 @@ local function initForm(formID)
         minZoomIndex = form.addIntbox(minZoom, 1, 21, 15, 0, 1, onMinZoomChanged, {width = 50})
         maxZoomIndex = form.addIntbox(maxZoom, 1, 21, 21, 0, 1, onMaxZoomChanged, {width = 50})
         form.setFocusedRow(1)
+        form.setButton(1, "Clr", ENABLED)
     end
     currFormID = formID
     collectgarbage()
