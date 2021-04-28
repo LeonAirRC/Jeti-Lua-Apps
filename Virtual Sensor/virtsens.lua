@@ -21,8 +21,10 @@ SOFTWARE.
 ]]
 
 local filepath = "Apps/VirtualSensor/sensors.json"
-local units = {"", "Wmi", "F", "°C", "°", "W", "s", "min", "h", "mAh", "Ah", "A", "V", "%", "hPa", "kPa", "psi", "atm", "b", "m/s", "km/h", "kt.", "mph",
-                "m", "ft", "km", "mi.", "yd.", "ml", "l", "hl", "floz", "gal", "ml/m", "l/m", "oz/m", "gpm"}
+
+local units = {"", "m", "km", "s", "min", "h", "m/s", "km/h", "V", "A", "mAh", "Ah", "W", "Wmi", "°C", "°", "%", "l", "ml", "hl", "l/m", "ml/m", "hPa", "kPa", "b",
+                "ft", "mi.", "yd.", "ft/s", "mph", "kt.", "F", "psi", "atm", "floz", "gal", "oz/m", "gpm"}
+
 local inputs = {"...", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10",
                 "SA", "SB", "SC", "SD", "SE", "SF", "SG", "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SP",
                 "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12", "T13", "T14", "T15", "T16",
@@ -156,9 +158,7 @@ end
 -------------------------------------------------------------------------
 local function evaluate(node)
     local type = node["type"]
-    if not node then
-        return nil
-    elseif type == 1 then -- CONST
+    if type == 1 then -- CONST
         return node["const"]
     elseif type == 2 then -- SENSOR
         local id,param = sensorIDs[node["sensor"]], sensorParams[node["sensor"]]
@@ -169,7 +169,7 @@ local function evaluate(node)
             return nil
         end
     elseif type == 3 then -- INPUT
-        return node["input"] ~= 1 and system.getInputs(inputs[node["input"]]) or nil
+        return node["input"] == 1 and nil or system.getInputs(inputs[node["input"]])
     elseif type <= twoOpTypes then
         local firstVal = evaluate(node["p1"])
         local secondVal = evaluate(node["p2"])
