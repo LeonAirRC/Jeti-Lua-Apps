@@ -52,7 +52,7 @@ local function getTranslation(table)
     return table[locale] or table["en"]
 end
 
--- forces a value into an allowed range of values
+-- forces a value into an allowed range of numbers
 -- If 'value' is smaller than 'lowest' then lowest is returned, equivalent for 'highest'. If 'value' is between the limits it is returned
 local function toRange(value, lowest, highest)
     return math.min(highest, math.max(lowest, value)) -- returned value is never higher than 'highest' but can be smaller than 'lowest' if lowest > highest
@@ -88,7 +88,7 @@ local function typeChanged(index, value)
     end
     changed = true
     collectgarbage()
-    form.reinit(form.getFocusedRow() + 2)
+    form.reinit(form.getFocusedRow())
 end
 
 local function frequencyChanged(index, value)
@@ -144,8 +144,8 @@ local function save()
 end
 
 local function keyPressed(keyCode)
-    form.preventDefault()
     if (file) then -- the list of elements is displayed currently
+        form.preventDefault()
         local focused = form.getFocusedRow() - 2
         if (keyCode == KEY_1 and focused > 1) then -- swap focused element with the row above
             local element = elements[focused - 1] -- swap elements
@@ -155,7 +155,7 @@ local function keyPressed(keyCode)
             elements[focused - 1]["Time"] = elements[focused]["Time"]
             elements[focused]["Time"] = time
             changed = true
-            form.reinit(form.getFocusedRow() + 1) -- go one row up (including +2 offset)
+            form.reinit(focused + 1) -- go one row up
         elseif (keyCode == KEY_2 and focused > 0 and focused < #elements) then -- swap focused element with the row above
             local element = elements[focused] -- swap elements
             elements[focused] = elements[focused + 1]
@@ -164,21 +164,21 @@ local function keyPressed(keyCode)
             elements[focused]["Time"] = elements[focused + 1]["Time"]
             elements[focused + 1]["Time"] = time
             changed = true
-            form.reinit(form.getFocusedRow() + 3) -- go one row down (including +2 offset)
+            form.reinit(focused + 3) -- go one row down
         elseif (keyCode == KEY_3 and (focused > 0 or #elements == 0) and #elements < 100) then -- add element
             local minTime = focused > 0 and (elements[focused]["Time"] + 1) or MIN_INT -- min and max values are calculated to find a default value for the new element
             local maxTime = (focused > 0 and focused < #elements) and (elements[focused + 1]["Time"] - 1) or MAX_INT
             if (minTime <= maxTime) then -- element cannot be added if there is no free "timeslot" between the two adjacent rows
                 table.insert(elements, focused < 1 and 1 or (focused + 1), { Time = toRange(DEFAULT_TIME, minTime, maxTime), Type = 1, Freq = DEFAULT_FREQ, Cnt = DEFAULT_CNT, Length = DEFAULT_LENGTH })
                 changed = true
-                form.reinit((focused < 1 and 3 or focused + 3) + 2) -- add +2 offset to actual index
+                form.reinit(focused + 3)
             else
                 system.messageBox(getTranslation(cannotInsertText))
             end
         elseif (keyCode == KEY_4 and focused > 0) then -- remove focused element
             table.remove(elements, focused)
             changed = true
-            form.reinit(math.min(#elements, focused) + 4) -- focus row below if the last element was deleted
+            form.reinit(math.min(#elements, focused) + 2) -- focus row below if the last element was deleted
         elseif (keyCode == KEY_5) then -- OK pressed
             if (changed) then
                 save()
@@ -186,7 +186,7 @@ local function keyPressed(keyCode)
             elements = nil
             file = nil
             timeIndices = nil
-            form.reinit(0)
+            form.reinit()
         elseif (keyCode == KEY_ESC) then -- ESC pressed
             if (changed) then
                 local result = form.question(getTranslation(saveChangesText), nil, nil, 0, false, 0)
@@ -197,29 +197,24 @@ local function keyPressed(keyCode)
             elements = nil
             file = nil
             timeIndices = nil
-            form.reinit(0)
-        end
-    else -- the file selection is displayed
-        if (keyCode == KEY_5 or keyCode == KEY_ESC or keyCode == KEY_POWER) then
-            form.close()
+            form.reinit()
         end
     end
     collectgarbage()
 end
 
 --------------------------------------------------------------------------------
--- formID: focused row for formID > 2
--- if formID is <= 2 then the file selection is displayed, otherwise the
--- list of elements is displayed as a table and the row 'formID - 2' is focused
+-- list of elements is displayed as a table and the row 'formID' is focused
 --------------------------------------------------------------------------------
 local function initForm(formID)
     form.setTitle("")
-    if (file and formID > 2) then -- a file is selected
+    if (file) then -- a file is selected
         if (not elements) then -- load elements from file if not yet loaded
             local content = io.readall("Config/" .. files[file]) -- read content of file
             if (not content) then
                 system.messageBox(getTranslation(fileErrorText))
-                form.reinit(1)
+                file = nil
+                form.reinit()
                 return
             end
             content = string.gsub(content, "[\r\n]", "")
@@ -261,7 +256,7 @@ local function initForm(formID)
                 form.addAudioFilebox(element["File"], function (value) fileChanged(i, value) end, { width = tableHeaderWidth[3]  + tableHeaderWidth[4] + tableHeaderWidth[5] })
             end
         end
-        form.setFocusedRow(formID - 2)
+        form.setFocusedRow(formID or 1)
         form.setButton(1, ":up", ENABLED)
         form.setButton(2, ":down", ENABLED)
         form.setButton(3, ":add", ENABLED)
@@ -272,7 +267,7 @@ local function initForm(formID)
             form.addLink(function ()
                 file = i
                 changed = false
-                form.reinit(3)
+                form.reinit()
             end, { label = filename .. ">>" })
         end
         for i = 1,4 do
@@ -291,4 +286,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, destroy = destroy, author = "LeonAir RC", version = "1.0", name = getTranslation(appName) }
+return { init = init, destroy = destroy, author = "LeonAir RC", version = "1.1", name = getTranslation(appName) }
