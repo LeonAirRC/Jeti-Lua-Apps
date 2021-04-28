@@ -169,7 +169,7 @@ local function evaluate(node)
             return nil
         end
     elseif type == 3 then -- INPUT
-        return node["input"] == 1 and nil or system.getInputs(inputs[node["input"]])
+        return node["input"] > 1 and system.getInputs(inputs[node["input"]]) or nil
     elseif type <= twoOpTypes then
         local firstVal = evaluate(node["p1"])
         local secondVal = evaluate(node["p2"])
