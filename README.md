@@ -12,6 +12,8 @@ announces average climb rates
 create playlists of audio files
 ### Virtual Sensor
 calculates virtual sensor values from one or many real sensor values and switch inputs
+### Proportional Switch
+use switches to move a control up and down
 ### Timer Beep Editor
 edit the beep/audiofile patterns that are used for timer signalization
 ### DJM Timer
