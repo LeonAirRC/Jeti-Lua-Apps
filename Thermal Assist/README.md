@@ -19,6 +19,9 @@ Interval at which gps and vario values are queried [ms].
 #### Interval
 Interval at which the announcement occur [s].
 
+#### Delay
+Adds an artificial delay to compensate the delay most vario/altitude sensors have. This number is the amount of data points that the vario values are shifted 'back'. For example, if the reading interval is 0.8s and the vario has a delay of 1.5s, it is beneficial to set this number to 2.
+
 ### Algorithm
 Currently there are three different algorithms to calculate the best point:
 - Best subsequence
@@ -58,3 +61,8 @@ Range of the zoom levels reachable with the zoom switch.
 ![thlassist2](https://user-images.githubusercontent.com/57962936/115938868-54d48780-a49c-11eb-8dfe-5ff7394d361c.png)
 ![thlassist3](https://user-images.githubusercontent.com/57962936/115938869-556d1e00-a49c-11eb-8d86-7a65c01fd653.png)
 ![thlassist4](https://user-images.githubusercontent.com/57962936/115938870-5605b480-a49c-11eb-9556-95f6e681dc5b.png)
+
+## Changelog
+#### v1.2
+- added delay
+- minor fixes
