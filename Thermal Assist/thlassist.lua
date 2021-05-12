@@ -35,6 +35,7 @@ local lonSensorIndexKey = "ta_lons"
 local latSensorIndexKey = "ta_lats"
 local sensorIndicesKey = "ta_sens"
 local sensorModeKey = "ta_smode"
+local delayKey = "ta_delay"
 local algorithmKey = "ta_alg"
 local readingInteravlKey = "ta_readingint"
 local intervalKey = "ta_interval"
@@ -52,7 +53,8 @@ local enableSwitch          -- sensor reading and speech output are disabled if 
 local zoomSwitch            -- switch that can be used for manual zoom. When in -1 position, the autozoom is used.
 local latSensorIndex        -- selected latitude sensor
 local lonSensorIndex        -- selected longitude sensor
-local sensorIndices         -- index 1: selected vario sensor index | index 2: selected altitude sensor index
+local sensorIndices         -- table with two entries representing - index 1: selected vario sensor index - index 2: selected altitude sensor index
+local delay
 local sensorMode            -- mode 1: vario, mode 2: altitude difference
 local algorithm             -- algorithm 1: best subsequence, algorithm 2: weighted vectors, algorithm 3: weighted vectors [bias]
 local readingInterval   -- interval of sensor readings [ms]
@@ -94,6 +96,7 @@ local latInputText = {en = "Latitude", de = "Breitengrad", cz = "zeměpisná š�
 local sensorModeText = {en = "Mode", de = "Modus", cz = "Režim"}
 local sensorInputText = {{en = "Vario EX", de = "Vario EX", cz = "vario EX"}, {en = "Altitude EX", de = "Höhe EX", cz = "výška EX"}}
 local modeSelectionText = {en = {"Vario", "Altitude difference"}, de = {"Variometer", "Höhendifferenz"}, cz = {"variometr", "výškový rozdíl"}}
+local delayText = {en = "Delay", de = "Verzögerung", cz = "zpoždění"}
 local algorithmText = {en = "Algorithm", de = "Algorithmus", cz = "algoritmus"}
 local algorithSelectionText = {en = {"Best subsequence", "Weighted vectors", "Weighted vectors [bias]"}, de = {"Beste Teilsequenz", "Gewichtete Vektoren", "Gewichtete Vektoren [Bias]"},
                                 cz = {"nejlepší dílčí sekvence", "vážené vektory", "vážené vektory [zaujatost]"}}
@@ -142,6 +145,12 @@ end
 local function onOtherSensorChanged(value)
     sensorIndices[sensorMode] = value - 1
     system.pSave(sensorIndicesKey, sensorIndices)
+end
+
+local function onDelayChanged(value)
+    delay = value
+    reset()
+    system.pSave(delayKey, delay)
 end
 
 local function onAlgorithmChanged(value)
@@ -267,7 +276,7 @@ end
 local function calcBestPoint(fullTurn)
     bestPoint = nil
     bestClimb = nil
-    if algorithm == 1 and #sensorReadings >= minSequenceLength and #sensorReadings >= bestSequenceLength then
+    if algorithm == 1 and #sensorReadings >= math.max(minSequenceLength, bestSequenceLength) + delay then -- best subsequence
 
         local sums = {} -- finding the best subsequence, sums[i] is the sum of the following 'bestSequenceLength' vario values
         sums[1] = 0 -- calculating the first sum
@@ -286,23 +295,23 @@ local function calcBestPoint(fullTurn)
             if sums[i] > sums[best] then best = i end
         end
         -- get center point of the best subsequence
-        if fullTurn and best + (bestSequenceLength - 1 // 2) > #sensorReadings then
-            bestPoint = gpsReadings[best + (bestSequenceLength - 1) // 2 - #sensorReadings]
+        if fullTurn and best + delay + (bestSequenceLength - 1 // 2) > #sensorReadings then
+            bestPoint = gpsReadings[best + delay + (bestSequenceLength - 1) // 2 - #sensorReadings]
         else
-            bestPoint = gpsReadings[best + (bestSequenceLength - 1) // 2]
+            bestPoint = gpsReadings[best + delay + (bestSequenceLength - 1) // 2]
         end
         bestClimb = sums[best] / bestSequenceLength
 
-    elseif algorithm == 2 and #sensorReadings >= minSequenceLength then -- weighted vectors
+    elseif algorithm == 2 and #sensorReadings >= minSequenceLength + delay then -- weighted vectors
 
         local varioSum = 0 -- sum of the absolute values of all weights (climb rates)
-        for i = 1, #sensorReadings do varioSum = varioSum + abs(sensorReadings[i]) end
+        for i = 1, #sensorReadings - delay do varioSum = varioSum + abs(sensorReadings[i]) end
         if varioSum == 0.0 then bestPoint = avgPoint -- all numbers in 'sensorReadings' are zeros, thus no better point can be determined
         else
             local latSum, lonSum = 0,0
             local centerLat, centerLon = gps.getValue(avgPoint)
-            for i = 1, #gpsReadings do
-                local lat,lon = gps.getValue(gpsReadings[i])
+            for i = 1, #gpsReadings - delay do
+                local lat,lon = gps.getValue(gpsReadings[i + delay])
                 latSum = latSum + sensorReadings[i] * (lat - centerLat) -- the sum of weights (sensorReadings[1..n] / varioSum) can be less than 1
                 lonSum = lonSum + sensorReadings[i] * (lon - centerLon) -- hence the avg vector (centerLat,centerLon) cannot be reduced and has to be subtracted here, then added later
             end
@@ -313,7 +322,7 @@ local function calcBestPoint(fullTurn)
 
         local bias = 0 -- the lowest vario value in 'sensorReadings' and at most 0
         local varioSum = 0  -- sum of all vario values
-        for i = 1, #sensorReadings do
+        for i = 1, #sensorReadings - delay do
             if sensorReadings[i] < bias then bias = sensorReadings[i] end
             varioSum = varioSum + sensorReadings[i]
         end
@@ -322,8 +331,8 @@ local function calcBestPoint(fullTurn)
             bias = -bias -- invert bias to a positive number
             varioSum = varioSum + #sensorReadings * bias -- modify the sum of all values to get an overall weight of 1
             local latSum, lonSum = 0,0
-            for i = 1, #gpsReadings do
-                local lat,lon = gps.getValue(gpsReadings[i])
+            for i = 1, #gpsReadings - delay do
+                local lat,lon = gps.getValue(gpsReadings[i + delay])
                 local weight = sensorReadings[i] + bias
                 latSum = latSum + lat * weight
                 lonSum = lonSum + lon * weight
@@ -362,7 +371,7 @@ local function calcAutozoom(width, height)
         autozoom = autozoom - 1
         local _,y1 = gps.getLcdXY(maxLatPoint, avgPoint, autozoom)
         local x2,_ = gps.getLcdXY(maxLonPoint, avgPoint, autozoom)
-    until autozoom < 2 or autozoom < zoom or (abs(y1) + 8 < height / 2 and abs(x2) + 8 < width / 2) -- 8 pixel margin
+    until autozoom < 2 or autozoom < zoom or (abs(y1) + 4 < height / 2 and abs(x2) + 4 < width / 2) -- 4 pixel margin
     zoom = autozoom
     collectgarbage()
 end
@@ -375,7 +384,7 @@ end
 local function printTelemetry(width, height)
     if gpsReadings and avgPoint and #gpsReadings > 0 then
         local zoomSwitchVal = system.getInputsVal(zoomSwitch)
-        if not zoomSwitch or zoomSwitchVal == -1.0 or zoomSwitchVal == 0.0 then
+        if (not zoomSwitch) or zoomSwitchVal == -1.0 or zoomSwitchVal == 0.0 then
             calcAutozoom(width, height)
         else
             zoom = math.floor(zoomSwitchVal * abs(maxZoom - minZoom) / 2 + (minZoom + maxZoom) / 2 + 0.5) -- round zoom to integer
@@ -384,9 +393,9 @@ local function printTelemetry(width, height)
         gps.offset(topleft, -width / 2, -height / 2, zoom)
 
         for i = 1, #gpsReadings do -- draw points
-            if sensorReadings[i] > 0 then -- positive climb
+            if i > delay and sensorReadings[i - delay] > 0 then -- positive climb
                 local x,y = gps.getLcdXY(gpsReadings[i], topleft, zoom)
-                local radius = math.floor(circleRadius * sensorReadings[i]) + 1
+                local radius = math.floor(circleRadius * sensorReadings[i - delay]) + 1
                 if algorithm == 1 and gpsReadings[i] == bestPoint then -- draw square at optimal position
                     lcd.drawRectangle(x - radius, y - radius, 2 * radius, 2 * radius)
                 else -- draw circle with the specified radius
@@ -446,11 +455,11 @@ local function loop()
                 if sensorMode == 1 then
                     table.insert(gpsReadings, 1, gpsPoint)
                     table.insert(sensorReadings, 1, sensorReading.value) -- add new point and vario/altitude value
-                elseif lastAltitude then -- add new point in sensorMode 2
+                elseif lastAltitude then -- add new point in sensor mode 2 when there is a previous altitude value
                     table.insert(gpsReadings, 1, gpsPoint)
                     table.insert(sensorReadings, 1, (sensorReading.value - lastAltitude) * 1000 / readingInterval) -- add virtual vario value to the path
                     lastAltitude = sensorReading.value
-                else
+                else -- sensor mode 2, this is the first reading
                     lastAltitude = sensorReading.value
                 end
                 if #gpsReadings > 0 then -- #gps points can be 0 if the first altitude after a reset was measured
@@ -516,7 +525,10 @@ local function initForm(formID)
         form.addSelectbox(getTranslation(modeSelectionText), sensorMode, false, onSensorModeChanged)
         form.addRow(2)
         sensorLabelIndex = form.addLabel({ label = getTranslation(sensorInputText[sensorMode]), width = 100 })
-        sensorInputIndex = form.addSelectbox(otherSensorLabels, sensorIndices[sensorMode] + 1, true, onOtherSensorChanged, {width = 220})
+        sensorInputIndex = form.addSelectbox(otherSensorLabels, sensorIndices[sensorMode] + 1, true, onOtherSensorChanged, { width = 220 })
+        form.addRow(2)
+        form.addLabel({ label = getTranslation(delayText) })
+        form.addIntbox(delay, 0, 5, 0, 0, 1, onDelayChanged)
         form.setFocusedRow(1)
 
     elseif formID == ALGORITHM_FORM then
@@ -524,7 +536,7 @@ local function initForm(formID)
         form.setTitle(getTranslation(algorithmsFormTitle))
         form.addRow(2)
         form.addLabel({ label = getTranslation(algorithmText), width = 100 })
-        form.addSelectbox(getTranslation(algorithSelectionText), algorithm, true, onAlgorithmChanged, {width = 220})
+        form.addSelectbox(getTranslation(algorithSelectionText), algorithm, true, onAlgorithmChanged, { width = 220 })
         form.addRow(2)
         form.addLabel({ label = getTranslation(minSequenceLengthText), width = 250 })
         form.addIntbox(minSequenceLength, 5, 60, 5, 0, 1, onMinSequenceLengthChanged)
@@ -547,8 +559,8 @@ local function initForm(formID)
         form.addIntbox(circleRadius, 1, 50, 15, 0, 1, onCircleRadiusChanged)
         form.addRow(3)
         form.addLabel({ label = getTranslation(zoomRangeText), width = 210 })
-        minZoomIndex = form.addIntbox(minZoom, 1, 21, 15, 0, 1, onMinZoomChanged, {width = 50})
-        maxZoomIndex = form.addIntbox(maxZoom, 1, 21, 21, 0, 1, onMaxZoomChanged, {width = 50})
+        minZoomIndex = form.addIntbox(minZoom, 1, 21, 15, 0, 1, onMinZoomChanged, { width = 50 })
+        maxZoomIndex = form.addIntbox(maxZoom, 1, 21, 21, 0, 1, onMaxZoomChanged, { width = 50 })
         form.setFocusedRow(1)
         form.setButton(1, "Clr", ENABLED)
     end
@@ -582,13 +594,14 @@ local function init()
     zoomSwitch = system.pLoad(zoomSwitchKey)
     latSensorIndex = system.pLoad(latSensorIndexKey, 0)
     lonSensorIndex = system.pLoad(lonSensorIndexKey, 0)
-    sensorIndices = system.pLoad(sensorIndicesKey, {0, 0})
+    sensorIndices = system.pLoad(sensorIndicesKey) or {0, 0}
+    delay = system.pLoad(delayKey, 0)
     if latSensorIndex > #gpsSensorIDs then latSensorIndex = 0 end
     if lonSensorIndex > #gpsSensorIDs then lonSensorIndex = 0 end
     if sensorIndices[1] > #otherSensorIDs then sensorIndices[1] = 0 end
     if sensorIndices[2] > #otherSensorIDs then sensorIndices[2] = 0 end
     sensorMode = system.pLoad(sensorModeKey, 1)
-    algorithm = system.pLoad(algorithmKey, 1)
+    algorithm = system.pLoad(algorithmKey, 2)
     readingInterval = system.pLoad(readingInteravlKey, 1000)
     interval = system.pLoad(intervalKey, 10)
     circleRadius = system.pLoad(circleRadiusKey, 15)
@@ -605,4 +618,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.14", name = getTranslation(appName) }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.2", name = getTranslation(appName) }
