@@ -18,6 +18,9 @@ This sensor calculates the glide ratio:\
 ![virtsens2](https://user-images.githubusercontent.com/57962936/115939245-d2e55e00-a49d-11eb-8c6c-05a84021d94b.png)
 ![virtsens3](https://user-images.githubusercontent.com/57962936/115939247-d37df480-a49d-11eb-9186-716df63b23ee.png)
 
+### Control
+Each sensor can be assigned to one of the ten virtual controls, C1 - C10. These can be assigned wherever a control(-stick) can be assigned.
+
 
 ### Output specification
 | Input | Output |
@@ -41,3 +44,9 @@ This sensor calculates the glide ratio:\
 | &nbsp;&nbsp;&nbsp;&nbsp;parameter < 0 | nil |
 | **SIN,COS,TAN<br>ASIN,ACOS,ATAN** | **unit: °** |
 | &nbsp;&nbsp;&nbsp;&nbsp;parameter *nil* | nil |
+
+## Changelog
+#### v 1.1
+- added voice annoucements
+- added control output
+- efficiency improvements
