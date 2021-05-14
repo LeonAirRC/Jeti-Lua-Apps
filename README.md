@@ -18,4 +18,4 @@ use switches to move a control up and down
 ### Timer Beep Editor
 edit the beep/audiofile patterns that are used for timer signalization
 ### DJM Timer
-speaking timer for the glider competitions at German youth championships - your tx is the judge
+speaking timer for the glider competitions at German youth championships
