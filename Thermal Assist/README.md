@@ -48,7 +48,8 @@ Then the best point is the middle point of the best subsequence.
 #### Zoom switch
 The pilot can define a zoom switch for the 'map' of gps points.\
 If the switch is not set or in -1 position, the autozoom is enabled.\
-Autozoom is the highest zoom level at which all points are on the screen.
+Autozoom is the highest zoom level at which all points are on the screen.\
+Due to a bug in the Lua-api the app cannot detect if the zoom-switch was deleted/unassigned. Therefore the button **F(1): Clr** has to be used to clear the zoom switch and enable autozoom.
 
 #### Circle Radius
 Radius of the circles in pixels per m/s climb rate.
