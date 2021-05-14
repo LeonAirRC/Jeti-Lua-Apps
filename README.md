@@ -1,7 +1,8 @@
 # Jeti-Lua-Apps
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate?hosted_button_id=749FB8DD5PZ8S)\
 \
-Lua applications for JETI DC/DS transmitters
+Jetiforum account: [LeonAir RC](https://jetiforum.de/index.php/user/7556-leonair)\
+Please use [discussions](https://github.com/LeonAirRC/Jeti-Lua-Apps/discussions) to share your thoughts.
 
 ## Overview
 ### Thermal Assist
