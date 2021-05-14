@@ -191,9 +191,10 @@ end
 
 local function destroy()
     for i = 1, 10 do
-        system.unregisterControl(i)
+        if enabled[i] then
+            system.unregisterControl(i)
+        end
     end
-    system.unregisterControl(1)
 end
 
 return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.01", name = getTranslation(appName) }
