@@ -16,7 +16,7 @@ Berechnet den gewichteten Durchschnitt über alle Vektoren, die vom Kreismittelp
 \
 <img src="https://user-images.githubusercontent.com/57962936/115405333-71e42e80-a1ee-11eb-8937-439e753f6a5b.png" width=300>\
 \
-Dann wird jeder Vektor mit seinem Gewicht (Steigrate / absolute Summe über alle Steigraten). Daraus resultiert dieser optimale Punkt:\
+Dann wird jeder Vektor mit seinem Gewicht (Steigrate / absolute Summe) multipiziert. Absolute Summe beschreibt hier die Summe über den Betrag aller Steigwerte. Daraus resultiert dieser optimale Punkt:\
 \
 <img src="https://user-images.githubusercontent.com/57962936/115410878-4d3e8580-a1f3-11eb-812f-87bdbb663b0b.png" width=400>
 
