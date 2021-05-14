@@ -41,7 +41,7 @@ The best point will not be calculated if the current number of gps points is low
 Used to prevent the path from getting very long if it does not contain a full 360° turn.
 
 #### Best sequence length
-To find the best spot on the path, the app calculates the average climb rate for each subsequence of this length.\
+To find the best spot on the path, the best-subsequence algorithm calculates the average climb rate for each subsequence of this length.\
 Then the best point is the middle point of the best subsequence.
 
 ### Telemetry Frame
