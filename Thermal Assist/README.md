@@ -16,7 +16,7 @@ When a switch is selected and in off-position, no more data points are added and
 #### Reading interval
 Interval at which gps and vario values are queried [ms].
 
-#### Interval
+#### Announcement Interval
 Interval at which the announcement occur [s].
 
 #### Delay
