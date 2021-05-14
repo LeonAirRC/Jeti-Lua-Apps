@@ -63,6 +63,17 @@ Range of the zoom levels reachable with the zoom switch.
 ![thlassist3](https://user-images.githubusercontent.com/57962936/115938869-556d1e00-a49c-11eb-8d86-7a65c01fd653.png)
 ![thlassist4](https://user-images.githubusercontent.com/57962936/115938870-5605b480-a49c-11eb-9556-95f6e681dc5b.png)
 
+## Update Schedule
+### v1.3
+- add switch for in-flight algorithm selection
+- add automatic algorithm selection
+- add search-mode for more appropriate ouputs while flying straight and seeking for thermals
+- adjustments based on real-world testing experiences
+### v1.4
+- UI improvements
+- use color display
+- set delay in ms rather than points -> better precision
+
 ## Changelog
 #### v1.2
 - added delay
