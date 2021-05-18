@@ -17,7 +17,7 @@ When a switch is selected and in off-position, no more data points are added and
 Interval at which gps and vario values are queried [ms].
 
 #### Announcement Interval
-Interval at which the announcement occur [s].
+Interval at which the announcement occurs [s].
 
 #### Delay
 Adds an artificial delay to compensate the delay most vario/altitude sensors have. This number is the amount of data points that the vario values are shifted 'back'. For example, if the reading interval is 0.8s and the vario has a delay of 1.5s, it is beneficial to set this number to 2.
@@ -34,6 +34,10 @@ For details on their usecases and how they work click [here](doc/algorithms.md).
 <img src="https://user-images.githubusercontent.com/57962936/115938776-0aeba180-a49c-11eb-8280-065e14868b05.png" width=320/>\
 Example: 'Weighted vectors' vs 'Best subsequence'
 
+#### Switch
+This switch can be used to change the algorithm in flight. If no switch is assigned, the algorithm can be chosen manually.\
+Due to a bug in the Lua-api the app cannot detect if this switch was deleted/unassigned. Therefore the button **F(1): Clr** has to be used to clear the switch and allow manual algorithm selection. (The same applies to the [zoom](#zoom-switch).)
+
 #### Minimum sequence length
 The best point will not be calculated if the current number of gps points is lower than the minimum length.
 
@@ -43,6 +47,10 @@ Used to prevent the path from getting very long if it does not contain a full 36
 #### Best sequence length
 To find the best spot on the path, the best-subsequence algorithm calculates the average climb rate for each subsequence of this length.\
 Then the best point is the middle point of the best subsequence.
+
+#### Estimate climb rate
+When checked, the app attempts to estimate the climb rate at the best point computed previously. This climb rate affects the size of the filled square in the telemetry frame and is also announced as part of the voice output.\
+The expected climb rate is calculated as a weighted average, where the weight of each point is the inverse square of it's distance to the optimal point.
 
 ### Telemetry Frame
 #### Zoom switch
@@ -66,10 +74,10 @@ Range of the zoom levels reachable with the zoom switch.
 ## Update Schedule
 ### v1.3
 - add switch for in-flight algorithm selection
-- add automatic algorithm selection
 - add search-mode for more appropriate ouputs while flying straight and seeking for thermals
 - adjustments based on real-world testing experiences
 ### v1.4
+- add automatic algorithm selection
 - UI improvements
 - use color display
 - set delay in ms rather than points -> better precision
