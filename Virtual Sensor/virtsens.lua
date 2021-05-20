@@ -32,7 +32,7 @@ local inputs = {"...", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P1
                 "O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8", "O9", "O10", "O11", "O12", "O13", "O14", "O15", "O16", "O17", "O18", "O19", "O20", "O21", "O22", "O23", "O24"}
 local controls = {"...", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10"}
 local specialTypes = 3 -- last sensor type that is 'special' (has no parameters)
-local twoOpTypes = 9 -- last sensor type that has two parameters
+local twoOpTypes = 18 -- last sensor type that has two parameters
 local refreshInterval = 500 -- interval in ms for the value refresh on display
 local lastTime = system.getTimeCounter()
 local activeTelemetryKey = "vs_acttel"
@@ -86,8 +86,12 @@ local function getTranslation(table)
     return table[locale] or table["en"]
 end
 
--- type:           1                             2                           3                           4      5      6      7      8      9      10     11       12       13      14      15     16     17      18     19      20
-local nodeTypes = {getTranslation(constantText), getTranslation(sensorText), getTranslation(inputText), "ADD", "SUB", "MUL", "DIV", "MIN", "MAX", "ABS", "ROUND", "FLOOR", "CEIL", "SQRT", "SIN", "COS", "TAN", "ASIN", "ACOS", "ATAN"}
+local nodeTypes = {getTranslation(constantText), getTranslation(sensorText), getTranslation(inputText), "ADD", "SUB", "MUL", "DIV", "MIN", "MAX", "=", "<", ">", "<=", ">=", "AND", "OR", "XOR", "IMPL", "NOT",
+            "ABS", "ROUND", "FLOOR", "CEIL", "SQRT", "SIN", "COS", "TAN", "ASIN", "ACOS", "ATAN"}
+
+local function toNumber(boolean)
+    return boolean and 1 or 0
+end
 
 --------------------------------------------------------------------------------------
 -- returns true if and only if one of the sensors is assigned to the specified control
@@ -151,19 +155,23 @@ local function onNodeTypeChanged(value)
         node["const"] = nil -- delete old attributes
         node["sensor"] = nil
         node["input"] = nil
-        node["p1"] = nil
-        node["p2"] = nil
-        if value == 1 then -- add new default values dependent on type
-            node["const"] = 0
-        elseif value == 2 then
-            node["sensor"] = 0
-        elseif value == 3 then
-            node["input"] = 1
-        else
-            if value <= twoOpTypes then
-                node["p2"] = {type = 1, const = 0}
+        if value <= specialTypes then -- new type is a special type
+            node["p1"] = nil -- delete both earlier parameters (if existent)
+            node["p2"] = nil
+            if value == 1 then -- add new default values dependent on type
+                node["const"] = 0
+            elseif value == 2 then
+                node["sensor"] = 0
+            elseif value == 3 then
+                node["input"] = 1
             end
-            node["p1"] = {type = 1, const = 0}
+        else -- the new node requires 1 or 2 parameters
+            if value <= twoOpTypes then -- requires 2 parameters
+                node["p2"] = node["p2"] or {type = 1, const = 0} -- add new p2-node if not already existent
+            else -- requires 1 parameter
+                node["p2"] = nil -- delete parameter 2
+            end
+            node["p1"] = node["p1"] or {type = 1, const = 0} -- add new p1-node if not already existent
         end
         form.reinit()
         collectgarbage()
@@ -292,6 +300,55 @@ evalFunctions = {
         else
             return secondVal
         end
+    end,
+    function(node) -- =
+        local firstVal = evaluate(node["p1"])
+        local secondVal = evaluate(node["p2"])
+        return (firstVal and secondVal) and toNumber(firstVal == secondVal) or nil
+    end,
+    function(node) -- <
+        local firstVal = evaluate(node["p1"])
+        local secondVal = evaluate(node["p2"])
+        return (firstVal and secondVal) and toNumber(firstVal < secondVal) or nil
+    end,
+    function(node) -- >
+        local firstVal = evaluate(node["p1"])
+        local secondVal = evaluate(node["p2"])
+        return (firstVal and secondVal) and toNumber(firstVal > secondVal) or nil
+    end,
+    function(node) -- <=
+        local firstVal = evaluate(node["p1"])
+        local secondVal = evaluate(node["p2"])
+        return (firstVal and secondVal) and toNumber(firstVal <= secondVal) or nil
+    end,
+    function(node) -- >=
+        local firstVal = evaluate(node["p1"])
+        local secondVal = evaluate(node["p2"])
+        return (firstVal and secondVal) and toNumber(firstVal >= secondVal) or nil
+    end,
+    function(node) -- AND
+        local firstVal = evaluate(node["p1"])
+        local secondVal = evaluate(node["p2"])
+        return (firstVal and secondVal) and toNumber(firstVal >= 1 and secondVal >= 1) or nil
+    end,
+    function(node) -- OR
+        local firstVal = evaluate(node["p1"])
+        local secondVal = evaluate(node["p2"])
+        return (firstVal and secondVal) and toNumber(firstVal >=1 or secondVal >= 1) or nil
+    end,
+    function(node) -- XOR
+        local firstVal = evaluate(node["p1"])
+        local secondVal = evaluate(node["p2"])
+        return (firstVal and secondVal) and toNumber((firstVal >= 1) ~= (secondVal >= 1)) or nil
+    end,
+    function(node) -- IMPL
+        local firstVal = evaluate(node["p1"])
+        local secondVal = evaluate(node["p2"])
+        return (firstVal and secondVal) and toNumber(firstVal < 1 or secondVal >= 1) or nil
+    end,
+    function(node) -- NOT
+        local val = evaluate(node["p1"])
+        return val and toNumber(val < 1) or nil
     end,
     function(node) -- ABS
         local val = evaluate(node["p1"])
@@ -629,4 +686,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.13", name = getTranslation(appName) }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.2", name = getTranslation(appName) }
