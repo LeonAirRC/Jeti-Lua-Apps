@@ -21,6 +21,12 @@ Der zeitliche Abstand zwischen zwei Messungen [ms].
 #### Ansageintervall
 Der zeitliche Abstand zwischen zwei Sprachansagen [s].
 
+#### Suchmodus umschalten
+Dieser Schalter schaltet den Suchmodus ein. In diesem Modus wird der Flugweg nicht mehr auf einen Kreis begrenzt und die Sprachansage nutzt anstelle des Mittelpunkts nun die aktuelle Position als Bezugspunkt.
+
+#### Im Suchmodus immer Algorithmus 1 nutzen
+Wenn dies ausgewählt ist, wird im Suchmodus immer der Beste-Teilsequenz Algorithmus genutzt, da dieser zum suchen am besten geeignet ist.
+
 #### Verzögerung
 Fügt eine künstliche Verzögerung hinzu, um das häufig stark verzögerte Verhalten von Varios zu kompensieren.
 Dieser Parameter beschreibt die Anzahl an Messpunkten, um die die Steigraten zeitlich nach hinten geschoben werden.
@@ -38,6 +44,11 @@ Details zu deren Funktionsweisen und Anwendungsfällen sind [hier](doc/algorithm
 <img src="https://user-images.githubusercontent.com/57962936/115938776-0aeba180-a49c-11eb-8280-065e14868b05.png" width=320/>\
 Beispiel: 'Gewichtete Vektoren' vs 'Beste Teilsequenz'
 
+#### Switch
+Mit diesem Schalter kann der Auswertungsalgorithmus geändert werden. Wenn kein Schalter zugewiesen ist, kann die Auswahl manuell getroffen werden.\
+Aufgrund einer Schwachstelle in der Lua-API kann die App nicht erkennen, wenn der zugeordnete Geber gelöscht wurde.
+Daher muss der Knopf **F(1): Clr** genutzt werden, um den zugeordneten Geber zu löschen und die manuelle Auswahl zu erlauben (Das selbe gilt für den [Zoom](#Zoom)).
+
 #### Minimale Sequenzlänge
 Der optimale Punkt wird nicht berechnet, sofern die Anzahl an Messpunkten geringer als dieser Parameter ist.
 
@@ -48,13 +59,17 @@ Dieser Wert wird genutzt, um einen übermäßig langen Flugweg zu vermeiden, fal
 Um den besten Punkt auf dem Flugweg zu finden, berechnet der Beste-Teilsequenz-Algorithmus die Summe über alle Teilsequenzen dieser Länge.\
 Der optimale Punkt entspricht dann dem mittleren Punkt dieser optimalen Teilsequenz.
 
+#### Erwartetes Steigen
+Wenn dies ausgewählt ist, versucht die App das erwartete Steigen am optimalen Punkt zu bestimmen. Dieser Wert wird dann mit der Sprachausgabe angesagt und beeinflusst zudem die Größe des optimalen Punktes in der Darstellung.\
+Das erwartete Steigen wird als ein gewichteter Durchschnitt berechnet, wobei das Gewicht eines Punktes das inverse Quadrat der Entfernung zum optimalen Punkt ist.
+
 ### Telemetriefenster
 #### Zoom
 Mit dem Zoom-Geber kann der Zoom auf der "Karte" von Punkten kontrolliert werden.\
 Wenn kein Geber ausgewählt ist oder sich der Geber in (-1)-Position befindet, wird der automatische Zoom aktiviert.\
 Dieser entspricht immer der höchsten Zoomstufe, bei der alle Punkte auf dem Bildschirm sind.\
 Aufgrund einer Schwachstelle in der Lua-API kann die App nicht erkennen, wenn der zugeordnete Geber gelöscht wurde.
-Daher muss dazu der Knopf **F(1): Clr** genutzt werden, um den zugeordneten Geber zu löschen und automatischen Zoom zu aktivieren.
+Daher muss der Knopf **F(1): Clr** genutzt werden, um den zugeordneten Geber zu löschen und automatischen Zoom zu aktivieren.
 
 
 #### Kreisradius
