@@ -19,6 +19,12 @@ Interval at which gps and vario values are queried [ms].
 #### Announcement Interval
 Interval at which the announcement occurs [s].
 
+#### Toggle search mode
+Define a switch that enables the search mode. In this mode, the path is not shortened to one full circle and the announcement uses the current position as the reference point instead of the average position.
+
+#### Always use algorithm 1 in search mode
+When this is checked and search mode is active, the app will always use the best-subsequence algorithm which is the obvious choice for searching thermals.
+
 #### Delay
 Adds an artificial delay to compensate the delay most vario/altitude sensors have. This number is the amount of data points that the vario values are shifted 'back'. For example, if the reading interval is 0.8s and the vario has a delay of 1.5s, it is beneficial to set this number to 2.
 
@@ -72,11 +78,8 @@ Range of the zoom levels reachable with the zoom switch.
 ![thlassist4](https://user-images.githubusercontent.com/57962936/115938870-5605b480-a49c-11eb-9556-95f6e681dc5b.png)
 
 ## Update Schedule
-### v1.3
-- add switch for in-flight algorithm selection
-- add search-mode for more appropriate ouputs while flying straight and seeking for thermals
-- adjustments based on real-world testing experiences
 ### v1.4
+- adjustments based on real-world testing experiences
 - add automatic algorithm selection
 - UI improvements
 - use color display
@@ -85,4 +88,9 @@ Range of the zoom levels reachable with the zoom switch.
 ## Changelog
 #### v1.2
 - added delay
+- minor fixes
+#### v1.3
+- added search mode
+- added climb rate estimation
+- added algorithm selection switch
 - minor fixes
