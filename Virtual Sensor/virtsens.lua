@@ -31,34 +31,32 @@ local inputs = {"...", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P1
                 "CH1", "CH2", "CH3", "CH4", "CH5", "CH6", "CH7", "CH8",
                 "O1", "O2", "O3", "O4", "O5", "O6", "O7", "O8", "O9", "O10", "O11", "O12", "O13", "O14", "O15", "O16", "O17", "O18", "O19", "O20", "O21", "O22", "O23", "O24"}
 local controls = {"...", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10"}
-local specialTypes = 3
-local twoOpTypes = 9
-local refreshInterval = 500
+local specialTypes = 3 -- last sensor type that is 'special' (has no parameters)
+local twoOpTypes = 9 -- last sensor type that has two parameters
+local refreshInterval = 500 -- interval in ms for the value refresh on display
 local lastTime = system.getTimeCounter()
 local activeTelemetryKey = "vs_acttel"
 local singleSwitchKey = "vs_switch"
 local intervalSwitchKey = "va_intswitch"
 local intervalKey = "va_int"
 
-local sensors
-local nodeStack = {}
+local sensors -- list of sensors where each sensor can be a tree of sensor nodes
+local nodeStack = {} -- Represents the stack of nodes as the user navigates through the sensor's tree structure. First element is the top element
 local evalFunctions
 local valueLabelIndex
 local controlSelectIndex
-local activeTelemetryIndex
-local currFormID
-local singleSwitch
-local intervalSwitch
-local interval
-local lastSingleSwitchVal
-local lastIntervalSwitchVal
-local lastAnnouncement
+local activeTelemetryIndex -- index of the sensor that is currently displayed in the telemetry frame
+local currFormID -- id of the current form
+local singleSwitch -- switch for single voice announcements
+local intervalSwitch -- switch for interval voice announcements
+local interval -- interval time in seconds
+local lastSingleSwitchVal -- last value of the singleSwitch
+local lastAnnouncement -- timestemp of the last interval-announcement
 
-local sensorIDs
-local sensorParams
-local sensorLabels
-local logVariableIDs -- Saves the log variable id for all sensor labels that existed at app initialization as a mapping label -> id.
-                     -- This approach is required to keep track of all log variables when sensors are deleted and the sensor with a requested log id has to be evaluated.
+local sensorIDs -- array of the sensor ids, indices corresponding to the sensors listed in sensorLabels
+local sensorParams -- array of the sensor params, indices corresponding to the sensors listed in sensorLabels
+local sensorLabels -- selection options for the sensor inputs: "<SensorLabel>: <SensorParam><unit>"
+local logSensors
 
 -- translations
 local locale = system.getLocale()
@@ -127,12 +125,7 @@ local function onIntervalChanged(value)
 end
 
 local function onIntervalSwitchChanged(value)
-    intervalSwitch = value
-    lastIntervalSwitchVal = system.getInputsVal(intervalSwitch)
-    if lastIntervalSwitchVal == 0.0 then
-        intervalSwitch = nil
-        lastIntervalSwitchVal = nil
-    end
+    intervalSwitch = system.getInputsVal(value) ~= 0.0 and value or nil
     system.pSave(intervalSwitchKey, intervalSwitch)
 end
 
@@ -194,6 +187,9 @@ local function onOperandSelected(opNum)
     form.reinit()
 end
 
+---------------------------------------------------
+-- indices are shifted by +1 due to the ... option
+---------------------------------------------------
 local function onControlChanged(value)
     if value ~= nodeStack[1]["control"] + 1 then
         if value == 1 then -- control deleted
@@ -203,7 +199,7 @@ local function onControlChanged(value)
             if nodeStack[1]["control"] > 0 then -- unregister old control
                 system.unregisterControl(nodeStack[1]["control"])
             end
-            if system.registerControl(value - 1, nodeStack[1]["label"], controls[value]) ~= nil and not controlRegistered(value - 1) then   -- successfully registered new control
+            if (not controlRegistered(value - 1)) and system.registerControl(value - 1, nodeStack[1]["label"], controls[value]) ~= nil then -- successfully registered new control
                                                                                                                                             -- fails if other apps or other sensors have registered the same control
                 nodeStack[1]["control"] = value - 1
             else
@@ -223,19 +219,13 @@ local function save()
         local file = io.open(filepath, "w")
         if file then
             if not io.write(file, json.encode(sensors)) then
-                system.messageBox(getTranslation(fileInexistentText))
+                system.messageBox(getTranslation(fileInexistentText)) -- show error text
             end
             io.close(file)
         else
             system.messageBox(getTranslation(fileInexistentText))
         end
     end
-end
-
--- close function registered with the main form
-local function close()
-    save()
-    collectgarbage()
 end
 
 -------------------------------------------------------------------------
@@ -247,6 +237,7 @@ end
 
 -------------------------------------------------------------------------
 -- evaluation functions, indexed by node type for high efficiency access
+-- each function takes the node as a parameter
 -------------------------------------------------------------------------
 evalFunctions = {
     function(node) -- CONST
@@ -348,56 +339,59 @@ evalFunctions = {
     end
 }
 
+---------------------------------
+-- key callback function
+---------------------------------
 local function onKeyPressed(keyCode)
-    if #nodeStack > 0 then
+    if #nodeStack > 0 then -- node stack is not empty
         form.preventDefault()
         if keyCode == KEY_ESC or keyCode == KEY_5 then
-            nodeStack = {}
+            nodeStack = {} -- clear stack to display main page on reinit
             form.reinit()
         elseif keyCode == KEY_1 then
-            table.remove(nodeStack, 1)
+            table.remove(nodeStack, 1) -- go up one level
             form.reinit()
         elseif keyCode == KEY_2 and nodeStack[1]["type"] > specialTypes then
             onOperandSelected(1)
         elseif keyCode == KEY_3 and nodeStack[1]["type"] > specialTypes and nodeStack[1]["type"] <= twoOpTypes then
             onOperandSelected(2)
         end
-    elseif currFormID == 2 then
+    elseif currFormID == 2 then -- voice announcement page
         if keyCode == KEY_ESC or keyCode == KEY_5 then
             form.preventDefault()
-            form.reinit()
+            form.reinit() -- go back to main page
         end
-    else
+    else -- main page
         local focused = form.getFocusedRow() - 1
-        if keyCode == KEY_1 and #sensors < 8 then
-
-            local defaultSensor = { label = "virtual sensor " .. tostring(#sensors + 1), unit = 1, decimals = 1, type = 1, const = 0, prio = 0, voiceLabel = "", control = 0 }
+        if keyCode == KEY_1 and #sensors < 8 then -- add new default sensor
+            
+            local defaultSensor = { label = "vsensor " .. tostring(#sensors + 1), unit = 1, decimals = 1, type = 1, const = 0, prio = 0, voiceLabel = "", control = 0 }
             table.insert(sensors, defaultSensor)
             form.reinit()
 
-        elseif keyCode == KEY_2 and focused > 0 and focused <= #sensors then
+        elseif keyCode == KEY_2 and focused > 0 and focused <= #sensors then -- delete focused sensor
 
             if sensors[focused]["control"] > 0 then
-                system.unregisterControl(sensors[focused]["control"])
+                system.unregisterControl(sensors[focused]["control"]) -- unregister assigned control
             end
             table.remove(sensors, focused)
             if activeTelemetryIndex then
-                if activeTelemetryIndex == focused then
+                if activeTelemetryIndex == focused then -- delete the telemetry sensor if the deleted one is selected
                     activeTelemetryIndex = nil
                     system.pSave(activeTelemetryKey, activeTelemetryIndex)
-                elseif activeTelemetryIndex > focused then
+                elseif activeTelemetryIndex > focused then -- reduce telemetry sensor index by 1
                     activeTelemetryIndex = activeTelemetryIndex - 1
                     system.pSave(activeTelemetryKey, activeTelemetryIndex)
                 end
             end
             form.reinit()
 
-        elseif keyCode == KEY_3 and #sensors > 0 and focused > 0 then
+        elseif keyCode == KEY_3 and #sensors > 0 and focused > 0 then -- put the focused sensor onto the stack and reinit
 
             table.insert(nodeStack, sensors[focused])
             form.reinit()
 
-        elseif keyCode == KEY_4 and #sensors > 0 and focused > 0 then
+        elseif keyCode == KEY_4 and #sensors > 0 and focused > 0 then -- select focused sensor to be displayed in the telemetry frame
 
             activeTelemetryIndex = focused
             system.pSave(activeTelemetryKey, activeTelemetryIndex)
@@ -405,24 +399,20 @@ local function onKeyPressed(keyCode)
 
         end
     end
+    collectgarbage()
 end
 
 --------------------------------------------------------------------------------------------------------
 -- Request method for log variables. Evaluates the sensor whose label is mapped to the requested log id.
 --------------------------------------------------------------------------------------------------------
 local function getLogVariableValue(logVariableID)
-    for _,sensor in pairs(sensors) do
-        if logVariableIDs[sensor["label"]] == logVariableID then -- if the log variable id registered for the current sensor is equal to the requested id
-            -- calculate value
-            local value = evaluate(sensor)
-            if value then
-                return math.floor(value * 10^sensor["decimals"]), sensor["decimals"]
-            else
-                return nil,0
-            end
-        end
+    local sensor = logSensors[logVariableID]
+    local value = evaluate(sensor)
+    if value then
+        return math.floor(value * 10^sensor["decimals"]), sensor["decimals"] -- return integer value and number of decimals
+    else
+        return nil,0
     end
-    return nil,0
 end
 
 --------------------------------------------------------------------------------------------------------
@@ -440,6 +430,7 @@ local function voiceAnnouncement()
             end
         end
     end
+    collectgarbage()
 end
 
 ---------------------------------------------------------------------------------------------------
@@ -529,7 +520,7 @@ local function initForm(formID)
         form.addLabel({ label = getTranslation(unitText), font = FONT_BOLD, alignRight = true })
         for i,sensor in ipairs(sensors) do
             form.addRow(3)
-            form.addTextbox(sensor["label"], 16, function (value) onSensorLabelChanged(i, value) end, { width = 180, font = i == activeTelemetryIndex and FONT_BOLD or FONT_NORMAL })
+            form.addTextbox(sensor["label"], 10, function (value) onSensorLabelChanged(i, value) end, { width = 180, font = i == activeTelemetryIndex and FONT_BOLD or FONT_NORMAL })
             form.addIntbox(sensor["decimals"], 0, 8, 1, 0, 1, function (value) onDecimalsChanged(i, value) end, { width = 60 })
             form.addSelectbox(units, sensor.unit, true, function (value) onSensorUnitChanged(i, value) end)
         end
@@ -541,14 +532,21 @@ local function initForm(formID)
         form.setButton(4, ":ok", #sensors > 0 and ENABLED or DISABLED)
         valueLabelIndex = nil
     end
+    collectgarbage()
+end
+
+-- close function registered with the main form
+local function close()
+    save()
+    collectgarbage()
 end
 
 local function init()
+    collectgarbage()
     activeTelemetryIndex = system.pLoad(activeTelemetryKey)
     singleSwitch = system.pLoad(singleSwitchKey)
     lastSingleSwitchVal = system.getInputsVal(singleSwitch)
     intervalSwitch = system.pLoad(intervalSwitchKey)
-    lastIntervalSwitchVal = system.getInputsVal(intervalSwitch)
     interval = system.pLoad(intervalKey, 30)
     sensorLabels = {"..."}
     sensorIDs = {}
@@ -566,37 +564,36 @@ local function init()
     if activeTelemetryIndex and activeTelemetryIndex > #sensors then
         activeTelemetryIndex = nil
     end
-    logVariableIDs = {}
+    logSensors = {}
     for i,sensor in ipairs(sensors) do
-        logVariableIDs[sensor["label"]] = system.registerLogVariable(sensor["label"], units[sensor["unit"]], getLogVariableValue)
-        if sensor["control"] > 0 and (controlRegistered(sensor["control"], i) or system.registerControl(sensor["control"], sensor["label"], controls[sensor["control"] + 1]) == nil) then
+        logSensors[system.registerLogVariable(sensor["label"], units[sensor["unit"]], getLogVariableValue)] = sensor -- save the registered sensor as the value of the returned variable id
+        if sensor["control"] > 0 and (controlRegistered(sensor["control"], i - 1) or system.registerControl(sensor["control"], sensor["label"], controls[sensor["control"] + 1]) == nil) then
             system.messageBox(string.format(getTranslation(registerErrorText), sensor["control"]))
-            sensor["control"] = 0
+            sensor["control"] = 0 -- control cannot be registered
         end
     end
     system.registerForm(1, MENU_APPS, getTranslation(appName), initForm, onKeyPressed, nil, close)
     system.registerTelemetry(2, getTranslation(appName), 0, printTelemetry)
     system.registerTelemetry(3, getTranslation(appName) .. " 2", 0, printTelemetry)
+    collectgarbage()
 end
 
--------------------------------------------------------------------------
--- the loop updates the value preview of node forms
--------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+-- the loop updates the value preview of node forms and initiates announcements
+--------------------------------------------------------------------------------
 local function loop()
-    local time = system.getTimeCounter()
-    if time >= lastTime + refreshInterval then
+    if system.getTimeCounter() >= lastTime + refreshInterval then
         if valueLabelIndex and #nodeStack > 0 then
-            form.setProperties(valueLabelIndex, { label = tostring(evaluate(nodeStack[1])) })
+            form.setProperties(valueLabelIndex, { label = tostring(evaluate(nodeStack[1])) }) -- refresh label of the current form
         end
         lastTime = lastTime + refreshInterval
     end
-    local speechSwitchVal = system.getInputsVal(singleSwitch)
-    if lastSingleSwitchVal ~= 1 and speechSwitchVal == 1 then
-        voiceAnnouncement()
+    local switchVal = system.getInputsVal(singleSwitch)
+    if lastSingleSwitchVal ~= 1 and switchVal == 1 then
+        voiceAnnouncement() -- single voice announcement
     end
-    lastSingleSwitchVal = speechSwitchVal
-    local intervalSwitchVal = system.getInputsVal(intervalSwitch)
-    if intervalSwitchVal == 1 then
+    lastSingleSwitchVal = switchVal
+    if system.getInputsVal(intervalSwitch) == 1 then
         if lastAnnouncement and system.getTimeCounter() >= lastAnnouncement + 1000 * interval then
             voiceAnnouncement()
             lastAnnouncement = lastAnnouncement + 1000 * interval
@@ -607,21 +604,22 @@ local function loop()
         lastAnnouncement = nil
     end
     for _,sensor in pairs(sensors) do
-        if sensor["control"] > 0 and system.setControl(sensor["control"], evaluate(sensor), 0) == nil then
+        if sensor["control"] > 0 and system.setControl(sensor["control"], math.max(math.min(evaluate(sensor), 1), -1), 0) == nil then
             system.unregisterControl(sensor["control"])
             system.messageBox(string.format(getTranslation(registerErrorText), sensor["control"]))
             sensor["control"] = 0
         end
     end
+    collectgarbage()
 end
 
 local function destroy()
-    for _,id in pairs(logVariableIDs) do
-        system.unregisterLogVariable(id)
+    for id,_ in pairs(logSensors) do
+        system.unregisterLogVariable(id) -- unregister all log variables
     end
     for _,sensor in pairs(sensors) do
         if sensor["control"] > 0 then
-            system.unregisterControl(sensor["control"])
+            system.unregisterControl(sensor["control"]) -- unregister all virtual controls
         end
     end
     if sensors then
@@ -631,4 +629,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.11", name = getTranslation(appName) }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.13", name = getTranslation(appName) }
