@@ -1,5 +1,5 @@
 # Vitual Sensor
-Calculates a virtual telemetry value and registers virtual log variables.\
+Calculates virtual telemetry values that can be compused of mathematical and boolean operations.\
 The numeric inputs can be constants, telemetry values, proportional controls, switches, trainer inputs, ppm inputs and servo outputs.\
 Numeric values are processed in a tree of mathematical operation that take either one or two operators, eg ADD, MIN, SQRT, SIN, ABS.\
 \
@@ -46,7 +46,10 @@ Each sensor can be assigned to one of the ten virtual controls, C1 - C10. These 
 | &nbsp;&nbsp;&nbsp;&nbsp;parameter *nil* | nil |
 
 ## Changelog
-#### v 1.1
+#### v1.1
 - added voice annoucements
 - added control output
 - efficiency improvements
+#### v1.2
+- added boolean operators
+- fixed control assignment on initialization
