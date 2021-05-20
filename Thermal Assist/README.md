@@ -54,7 +54,7 @@ Used to prevent the path from getting very long if it does not contain a full 36
 To find the best spot on the path, the best-subsequence algorithm calculates the average climb rate for each subsequence of this length.\
 Then the best point is the middle point of the best subsequence.
 
-#### Estimate climb rate
+#### Expected climb rate
 When checked, the app attempts to estimate the climb rate at the best point computed previously. This climb rate affects the size of the filled square in the telemetry frame and is also announced as part of the voice output.\
 The expected climb rate is calculated as a weighted average, where the weight of each point is the inverse square of it's distance to the optimal point.
 
