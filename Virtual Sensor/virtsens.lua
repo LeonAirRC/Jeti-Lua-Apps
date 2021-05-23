@@ -58,11 +58,13 @@ local sensorParams -- array of the sensor params, indices corresponding to the s
 local sensorLabels -- selection options for the sensor inputs: "<SensorLabel>: <SensorParam><unit>"
 local logSensors
 
-local lang
+local text = json.decode(io.readall("Apps/VirtualSensor/lang.json"))
+local lang = text[system.getLocale()] or text["en"]
 
 local MAX_PRIO = 5
 
-local nodeTypes
+local nodeTypes = {lang.constantText, lang.sensorText, lang.inputText, "ADD", "SUB", "MUL", "DIV", "MIN", "MAX", "=", "<", ">", "<=", ">=", "AND", "OR", "XOR", "IMPL", "NOT",
+"ABS", "ROUND", "FLOOR", "CEIL", "SQRT", "SIN", "COS", "TAN", "ASIN", "ACOS", "ATAN"}
 
 local function toNumber(boolean)
     return boolean and 1 or 0
@@ -604,8 +606,6 @@ local function init()
             sensor.control = 0 -- control cannot be registered
         end
     end
-    nodeTypes = {lang.constantText, lang.sensorText, lang.inputText, "ADD", "SUB", "MUL", "DIV", "MIN", "MAX", "=", "<", ">", "<=", ">=", "AND", "OR", "XOR", "IMPL", "NOT",
-            "ABS", "ROUND", "FLOOR", "CEIL", "SQRT", "SIN", "COS", "TAN", "ASIN", "ACOS", "ATAN"}
     system.registerForm(1, MENU_APPS, lang.appName, initForm, onKeyPressed, nil, close)
     system.registerTelemetry(2, lang.appName, 0, printTelemetry)
     collectgarbage()
@@ -662,7 +662,5 @@ local function destroy()
     collectgarbage()
 end
 
-local text = json.decode(io.readall("Apps/VirtualSensor/lang.json"))
-lang = text[system.getLocale()] or text["en"]
 collectgarbage()
 return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.21", name = lang.appName }
