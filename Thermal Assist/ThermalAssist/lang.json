@@ -25,7 +25,7 @@
 		"searchModeText" : "Enable search mode",
 		"searchModeForceText" : "Always use alg. 1 in search mode",
 		"numericBearingText" : "Announce bearing in degrees",
-		"bearingFiles" : ["north-en", "northeast-en", "east-en", "southeast-en", "south-en", "southwest-en", "west-en", "northwest-en"]
+		"bearingLang" : "en"
 	},
 	"de" : {
 		"appName" : "Thermikassistent",
@@ -53,7 +53,7 @@
 		"searchModeText" : "Suchmodus einschalten",
 		"searchModeForceText" : "Im Suchmodus immer Alg. 1 nutzen",
 		"numericBearingText" : "Richtung in Grad ausgeben",
-		"bearingFiles" : ["north-de", "northeast-de", "east-de", "southeast-de", "south-de", "southwest-de", "west-de", "northwest-de"]
+		"bearingLang" : "de"
 	},
 	"cz" : {
 		"appName" : "Tepelný asistent",
@@ -81,6 +81,6 @@
 		"searchModeText" : "Přepnout režim vyhledávání",
 		"searchModeForceText" : "použijte alg. 1 v režimu vyhledávání",
 		"numericBearingText" : "oznamte směr ve stupních",
-		"bearingFiles" : ["north-en", "northeast-en", "east-en", "southeast-en", "south-en", "southwest-en", "west-en", "northwest-en"]
+		"bearingLang" : "en"
 	}
 }
