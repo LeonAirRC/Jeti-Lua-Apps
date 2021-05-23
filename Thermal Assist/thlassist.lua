@@ -92,7 +92,7 @@ local lastSpeech        -- time of the last speech output [ms]
 local lastAltitude      -- last altitude, only used in sensor mode 2
 
 local lang
-local bearings = {0, 22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5, 360}
+local bearingFilenames = {"north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"}
 
 -----------------------------------------
 -- clear all values, go to initial state
@@ -273,7 +273,7 @@ end
 -------------------------------------------------------------------------------------------------------
 local function voiceOutput()
     if avgPoint and bestPoint then
-        local relPoint = (appModeSwitch and system.getInputsVal(appModeSwitch) == 1) and gpsReadings[1] or avgPoint -- use current position in search mode and the average otherwise
+        local relPoint = system.getInputsVal(appModeSwitch) == 1 and gpsReadings[1] or avgPoint -- use current position in search mode and the average otherwise
         local bearing = gps.getBearing(relPoint, bestPoint)   -- bearing from the current center point towards the optimal point
         local distance = gps.getDistance(relPoint, bestPoint) -- distance from the current center point to the optimal point
         if numericBearing then
@@ -281,7 +281,7 @@ local function voiceOutput()
         else
             -- convert bearing to file: add 22.5 to prepare for integer division, substract 360 if necessary
             -- integer division by 45 categorizes blocks of 45° into one direction
-            system.playFile("Apps/ThermalAssist/" .. lang.bearingFiles[(((bearing + 22.5) % 360) // 45) + 1] .. ".wav", AUDIO_QUEUE)
+            system.playFile(string.format("/Apps/ThermalAssist/%s-%s.wav", bearingFilenames[((bearing + 22.4) % 360) // 45 + 1], lang.bearingLang), AUDIO_QUEUE)
         end
         system.playNumber(distance, 0, "m")
         if bestClimb then
@@ -699,7 +699,7 @@ local function destroy()
     collectgarbage()
 end
 
-local text = json.decode(io.readall("Apps/ThermalAssist/lang.json"))
+local text = json.decode(io.readall("/Apps/ThermalAssist/lang.json"))
 lang = text[system.getLocale()] or text["en"]
 collectgarbage()
 return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.33", name = lang.appName }
