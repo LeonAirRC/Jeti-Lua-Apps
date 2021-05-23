@@ -272,19 +272,16 @@ end
 -- The expected climb rate at that point is also annouced if the best-subsequence algorith is selected.
 -------------------------------------------------------------------------------------------------------
 local function voiceOutput()
-    if avgPoint and bestPoint and #sensorReadings >= minSequenceLength and (algorithm ~= 1 or #sensorReadings >= bestSequenceLength) then
+    if avgPoint and bestPoint then
         local relPoint = (appModeSwitch and system.getInputsVal(appModeSwitch) == 1) and gpsReadings[1] or avgPoint -- use current position in search mode and the average otherwise
         local bearing = gps.getBearing(relPoint, bestPoint)   -- bearing from the current center point towards the optimal point
         local distance = gps.getDistance(relPoint, bestPoint) -- distance from the current center point to the optimal point
         if numericBearing then
             system.playNumber(bearing, 0, string.char(176))       -- ° char as unicode
         else
-            for i = 1, #bearings - 1 do
-                if bearing >= bearings[i] and bearing < bearings[i + 1] then
-                    system.playFile("Apps/ThermalAssist/" .. lang.bearingFiles[i] .. ".wav", AUDIO_QUEUE)
-                    break
-                end
-            end
+            -- convert bearing to file: add 22.5 to prepare for integer division, substract 360 if necessary
+            -- integer division by 45 categorizes blocks of 45° into one direction
+            system.playFile("Apps/ThermalAssist/" .. lang.bearingFiles[(((bearing + 22.5) % 360) // 45) + 1] .. ".wav", AUDIO_QUEUE)
         end
         system.playNumber(distance, 0, "m")
         if bestClimb then
@@ -705,4 +702,4 @@ end
 local text = json.decode(io.readall("Apps/ThermalAssist/lang.json"))
 lang = text[system.getLocale()] or text["en"]
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.32", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.33", name = lang.appName }
