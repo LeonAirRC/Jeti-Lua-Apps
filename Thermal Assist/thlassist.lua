@@ -46,8 +46,9 @@ local maxZoomKey = "ta_maxzoom"
 local algorithmSwitchKey = "ta_algsw"
 local appModeSwitchKey = "ta_amode"
 local searchModeForceKey = "ta_smforce"
+local numericBearingKey = "ta_numbear"
 
-local sensorLabelIndex, sensorInputIndex, minZoomIndex, maxZoomIndex, zoomInputboxIndex, estimateCheckboxIndex, algorithmSelectIndex, algorithmSwitchInputIndex, searchModeForceIndex
+local sensorLabelIndex, sensorInputIndex, minZoomIndex, maxZoomIndex, zoomInputboxIndex, estimateCheckboxIndex, algorithmSelectIndex, algorithmSwitchInputIndex, searchModeForceIndex, numericBearingIndex
 local abs = math.abs -- minimizes calls to math lib
 
 local minSequenceLength     -- the minimal amount of gps points required for a speech output
@@ -69,6 +70,8 @@ local minZoom, maxZoom  -- zoom range for the zoom switch
 local algorithmSwitch   -- switch to select the algorithm in flight
 local appModeSwitch     -- switch to toggle search mode
 local searchModeForce   -- [boolean] true if the best-subsequence algorithm should always be used in search mode
+local numericBearing    -- [boolean] true if the bearing should be announced as a number
+
 local zoom = 1          -- current zoom
 local switchOn          -- [boolean] saves the last state of the enable switch
 local bestPoint         -- [GpsPoint] the best point on the path
@@ -88,37 +91,8 @@ local lastTime          -- time of the last reading [ms]
 local lastSpeech        -- time of the last speech output [ms]
 local lastAltitude      -- last altitude, only used in sensor mode 2
 
--- translations
-local locale = system.getLocale()
-local appName = {en = "Thermal Assistant", de = "Thermikassistent", cz = "Tepelný asistent"}
-local sensorsFormTitle = {en = "Sensors", de = "Sensoren", cz = "Senzory"}
-local algorithmsFormTitle = {en = "Algorithm", de = "Algorithmus", cz = "algoritmus"}
-local telemetryFormTitle = {en = "Telemetry frame", de = "Telemetriefenster", cz = "okno telemetrie"}
-local minSequenceLengthText = {en = "Minimum sequence length", de = "Minimale Sequenzlänge", cz = "minimální délka sekvence"}
-local maxSequenceLengthText = {en = "Maximum sequence length", de = "Maximale Sequenzlänge", cz = "maximální délka sekvence"}
-local bestSequenceLengthText = {en = "Optimal subsequence length", de = "Länge optimale Teilsequenz", cz = "Optimální délka subsekvence"}
-local enableSwitchText = {en = "Switch", de = "Switch", cz = "vypínač"}
-local zoomSwitchText = {en = "Zoom", de = "Zoom", cz = "Zvětšení"}
-local lonInputText = {en = "Longitude", de = "Längengrad", cz = "zeměpisná délka"}
-local latInputText = {en = "Latitude", de = "Breitengrad", cz = "zeměpisná šířka"}
-local sensorModeText = {en = "Mode", de = "Modus", cz = "Režim"}
-local sensorInputText = {{en = "Vario EX", de = "Vario EX", cz = "vario EX"}, {en = "Altitude EX", de = "Höhe EX", cz = "výška EX"}}
-local modeSelectionText = {en = {"Vario", "Altitude difference"}, de = {"Variometer", "Höhendifferenz"}, cz = {"variometr", "výškový rozdíl"}}
-local delayText = {en = "Delay", de = "Verzögerung", cz = "zpoždění"}
-local algorithmText = {en = "Algorithm", de = "Algorithmus", cz = "algoritmus"}
-local algorithSelectionText = {en = {"Best subsequence", "Weighted vectors", "Weighted vectors [bias]"}, de = {"Beste Teilsequenz", "Gewichtete Vektoren", "Gewichtete Vektoren [Bias]"},
-                                cz = {"nejlepší dílčí sekvence", "vážené vektory", "vážené vektory [zaujatost]"}}
-local readingsText = {en = "Reading interval", de = "Messintervall", cz = "Interval měření"}
-local intervalText = {en = "Announcement interval", de = "Ansageintervall", cz = "Interval oznámení"}
-local estimateClimbText = {en = "Expected climb rate", de = "Erwartetes Steigen", cz = "Očekávaná rychlost stoupání"}
-local circleRadiusText = {en = "Circle radius [px / m/s]", de = "Kreisradius [px / m/s]", cz = "Poloměr kruhu [px / ms]"}
-local zoomRangeText = {en = "Zoom range", de = "Zoombereich", cz = "rozsah zvětšení"}
-local searchModeText = {en = "Toggle search mode", de = "Suchmodus umschalten", cz = "Přepnout režim vyhledávání"}
-local searchModeForceText = {en = "Always use alg. 1 in search mode", de = "Im Suchmodus immer Alg. 1 nutzen", cz = "použijte alg. 1 v režimu vyhledávání"}
-
-local function getTranslation(table)
-    return table[locale] or table["en"]
-end
+local lang
+local bearings = {0, 22.5, 67.5, 112.5, 157.5, 202.5, 247.5, 292.5, 337.5, 360}
 
 -----------------------------------------
 -- clear all values, go to initial state
@@ -141,7 +115,7 @@ end
 local function onSensorModeChanged(value)
     sensorMode = value
     reset()
-    form.setProperties(sensorLabelIndex, { label = getTranslation(sensorInputText[sensorMode]) })
+    form.setProperties(sensorLabelIndex, { label = lang.sensorInputText[sensorMode] })
     form.setValue(sensorInputIndex, sensorIndices[sensorMode] + 1) -- add 1 to the value to compensate the ... option
     system.pSave(sensorModeKey, sensorMode)
 end
@@ -169,7 +143,6 @@ end
 
 local function onAlgorithmChanged(value)
     algorithm = value
-    -- reset()
     system.pSave(algorithmKey, algorithm)
 end
 
@@ -258,6 +231,12 @@ local function onSearchModeForceChanged(value)
     system.pSave(searchModeForceKey, searchModeForce and 1 or 0)
 end
 
+local function onNumericBearingChanged(value)
+    numericBearing = not value
+    form.setValue(numericBearingIndex, numericBearing)
+    system.pSave(numericBearingKey, numericBearing and 1 or 0)
+end
+
 -------------------------------------------------------------------------
 -- shortens the sequence of gps points and the associated sensor readings
 -- returns true if and only if a turn of at least 360° was detected
@@ -280,7 +259,7 @@ local function filterReadings()
         sum = sum + angle   -- add to sum
         i = i + 1
     end
-    for _ = 1, #gpsReadings - math.max(i, minSequenceLength) do -- delete all points older than the i-th point, while not passing a minimum length
+    for j = 1, #gpsReadings - math.max(i, minSequenceLength) do -- delete all points older than the i-th point, while not passing a minimum length
         table.remove(gpsReadings)
         table.remove(sensorReadings)
     end
@@ -292,15 +271,24 @@ end
 -- Announcement of the bearing and distance to the optimal point.
 -- The expected climb rate at that point is also annouced if the best-subsequence algorith is selected.
 -------------------------------------------------------------------------------------------------------
-local function speechOutput()
+local function voiceOutput()
     if avgPoint and bestPoint and #sensorReadings >= minSequenceLength and (algorithm ~= 1 or #sensorReadings >= bestSequenceLength) then
         local relPoint = (appModeSwitch and system.getInputsVal(appModeSwitch) == 1) and gpsReadings[1] or avgPoint -- use current position in search mode and the average otherwise
-        local relocationBearing = gps.getBearing(relPoint, bestPoint)   -- bearing from the current center point towards the optimal point
-        local relocationDistance = gps.getDistance(relPoint, bestPoint) -- distance from the current center point to the optimal point
-        system.playNumber(relocationBearing, 0, string.char(176))       -- ° char as unicode
-        system.playNumber(relocationDistance, 0, "m")
+        local bearing = gps.getBearing(relPoint, bestPoint)   -- bearing from the current center point towards the optimal point
+        local distance = gps.getDistance(relPoint, bestPoint) -- distance from the current center point to the optimal point
+        if numericBearing then
+            system.playNumber(bearing, 0, string.char(176))       -- ° char as unicode
+        else
+            for i = 1, #bearings - 1 do
+                if bearing >= bearings[i] and bearing < bearings[i + 1] then
+                    system.playFile("Apps/ThermalAssist/" .. lang.bearingFiles[i] .. ".wav", AUDIO_QUEUE)
+                    break
+                end
+            end
+        end
+        system.playNumber(distance, 0, "m")
         if bestClimb then
-            system.playNumber(bestClimb, 2, "m/s") -- play optimal climb
+            system.playNumber(bestClimb, 1, "m/s") -- play optimal climb
         end
         collectgarbage()
     end
@@ -556,7 +544,7 @@ local function loop()
             lastTime = lastTime + readingInterval
         end
         if gpsReadings and time >= lastSpeech + 1000 * interval then
-            speechOutput()
+            voiceOutput()
             lastSpeech = lastSpeech + 1000 * interval
         end
     end
@@ -567,85 +555,88 @@ local function initForm(formID)
     collectgarbage()
     if not formID or formID == MAIN_FORM then
 
-        form.setTitle(getTranslation(appName))
+        form.setTitle(lang.appName)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(enableSwitchText) })
+        form.addLabel({ label = lang.enableSwitchText })
         form.addInputbox(enableSwitch, false, onEnableSwitchChanged)
         form.addRow(1)
-        form.addLink(function () form.reinit(SENSORS_FORM) end, { label = getTranslation(sensorsFormTitle) .. " >>" })
+        form.addLink(function () form.reinit(SENSORS_FORM) end, { label = lang.sensorsFormTitle .. " >>" })
         form.addRow(1)
-        form.addLink(function () form.reinit(ALGORITHM_FORM) end, { label = getTranslation(algorithmsFormTitle) .. " >>" })
+        form.addLink(function () form.reinit(ALGORITHM_FORM) end, { label = lang.algorithmsFormTitle .. " >>" })
         form.addRow(1)
-        form.addLink(function () form.reinit(TELEMETRY_FORM) end, { label = getTranslation(telemetryFormTitle) .. " >>" })
+        form.addLink(function () form.reinit(TELEMETRY_FORM) end, { label = lang.telemetryFormTitle .. " >>" })
         form.addRow(2)
-        form.addLabel({ label = getTranslation(readingsText) })
+        form.addLabel({ label = lang.readingsText })
         form.addIntbox(readingInterval, 500, 5000, 1000, 0, 100, onReadingIntervalChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(intervalText), width = 250 })
+        form.addLabel({ label = lang.intervalText, width = 250 })
         form.addIntbox(interval, 3, 30, 10, 0, 1, onIntervalChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(searchModeText), width = 250 })
+        form.addLabel({ label = lang.searchModeText, width = 250 })
         form.addInputbox(appModeSwitch, false, onAppModeSwitchChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(searchModeForceText), width = 280 })
+        form.addLabel({ label = lang.searchModeForceText, width = 280 })
         searchModeForceIndex = form.addCheckbox(searchModeForce, onSearchModeForceChanged)
+        form.addRow(2)
+        form.addLabel({ label = lang.numericBearingText, width = 280 })
+        numericBearingIndex = form.addCheckbox(numericBearing, onNumericBearingChanged)
         form.setFocusedRow(currForm or 1)
 
     elseif formID == SENSORS_FORM then
 
-        form.setTitle(getTranslation(sensorsFormTitle))
+        form.setTitle(lang.sensorsFormTitle)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(latInputText) })
+        form.addLabel({ label = lang.latInputText })
         form.addSelectbox(gpsSensorLabels, latSensorIndex + 1, true, onLatSensorChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(lonInputText) })
+        form.addLabel({ label = lang.lonInputText })
         form.addSelectbox(gpsSensorLabels, lonSensorIndex + 1, true, onLonSensorChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(sensorModeText) })
-        form.addSelectbox(getTranslation(modeSelectionText), sensorMode, false, onSensorModeChanged)
+        form.addLabel({ label = lang.sensorModeText })
+        form.addSelectbox(lang.modeSelectionText, sensorMode, false, onSensorModeChanged)
         form.addRow(2)
-        sensorLabelIndex = form.addLabel({ label = getTranslation(sensorInputText[sensorMode]), width = 100 })
+        sensorLabelIndex = form.addLabel({ label = lang.sensorInputText[sensorMode], width = 100 })
         sensorInputIndex = form.addSelectbox(otherSensorLabels, sensorIndices[sensorMode] + 1, true, onOtherSensorChanged, { width = 220 })
         form.addRow(2)
-        form.addLabel({ label = getTranslation(delayText) })
+        form.addLabel({ label = lang.delayText })
         form.addIntbox(delay, 0, 5, 0, 0, 1, onDelayChanged)
         form.setFocusedRow(1)
 
     elseif formID == ALGORITHM_FORM then
 
-        form.setTitle(getTranslation(algorithmsFormTitle))
+        form.setTitle(lang.algorithmsFormTitle)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(algorithmText), width = 100 })
-        algorithmSelectIndex = form.addSelectbox(getTranslation(algorithSelectionText), algorithm, true, onAlgorithmChanged, { width = 220 })
+        form.addLabel({ label = lang.algorithmText, width = 100 })
+        algorithmSelectIndex = form.addSelectbox(lang.algorithSelectionText, algorithm, true, onAlgorithmChanged, { width = 220 })
         form.addRow(2)
-        form.addLabel({ label = getTranslation(enableSwitchText) })
+        form.addLabel({ label = lang.enableSwitchText })
         algorithmSwitchInputIndex = form.addInputbox(algorithmSwitch, true, onAlgorithmSwitchChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(minSequenceLengthText), width = 250 })
+        form.addLabel({ label = lang.minSequenceLengthText, width = 250 })
         form.addIntbox(minSequenceLength, 5, 60, 5, 0, 1, onMinSequenceLengthChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(maxSequenceLengthText), width = 250 })
+        form.addLabel({ label = lang.maxSequenceLengthText, width = 250 })
         form.addIntbox(maxSequenceLength, 5, 60, 20, 0, 1, onMaxSequenceLengthChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(bestSequenceLengthText), width = 250 })
+        form.addLabel({ label = lang.bestSequenceLengthText, width = 250 })
         form.addIntbox(bestSequenceLength, 1, 20, 3, 0, 1, onBestSequenceLengthChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(estimateClimbText), width = 280 })
+        form.addLabel({ label = lang.estimateClimbText, width = 280 })
         estimateCheckboxIndex = form.addCheckbox(estimateClimb, onEstimateClimbChanged)
         form.setFocusedRow(1)
         form.setButton(1, "Clr", ENABLED)
 
     else
 
-        form.setTitle(getTranslation(telemetryFormTitle))
+        form.setTitle(lang.telemetryFormTitle)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(zoomSwitchText) })
+        form.addLabel({ label = lang.zoomSwitchText })
         zoomInputboxIndex = form.addInputbox(zoomSwitch, true, onZoomSwitchChanged)
         form.addRow(2)
-        form.addLabel({ label = getTranslation(circleRadiusText), width = 250 })
+        form.addLabel({ label = lang.circleRadiusText, width = 250 })
         form.addIntbox(circleRadius, 1, 50, 15, 0, 1, onCircleRadiusChanged)
         form.addRow(3)
-        form.addLabel({ label = getTranslation(zoomRangeText), width = 210 })
+        form.addLabel({ label = lang.zoomRangeText, width = 210 })
         minZoomIndex = form.addIntbox(minZoom, 1, 21, 15, 0, 1, onMinZoomChanged, { width = 50 })
         maxZoomIndex = form.addIntbox(maxZoom, 1, 21, 21, 0, 1, onMaxZoomChanged, { width = 50 })
         form.setFocusedRow(1)
@@ -673,9 +664,10 @@ local function init()
             otherSensorIDs[#otherSensorIDs+1] = sensor.id
             otherSensorParams[#otherSensorParams+1] = sensor.param
         end
+        collectgarbage()
     end
     minSequenceLength = system.pLoad(minSequenceLengthKey, 5)
-    maxSequenceLength = system.pLoad(maxSequenceLengthKey, 20)
+    maxSequenceLength = system.pLoad(maxSequenceLengthKey, 40)
     bestSequenceLength = system.pLoad(bestSequenceLengthKey, 3)
     enableSwitch = system.pLoad(enableSwitchKey)
     zoomSwitch = system.pLoad(zoomSwitchKey)
@@ -697,9 +689,10 @@ local function init()
     maxZoom = system.pLoad(maxZoomKey, 21)
     algorithmSwitch = system.pLoad(algorithmSwitchKey)
     appModeSwitch = system.pLoad(appModeSwitchKey)
-    searchModeForce = (system.pLoad(searchModeForceKey, 1) == 1) -- create boolean from integer
-    system.registerForm(1, MENU_APPS, getTranslation(appName), initForm, onKeyPressed)
-    system.registerTelemetry(2, getTranslation(appName), 4, printTelemetry)
+    searchModeForce = (system.pLoad(searchModeForceKey, 1) == 1)
+    numericBearing = (system.pLoad(numericBearingKey, 1) == 1)
+    system.registerForm(1, MENU_APPS, lang.appName, initForm, onKeyPressed)
+    system.registerTelemetry(2, lang.appName, 4, printTelemetry)
     reset()
     collectgarbage()
 end
@@ -709,4 +702,7 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.31", name = getTranslation(appName) }
+local text = json.decode(io.readall("Apps/ThermalAssist/lang.json"))
+lang = text[system.getLocale()] or text["en"]
+collectgarbage()
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.32", name = lang.appName }
