@@ -101,15 +101,15 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "de": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/ThermalAssist-de.html",
-                "en": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/ThermalAssist-en.html"
+                "de": "/doc/ThermalAssist-de.html",
+                "en": "/doc/ThermalAssist-en.html"
             },
             "files": [
                 {
                     "destination": "Apps/thlassist.lc",
                     "hash": "7abff5c00bf2fabbcc8df91c92194f248da2c2ae",
                     "size": 14228,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/thlassist.lc"
+                    "url": "/thlassist.lc"
                 },
                 {
                     "destination": "Apps/ThermalAssist/east-de.wav",
@@ -281,15 +281,14 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "en": "https://github.com/LeonAirRC/Jeti-Lua-Apps/blob/main/repository/doc/DJMTimer-de.html?raw=true",
-                "de": "https://github.com/LeonAirRC/Jeti-Lua-Apps/blob/main/repository/doc/DJMTimer-de.html?raw=true"
+                "de": "/doc/DJMTimer-de.html"
             },
             "files": [
                 {
                     "destination": "Apps/DJM Timer.lc",
                     "hash": "c1359b647d51ad562c42e654ce03ecc76b18806c",
                     "size": 2842,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/DJM%20Timer.lc"
+                    "url": "/DJM Timer.lc"
                 }
             ],
             "hw": [
@@ -305,7 +304,7 @@
             "name": {
                 "en": "DJM Timer"
             },
-            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
+            "previewIcon": "/logo.png",
             "releaseDate": "Mi Mai 26 00:00:00 2021",
             "version": "1.0"
         }
