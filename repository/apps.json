@@ -281,14 +281,14 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "de": "https://raw.githack.com/LeonAirRC/Jeti-Lua-Apps/main/repository/doc/DJMTimer-de.html"
+                "de": "https://rawcdn.githack.com/LeonAirRC/Jeti-Lua-Apps/58526849f9f5691ae6216877d093578ebb24b118/repository/doc/DJMTimer-de.html"
             },
             "files": [
                 {
                     "destination": "Apps/DJM Timer.lc",
                     "hash": "c1359b647d51ad562c42e654ce03ecc76b18806c",
                     "size": 2842,
-                    "url": "/DJM Timer.lc"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/DJM%20Timer/DJM%20Timer.lc"
                 }
             ],
             "hw": [
