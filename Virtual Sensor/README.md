@@ -8,6 +8,8 @@ Although constants can only be integers, floating point constants can be created
 \
 **F(4):** select the sensor value that is displayed in the telemetry frame
 
+### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
+
 ## Example
 This sensor calculates the glide ratio:\
 \
