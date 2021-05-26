@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Vario Integrator</title>
+</head>
+<body>
+  <h1>Vario Integrator</h1>
+  <p>Sagt regelmäßig das durschnittliche Steigen an.</p>
+  <br>
+  <p>
+	<img src="img/integrator.png" alt="main page"/><br>
+          Beispiel mit einem Variosensor.
+  </p>
+  <h2>Beschreibung</h2>
+  <p>
+    In der Thermik ist es wichtig nicht nur das aktuelle Steigen zu kennen, sondern auch wie gut der letze Kreis insgesamt war, also den Durchschnitt über eine einstellbare Zeit.<br>
+    Die App bietet zwei verschiedene Modi:
+    <ul>
+      <li>
+        <b>Vario integriert:</b> Integriert die Steigrate über die Zeit. Der Durchschnitt entspricht dann dem Wert des Integrals dividiert durch die Intervalllänge.
+      </li>
+      <li>
+        <b>Höhendifferenz:</b> Vor jeder Ansage wird die Höhe einmal gelesen. Die angesagte Zahl entspricht hier der Differenz zum vorheringen Wert dividiert durch die Intervalllänge.
+      </li>
+    </ul
+  </p>
+  <h2>Bedienung</h2>
+  <ol>
+    <li>
+      <p>Wähle einen Vario- oder Höhensensor.</p>
+    </li>
+    <li>
+      <p>Definiere einen Schalter, um die Ansage ein- und auszuschalten. Ist kein Schalter ausgewählt, ist die Ansage immer aktiv.</p>
+    </li>
+    <li>
+      <p>Stelle das Intervall [s] ein, in dem die Steigrate berechnet und angesagt wird.</p>
+    </li>
+    <li>
+      <p>Wenn 'Ankündigung' aktiv ist, wird die Ansage mit "Vario" begonnen.</p>
+    </li>
+  </ol>
+<br><br>
+Quelltexte und weitere Informationen sind in meinem <a href="https://github.com/LeonAirRC/Jeti-Lua-Apps">GitHub Repository</a> aufgeführt.
+<br><br>
+<a href="https://mit-license.org/">LICENSE</a>
+</body>
+</html>

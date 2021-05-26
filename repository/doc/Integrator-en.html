@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Vario Integrator</title>
+</head>
+<body>
+  <h1>Vario Integrator</h1>
+  <p>Announces the average climb rate in regular intervals.</p>
+  <br>
+  <p>
+	<img src="img/integrator.png" alt="main page"/>
+  </p>
+  <h2>Description</h2>
+  <p>When piloting a glider it is essential to know not only the current climb rate, but also the average over a certain duration.<br>
+     The app features two basic modes:
+    <ul>
+      <li>
+        <b>vario integrated:</b> Actually integrates a variometer sensor value. The average then equals the integral divided by the interval duration.
+      </li>
+      <li>
+        <b>altitude difference:</b> Reads the altitude once before each announcement. The average is calculated as the difference of the current altitude relative to the last value, divided by the interval duration.
+      </li>
+    </ul
+  </p>
+  <h2>Usage</h2>
+  <ol>
+    <li>
+      <p>Select a variometer or an altitude sensor as the input.</p>
+    </li>
+    <li>
+      <p>Define a switch to turn the speech output on and off. When no switch is selected the output is always active.</p>
+    </li>
+    <li>
+      <p>Set the interall (in seconds) at which the average climb rate is calculated and announced.</p>
+    </li>
+  </ol>
+<br>
+Visit my <a href="https://github.com/LeonAirRC/Jeti-Lua-Apps">GitHub repository</a> for more details and source code downloads.
+<br><br>
+<a href="https://mit-license.org/">LICENSE</a>
+</body>
+</html>
