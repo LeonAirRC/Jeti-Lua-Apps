@@ -4,6 +4,10 @@
 Jetiforum account: [LeonAir RC](https://jetiforum.de/index.php/user/7556-leonair)\
 Please use [discussions](https://github.com/LeonAirRC/Jeti-Lua-Apps/discussions) to share your thoughts.
 
+## Installation
+Add this [repository file](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/apps.json) to the list of repositories in Jeti Studio.\
+Then Jeti's app manager can be used to download the apps very comfortably.
+
 ## Overview
 ### Thermal Assist
 constantly guides you to the best thermals on your path
