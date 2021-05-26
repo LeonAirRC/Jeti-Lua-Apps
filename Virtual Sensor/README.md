@@ -1,4 +1,5 @@
 # Vitual Sensor
+### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
 Calculates virtual telemetry values that can be compused of mathematical and boolean operations.\
 The numeric inputs can be constants, telemetry values, proportional controls, switches, trainer inputs, ppm inputs and servo outputs.\
 Numeric values are processed in a tree of mathematical operation that take either one or two operators, eg ADD, MIN, SQRT, SIN, ABS.\
@@ -7,8 +8,6 @@ Although constants can only be integers, floating point constants can be created
 3.1416 = DIV 31416 10000\
 \
 **F(4):** select the sensor value that is displayed in the telemetry frame
-
-### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
 
 ## Example
 This sensor calculates the glide ratio:\
