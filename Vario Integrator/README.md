@@ -1,4 +1,5 @@
 ## Vario Integrator
+### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
 This app calculates the average climb based on telemetry values.\
 In an adjustable interval it announces the average climb within the last interval.\
 \
