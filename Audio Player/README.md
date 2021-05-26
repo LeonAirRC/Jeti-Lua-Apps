@@ -1,4 +1,5 @@
 ## Audio Player
+### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
 Audio player is similar to the built-in player.\
 It can play a user-defined playlist of all soundfiles on the transmitter.\
 \
