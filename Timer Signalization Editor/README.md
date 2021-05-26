@@ -1,4 +1,5 @@
 ## Timer Signalization Editor
+### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
 Changing the beeps and audio files of a Timer Signalization usually takes a USB connection to edit the json files in the /Config folder.\
 This app provides a simple interface to edit, add and delete those elements.\
 \
