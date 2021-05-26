@@ -3,10 +3,7 @@ Inspired by a system used on manned gliders, this app helps to determine the opt
 A periodic speech output tells the pilot the bearing and distance to the point where the center of the circle should be shifted to.\
 Therefore a gps and a vario or altitude sensor are required.
 
-## Installation
-Download and copy the following files into the Apps folder on your transmitter:
-- .lc or .lua application file
-- the "ThermalAssist" folder
+### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
 
 ## How it works
 The GPS position and the vario values are queried in regular intervals.\
