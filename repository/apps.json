@@ -11,7 +11,7 @@
                     "destination": "Apps/audplayer.lc",
                     "hash": "74f87729a5f57b0950fb776ea2e28ff779f0dfbe",
                     "size": 6926,
-                    "url": "/audplayer.lc"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Audio%20Player/audplayer.lc"
                 }
             ],
             "hw": [
@@ -44,7 +44,7 @@
                     "destination": "Apps/beepedit.lc",
                     "hash": "d6fd216028210567cd01b794f1622497c31f4d06",
                     "size": 6636,
-                    "url": "/beepedit.lc"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Timer%20Signalization%20Editor/beepedit.lc"
                 }
             ],
             "hw": [
@@ -77,7 +77,7 @@
                     "destination": "Apps/integrator.lc",
                     "hash": "885dc8d353c575a2ddb846c4e73aa0684181b986",
                     "size": 4707,
-                    "url": "/integrator.lc"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Vario%20Integrator/integrator.lc"
                 }
             ],
             "hw": [
@@ -109,109 +109,109 @@
                     "destination": "Apps/thlassist.lc",
                     "hash": "7abff5c00bf2fabbcc8df91c92194f248da2c2ae",
                     "size": 14228,
-                    "url": "/thlassist.lc"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/thlassist.lc"
                 },
                 {
                     "destination": "Apps/ThermalAssist/east-de.wav",
                     "hash": "7919b95a306c8b343de53cc54cb6fc53342f2e52",
                     "size": 27894,
-                    "url": "/ThermalAssist/east-de.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/east-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/east-en.wav",
                     "hash": "d3556c2ecf477efa53f819db6ef427fd98f48a6e",
                     "size": 27894,
-                    "url": "/ThermalAssist/east-en.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/east-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/lang.json",
                     "hash": "bfc556d66d554bcf15cbf0d9e7ce67ac544a5566",
                     "size": 3673,
-                    "url": "/ThermalAssist/lang.json"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/lang.json"
                 },
                 {
                     "destination": "Apps/ThermalAssist/north-de.wav",
                     "hash": "e9a8bf8943f5799d241ff89729b015688d2f573f",
                     "size": 50832,
-                    "url": "/ThermalAssist/north-de.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/north-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/north-en.wav",
                     "hash": "abd500c8465d957cfa9eb2a8f9207a424f83d42f",
                     "size": 27894,
-                    "url": "/ThermalAssist/north-en.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/north-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/northeast-de.wav",
                     "hash": "a606f4f289e498e62e21547cdb32873106ace864",
                     "size": 38496,
-                    "url": "/ThermalAssist/northeast-de.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/northeast-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/northeast-en.wav",
                     "hash": "8975ed1253886d444b9662eb6155e3839a306ab0",
                     "size": 43230,
-                    "url": "/ThermalAssist/northeast-en.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/northeast-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/northwest-de.wav",
                     "hash": "fc46c87223339fc2221158a07049bc69a0eb27f1",
                     "size": 45534,
-                    "url": "/ThermalAssist/northwest-de.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/northwest-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/northwest-en.wav",
                     "hash": "03613f3de1d3eee725cb847230eab38cabbc1e15",
                     "size": 43318,
-                    "url": "/ThermalAssist/northwest-en.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/northwest-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/south-de.wav",
                     "hash": "3f904d4da65ade659efe9d16a06a1468130a92bf",
                     "size": 28980,
-                    "url": "/ThermalAssist/south-de.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/south-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/south-en.wav",
                     "hash": "2350449566e7a2c92906222e55499dbf901aa264",
                     "size": 40364,
-                    "url": "/ThermalAssist/south-en.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/south-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/southeast-de.wav",
                     "hash": "b4e4858b3fb6c16b34cce6a52a7979f7db375c1b",
                     "size": 37126,
-                    "url": "/ThermalAssist/southeast-de.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/southeast-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/southeast-en.wav",
                     "hash": "ccb5f9c09a41a6b8dd37396322ea25be771b130c",
                     "size": 44144,
-                    "url": "/ThermalAssist/southeast-en.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/southeast-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/southwest-de.wav",
                     "hash": "1b2d9a275baac347f8a3b5e7f8fc64b9b3750f0d",
                     "size": 44610,
-                    "url": "/ThermalAssist/southwest-de.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/southwest-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/southwest-en.wav",
                     "hash": "93fed65242c3975ab3c93be2b24769b6bb8ca5a9",
                     "size": 52006,
-                    "url": "/ThermalAssist/southwest-en.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/southwest-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/west-de.wav",
                     "hash": "b1164fb919150dcdc89e1aa846d47bc636add986",
                     "size": 31408,
-                    "url": "/ThermalAssist/west-de.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/west-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/west-en.wav",
                     "hash": "e3c5cc818c8bcab19a689fe8848e85a5047f603b",
                     "size": 35092,
-                    "url": "/ThermalAssist/west-en.wav"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/west-en.wav"
                 }
             ],
             "hw": [
@@ -244,19 +244,19 @@
                     "destination": "Apps/virtsens.lc",
                     "hash": "6ef7b73f69f761794e4ee61c18403f20a64b2f37",
                     "size": 15944,
-                    "url": "/virtsens.lc"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Virtual%20Sensor/virtsens.lc"
                 },
                 {
                     "destination": "Apps/VirtualSensor/lang.json",
                     "hash": "f66ac95d3540dc5db31d85ca87d768c06ae37643",
                     "size": 2478,
-                    "url": "/VirtualSensor/lang.json"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Virtual%20Sensor/VirtualSensor/lang.json"
                 },
                 {
                     "destination": "Apps/VirtualSensor/sensors.json",
                     "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
                     "size": 2,
-                    "url": "/VirtualSensor/sensors.json"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Virtual%20Sensor/VirtualSensor/sensors.json"
                 }
             ],
             "hw": [
