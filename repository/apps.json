@@ -101,15 +101,15 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "de": "/doc/ThermalAssist-de.html",
-                "en": "/doc/ThermalAssist-en.html"
+                "de": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/ThermalAssist-de.html",
+                "en": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/ThermalAssist-en.html"
             },
             "files": [
                 {
                     "destination": "Apps/thlassist.lc",
                     "hash": "7abff5c00bf2fabbcc8df91c92194f248da2c2ae",
                     "size": 14228,
-                    "url": "/thlassist.lc"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/thlassist.lc"
                 },
                 {
                     "destination": "Apps/ThermalAssist/east-de.wav",
