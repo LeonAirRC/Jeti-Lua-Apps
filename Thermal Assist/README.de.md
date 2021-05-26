@@ -3,10 +3,7 @@ Diese App basiert auf einem System, das in bemannten Segelflugzeugen eingesetzt 
 Eine regelmäßige Sprachansage nennt dem Piloten die Richtung und die Strecke, um welche der Kreis verlagert werden sollte.\
 Dafür werden ein GPS und ein Vario oder ein Höhenmesser benötigt.
 
-## Installation
-Folgende Elemente müssen heruntergeladen und in den Apps-Ordner des Senders kopiert werden:
-- die .lc oder .lua Datei
-- der Ordner "ThermalAssist"
+### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
 
 ## So funktionierts
 Die GPS-Position und die Steigraten werden in regelmäßigen Intervallen abgefragt.\
