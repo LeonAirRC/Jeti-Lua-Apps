@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Thermikassistent</title>
+</head>
+<body>
+  <h1>Thermikassistent</h1>
+  <p>Hilft in der Thermik den besten Punkt zum Kreisen zu finden. Dazu werden eine Visualisierung und eine Sprachausgabe genutzt.</p>
+  <h2>Übersicht</h2>
+  <p>
+    Inspiriert durch ein System, das für manntragende Flugzeuge entwickelt wurde, hilft diese App dabei den optimalen Punkt zum Kreisen zu finden. Eine regelmäßige Sprachausgabe gibt die Richtung und Entfernung zu dem Punkt aus, wohin der Kreismittelpunkt verlagert werden sollte.<br>
+Dazu werden ein GPS-Sensor sowie ein Variometer oder ein Höhensensor benötigt.
+  </p>
+  <br>
+  <p>
+	<img src="img/thlassist5.png" alt="weighted vectors example"/>
+	<img src="img/thlassist6.png" alt="best subsequence example"/><br>
+	Beispiel: 'Gewichtete Vektoren' vs 'Beste Teilsequenz'
+  </p>
+  <br>
+  <p>
+    Die GPS-Position und die Steigraten werden in regelmäßigen Abständen abgefragt.
+Jeder dieser Punkte wird in einem Telemetriefenster als ein Kreis angezeigt, dessen Radius proportional zu der dortigen Steigrate ist, falls diese positiv ist.
+Die Flugbahn wird zu jeder Zeit soweit gekürzt, sodass sie eine Krümmung von höchstens 360° enthält, also immer nur den letzen Kreis beschreibt.
+Abhängig von den Steigraten entlang der Flugbahn und dem gewählten Auswertungsalgorithmus wird dann der optimale Punkt berechnet.
+Die Ansage enthält die Richtung und Entfernung zum diesem Punkt, relativ zum Mittelpunkt des letzen Kreises. Falls bekannt, wird auch die dort erwartete Steigrate ausgegeben.<br>
+Zum Beispiel empfiehlt die Ansage "85° 20m 2m/s" eine Verschiebung um 20 Meter nach Osten, wo ein Steigen von 2 m/s zu erwarten ist.<br>
+Der optimale Punkt wird immer als ein Quadrat dargestellt. Ist die dortige Steigrate bekannt, wird dessen Größe analog zu den Kreisradien bestimmt.
+  </p>
+  <br>
+  <h2>Berechnung des optimalen Punktes</h2>
+  <p>
+    Die App bietet aktuell drei verschiedene Auswertungsalgorithmen, welche alle ein eigenes ideales Anwendungsszenario besitzen. Die folgende Liste ist nur eine kurze Übersicht, eine sehr detaillierte Beschreibung ist <a href="https://github.com/LeonAirRC/Jeti-Lua-Apps/blob/main/Thermal%20Assist/doc/algorithms.md">hier</a> zu finden.
+    <ol>
+      <li>
+        <p>
+	<b>Beste Teilsequenz:</b> Berechnet die Summe der Steigraten über alle Teilsequenzen der Flugbahn mit der eingestellten Länge.<br>
+	   Dann wird der mittlere Punkt der Teilsequenz zurückgegeben, die insgesamt die höchste Summe aufweist.
+        </p>
+      </li>
+      <li>
+        <p>
+	<b>Gewichtete Vektoren:</b> Interpretiert die Abweichung eines GPS-Punktes vom Kreismittelpunkt als ein Vektor und multipliziert ihn mit einem Gewicht, das proportional zu der Steigrate an diesem Punkt ist. Die Summe über alle diese Vektoren zeigt dann auf den optimalen Punkt.
+        </p>
+      </li>
+      <li>
+        <p>
+	<b>Gewichtete Vektoren [Bias]:</b> Ist dem zweiten Algorithmus sehr ähnlich, aber empfiehlt nicht so aggressive Verlagerungen.
+        </p>
+      </li>
+    </ol>
+  </p>
+  <br>
+  <p>
+	<img src="img/thlassist1.png" alt="main page"/>
+	<img src="img/thlassist2.png" alt="sensors page"/>
+	<img src="img/thlassist3.png" alt="algorithm settings"/>
+	<img src="img/thlassist4.png" alt="telemetry frame settings"/>
+  </p>
+  <h2>Parameter</h2>
+  <ul>
+    <li>
+      <p>
+        <b>Switch:</b> Die Sprachansage und das Aufnehmen neuer Messpunkte werden deaktiviert, wenn hier ein Schalter ausgewählt ist und sich dieser in der Aus-Position befindet.
+      </p>
+    </li>
+    <li>
+      <p>
+        <b>Messintervall:</b> Das Intervall [ms], in dem neue Messpunkte gelesen werden.
+      </p>
+    </li>
+    <li>
+      <p>
+        <b>Ansageintervall:</b> Das Intervall [s], in dem die empohlene Verlagerung angesagt wird.
+      </p>
+    </li>
+    <li>
+      <p>
+        <b>Länge, Breite, Vario EX, Höhe EX:</b> Auswahl der entsprechenden Sensoren.
+      </p>
+    </li>
+    <li>
+      <p>
+        <b>Modus:</b> Die App bietet die Modi 'Vario' und 'Höhendifferenz'. Wenn letzteres ausgewählt ist, wird eine Steigrate immer als die Differenz von aktueller und zuletzt gemessener Höhe berechnet.
+      </p>
+    </li>
+    <li>
+      <p>
+        <b>Minimale Sequenzlänge:</b> Die minimale Anzahl von erforderlichen Datenpunkten, damit die Sprachansage aktiv ist.
+      </p>
+    </li>
+    <li>
+      <p>
+        <b>Maximale Sequenzlänge:</b> Oberes Limit für die Anzahl von Datenpunkten. Verhindert eine sehr große Anzahl von Punkten, wenn die Flugbahn keinen vollständigen Kreis enthält.
+      </p>
+    </li>
+    <li>
+      <p>
+        <b>Länge optimale Teilsequenz:</b> Länge der Teilsequenzen, die der Algorithmus 'Beste Teilsequenz' betrachtet. Je größer dieser Wert ist, desto großflächiger muss ein steigendes Gebiet sein, um als beste Teilsequenz gewählt zu werden.
+      </p>
+    </li>
+    <li>
+      <p>
+        <b>Zoom:</b> Ein [proportionaler] Geber für manuellen Zoom im Telemetriefenster. Wenn kein Geber gewählt ist oder der Geber in der geringsten Position ist, wird der automatische Zoom aktiviert. Automatischer Zoom ist die größtmögliche Zoomstufe, bei der alle Punkte auf dem Bildschirm sind.<br>
+Der zugeordnete Geber kann mit <b>F(1)</b> [Clr] gelöscht werden.
+      </p>
+    </li>
+    <li>
+      <p>
+        <b>Kreisradius:</b> Der Radius der Kreise im Telemetriefenster wird berechnet als das Produkt aus dieser Zahl und der jeweiligen Steigrate.
+      </p>
+    </li>
+    <li>
+      <p>
+        <b>Zoombereich:</b> Der Bereich von Zoomstufen, die mit dem Zoom-Geber erreicht werden können.
+      </p>
+    </li>
+  </ul>
+<br>
+<br>
+Quelltexte und weitere Informationen sind in meinem <a href="https://github.com/LeonAirRC/Jeti-Lua-Apps">GitHub Repository</a> aufgeführt.
+  <br><br>
+  <a href="https://mit-license.org/">LICENSE</a>
+</body>
+</html>
