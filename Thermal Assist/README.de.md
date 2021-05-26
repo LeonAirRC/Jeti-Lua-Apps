@@ -2,6 +2,12 @@
 Diese App basiert auf einem System, das in bemannten Segelflugzeugen eingesetzt wird, und hilft dabei den optimalen Kreispunkt in der Thermik zu finden.
 Eine regelmäßige Sprachansage nennt dem Piloten die Richtung und die Strecke, um welche der Kreis verlagert werden sollte.\
 Dafür werden ein GPS und ein Vario oder ein Höhenmesser benötigt.
+
+## Installation
+Folgende Elemente müssen heruntergeladen und in den Apps-Ordner des Senders kopiert werden:
+- die .lc oder .lua Datei
+- der Ordner "ThermalAssist"
+
 ## So funktionierts
 Die GPS-Position und die Steigraten werden in regelmäßigen Intervallen abgefragt.\
 Jeder Messpunkt wird in einem Telemetriefenster als ein Kreis angezeigt, wobei der Radius proportional vom dortigen Steigen abhängt.
