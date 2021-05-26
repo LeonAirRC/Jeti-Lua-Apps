@@ -29,7 +29,7 @@
                 "de": "Audio Player",
                 "en": "Audio Player"
             },
-            "previewIcon": "/logo.png",
+            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.1"
         },
@@ -62,7 +62,7 @@
                 "de": "Beep Editor",
                 "en": "Beep Editor"
             },
-            "previewIcon": "/logo.png",
+            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.1"
         },
@@ -94,7 +94,7 @@
                 "de": "Vario Integrator",
                 "en": "Vario Integrator"
             },
-            "previewIcon": "/logo.png",
+            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.1"
         },
@@ -229,7 +229,7 @@
                 "de": "Thermikassistent",
                 "en": "Thermal Assistant"
             },
-            "previewIcon": "/logo.png",
+            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021",
             "version": "1.33"
         },
@@ -274,7 +274,7 @@
                 "de": "Virtueller Sensor",
                 "en": "Virtual Sensor"
             },
-            "previewIcon": "/logo.png",
+            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021",
             "version": "1.21"
         },
@@ -304,7 +304,7 @@
             "name": {
                 "en": "DJM Timer"
             },
-            "previewIcon": "/logo.png",
+            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Mi Mai 26 00:00:00 2021",
             "version": "1.0"
         }
