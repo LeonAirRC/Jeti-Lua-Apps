@@ -3,8 +3,8 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "de": "/doc/AudioPlayer-de.html",
-                "en": "/doc/AudioPlayer-en.html"
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/AudioPlayer-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/AudioPlayer-en.html"
             },
             "files": [
                 {
@@ -36,8 +36,8 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "de": "/doc/BeepEdit-de.html",
-                "en": "/doc/BeepEdit-en.html"
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BeepEdit-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BeepEdit-en.html"
             },
             "files": [
                 {
@@ -69,8 +69,8 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "de": "/doc/Integrator-de.html",
-                "en": "/doc/Integrator-en.html"
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/Integrator-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/Integrator-en.html"
             },
             "files": [
                 {
@@ -101,8 +101,8 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "de": "/doc/ThermalAssist-de.html",
-                "en": "/doc/ThermalAssist-en.html"
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/ThermalAssist-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/ThermalAssist-en.html"
             },
             "files": [
                 {
@@ -236,8 +236,8 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "de": "/doc/VirtualSensor-de.html",
-                "en": "/doc/VirtualSensor-en.html"
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/VirtualSensor-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/VirtualSensor-en.html"
             },
             "files": [
                 {
