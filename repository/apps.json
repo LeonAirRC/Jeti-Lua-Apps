@@ -307,6 +307,39 @@
             "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Mi Mai 26 00:00:00 2021",
             "version": "1.0"
+        },
+        {
+            "author": "LeonAir RC",
+            "description": {
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/PropSwitch-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/PropSwitch-en.html"
+            },
+            "files": [
+                {
+                    "destination": "Apps/propswitch.lc",
+                    "hash": "7801836fbda4272fd0c232078de80277fd74bcd8",
+                    "size": 5276,
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Proportional%20Switch/propswitch.lc"
+                }
+            ],
+            "hw": [
+                674,
+                675,
+                676,
+                677,
+                678,
+                679,
+                680
+            ],
+            "id": 0,
+            "name": {
+                "cz": "Proporcionální spínač",
+                "de": "Proportionaler Schalter",
+                "en": "Proportional Switch"
+            },
+            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
+            "releaseDate": "Do Mai 27 00:00:00 2021",
+            "version": "1.1"
         }
     ]
 }
