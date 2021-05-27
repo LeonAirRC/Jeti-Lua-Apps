@@ -33,8 +33,8 @@ local neutralPoints
 local enabled
 local values = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 local delays
-local lastTime
-local controlIndex = 0
+local lastTime -- saves the last loop time for intergration
+local controlIndex = 0 -- index of the currently selected control (1-10) or 0 if the main page is displayed
 
 local checkboxIndex
 
@@ -50,6 +50,10 @@ local registerErrorText = {en = "Control %d is already in use", de = "Geber %d w
 local function getTranslation(table)
     return table[locale] or table["en"]
 end
+
+----------------------
+-- callback functions
+----------------------
 
 local function onLabelChanged(value)
     labels[controlIndex] = value
@@ -105,20 +109,23 @@ local function loop()
     local time = system.getTimeCounter()
     for i = 1, 10 do
         if upSwitches[i] and downSwitches[i] then
-            local total = (system.getInputsVal(upSwitches[i]) - neutralPoints[i]) / (1 - neutralPoints[i]) - (system.getInputsVal(downSwitches[i]) - neutralPoints[i]) / (1 - neutralPoints[i])
-            values[i] = values[i] + total * (time - lastTime) / (100 * delays[i])
-            if values[i] > 1 then       values[i] = 1
-            elseif values[i] < -1 then  values[i] = -1
+            local total = (system.getInputsVal(upSwitches[i]) - neutralPoints[i]) / (1 - neutralPoints[i]) - (system.getInputsVal(downSwitches[i]) - neutralPoints[i]) / (1 - neutralPoints[i]) -- sum of switch inputs
+            values[i] = values[i] + total * (time - lastTime) / (100 * delays[i]) -- add total multiplied by time to approximate the integral
+            if values[i] > 1 then       values[i] = 1  -- max 1
+            elseif values[i] < -1 then  values[i] = -1 -- min -1
             end
-            if system.setControl(i, values[i], 0) == nil then
+            if system.setControl(i, values[i], 0) == nil then -- setControl failed
                 enabled[i] = 0
-                system.messageBox(string.format(getTranslation(registerErrorText), i))
+                system.messageBox(string.format(getTranslation(registerErrorText), i)) -- notify that the control was unassigned, probably due to intersection with another app
             end
         end
     end
     lastTime = time
 end
 
+----------------------------------------------
+-- prints the amplitude as a bar and a number
+----------------------------------------------
 local function printForm(width, height)
     if controlIndex ~= 0 and enabled[controlIndex] == 1 then
         local x = width // 2
@@ -181,8 +188,8 @@ local function init()
     end
     system.registerForm(1, MENU_APPS, getTranslation(appName), initForm, onKeyPressed, printForm)
     for i = 1, 10 do
-        if enabled[i] == 1 and system.registerControl(i, labels[i], "C" .. tostring(i)) == nil then
-            enabled[i] = 0
+        if enabled[i] == 1 and system.registerControl(i, labels[i], "C" .. tostring(i)) == nil then -- register failed
+            enabled[i] = 0 -- deactivate control
             system.messageBox(string.format(getTranslation(registerErrorText), i))
         end
     end
@@ -197,4 +204,4 @@ local function destroy()
     end
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.01", name = getTranslation(appName) }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1", name = getTranslation(appName) }
