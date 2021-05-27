@@ -3,8 +3,8 @@ Registers up to ten new controls whose state can be moved up and down with two s
 Example: The flaps slowly move up as long as the up-switch is triggered and move down if the down-switch is triggered.\
 The input switches can also be proportional which allows even more precise controls.\
 \
-Combined with a <a href = "https://github.com/LeonAirRC/Jeti-Lua-Apps/tree/main/Virtual%20Sensor">virtual sensors</a>
-this can also act as an **integral** over any control or telemetry.\
+Combined with a [virtual sensor]("https://github.com/LeonAirRC/Jeti-Lua-Apps/tree/main/Virtual%20Sensor)
+this can also act as an **integral** over any control or telemetry.
 
 ### Neutral point
 Describes the input value for which the output does not change. Usually it is -1, but can be 0 if one switch is used to control both directions.\
