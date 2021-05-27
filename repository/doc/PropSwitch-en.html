@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Proportional Switch</title>
+</head>
+<body>
+  <h1>Proportional Switch</h1>
+  <p>
+Registers up to ten new controls whose state can be moved up and down with two switches.<br>
+Example: The flaps slowly move up as long as the up-switch is triggered and move down if the down-switch is triggered.<br>
+The input switches can also be proportional which allows even more precise controls.<br>
+<br>
+Combined with a virtual sensors this can also act as an integral over any control or telemetry.<br></p>
+<h3>Neutral point</h3>
+<p>
+Describes the input value for which the output does not change. Usually it is -1, but can be 0 if one switch is used to control both directions.
+When the neutral point is 0, both inputs can control both directions. Hence it is useful when the input(s) should be integrated.
+</p>
+<h3>Delay</h3>
+<p>
+The time it takes the output value to change by 1. Defines the movement speed.
+</p>
+<p>
+<img src="https://user-images.githubusercontent.com/57962936/118042978-12a0b680-b375-11eb-90f7-540acb66c801.png"/>
+<img src="https://user-images.githubusercontent.com/57962936/118042980-13394d00-b375-11eb-8ca1-20c27e2cb575.png"/>
+</p>
+<br>
+Visit my <a href="https://github.com/LeonAirRC/Jeti-Lua-Apps">GitHub repository</a> for more details and source code downloads.
+<br><br>
+<a href="https://mit-license.org/">LICENSE</a>
+</body>
+</html>
