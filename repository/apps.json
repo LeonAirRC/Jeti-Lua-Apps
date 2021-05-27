@@ -304,7 +304,7 @@
             "name": {
                 "en": "DJM Timer"
             },
-            "previewIcon": "logo.png",
+            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Mi Mai 26 00:00:00 2021",
             "version": "1.0"
         }
