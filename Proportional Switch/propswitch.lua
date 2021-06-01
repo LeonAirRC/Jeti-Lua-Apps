@@ -204,4 +204,4 @@ local function destroy()
     end
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1", name = getTranslation(appName) }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.1", name = getTranslation(appName) }
