@@ -23,7 +23,7 @@ local endless
 local controlIndex, smoothIndex, endlessIndex
 
 local locale = system.getLocale()
-local appName = {en = "Sequential Button", de = "Sequentieller Taster"}
+local appName = {en = "Sequential Button", de = "Sequenzieller Taster"}
 local switchText = {en = "Switch", de = "Switch"}
 local controlText = {en = "Control", de = "Geber"}
 local delayText = {en = "Delay [ms]", de = "Verzögerung [ms]"}
