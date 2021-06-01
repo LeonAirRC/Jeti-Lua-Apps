@@ -340,6 +340,38 @@
             "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Do Mai 27 00:00:00 2021",
             "version": "1.1"
+        },
+        {
+            "author": "LeonAir RC",
+            "description": {
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/SeqBtn-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/SeqBtn-en.html"
+            },
+            "files": [
+                {
+                    "destination": "Apps/seqbtn.lc",
+                    "hash": "499479443eb57cdf93965b9e455266d4191712ff",
+                    "size": 5836,
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Sequential%20Button/seqbtn.lc"
+                }
+            ],
+            "hw": [
+                674,
+                675,
+                676,
+                677,
+                678,
+                679,
+                680
+            ],
+            "id": 0,
+            "name": {
+                "de": "Sequentieller Taster",
+                "en": "Sequential Button"
+            },
+            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
+            "releaseDate": "Di Jun 1 00:00:00 2021",
+            "version": "1.0"
         }
     ]
 }
