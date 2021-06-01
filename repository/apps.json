@@ -317,8 +317,8 @@
             "files": [
                 {
                     "destination": "Apps/propswitch.lc",
-                    "hash": "c471df4cb2275c4215938c963cd25e652a399ee4",
-                    "size": 5275,
+                    "hash": "5a77bd37588b7a6a00a61c73772308a8c16fcbaf",
+                    "size": 5277,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Proportional%20Switch/propswitch.lc"
                 }
             ],
@@ -339,7 +339,7 @@
             },
             "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Do Mai 27 00:00:00 2021",
-            "version": "1.1"
+            "version": "1.1.1"
         },
         {
             "author": "LeonAir RC",
