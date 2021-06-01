@@ -256,7 +256,7 @@
                     "destination": "Apps/VirtualSensor/sensors.json",
                     "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
                     "size": 2,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Virtual%20Sensor/VirtualSensor/sensors.json"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/Virtual%20Sensor/VirtualSensor/sensors.json"
                 }
             ],
             "hw": [
