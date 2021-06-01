@@ -107,8 +107,8 @@
             "files": [
                 {
                     "destination": "Apps/thlassist.lc",
-                    "hash": "7abff5c00bf2fabbcc8df91c92194f248da2c2ae",
-                    "size": 14228,
+                    "hash": "6fbbb1035279dea8a1d543973d143f50b4432579",
+                    "size": 14229,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/thlassist.lc"
                 },
                 {
@@ -242,8 +242,8 @@
             "files": [
                 {
                     "destination": "Apps/virtsens.lc",
-                    "hash": "6ef7b73f69f761794e4ee61c18403f20a64b2f37",
-                    "size": 15944,
+                    "hash": "099bd1d9590ed2099cee1ff7de34823592c8890f",
+                    "size": 15945,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Virtual%20Sensor/virtsens.lc"
                 },
                 {
@@ -256,7 +256,7 @@
                     "destination": "Apps/VirtualSensor/sensors.json",
                     "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
                     "size": 2,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/Virtual%20Sensor/VirtualSensor/sensors.json"
+                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Virtual%20Sensor/VirtualSensor/sensors.json"
                 }
             ],
             "hw": [
