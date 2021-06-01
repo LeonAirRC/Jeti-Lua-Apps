@@ -702,4 +702,4 @@ end
 local text = json.decode(io.readall("/Apps/ThermalAssist/lang.json"))
 lang = text[system.getLocale()] or text["en"]
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.33", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.3.3", name = lang.appName }
