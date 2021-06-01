@@ -663,4 +663,4 @@ local function destroy()
 end
 
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.21", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.2.1", name = lang.appName }
