@@ -28,4 +28,5 @@ a control that can be set to user-defined deflections stepwise
 
 # Disclaimer
 Never use a Lua app to control a critical function of a model!\
-These apps are tested with no other apps active. Interference with other apps cannot be precluded. Lua apps can be killed by the transmitter if cpu or memory usage exceeds the limits. As state by the license, the author is in no way liable for any damages that are related to using the apps listed in this repository.
+These apps are tested with no other apps active. Interference with other apps cannot be precluded. Lua apps can be killed by the transmitter if cpu or memory usage exceeds the limits.\
+As stated in the license text, the author is in no way liable for any damages that are related to using the apps listed in this repository.
