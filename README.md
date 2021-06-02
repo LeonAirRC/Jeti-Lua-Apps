@@ -23,3 +23,9 @@ use switches to move a control up and down
 edit the beep/audiofile patterns that are used for timer signalization
 ### DJM Timer
 speaking timer for the glider competitions at German youth championships
+### Sequential Button
+a control that can be set to user-defined deflections stepwise
+
+# Disclaimer
+Never use a Lua app to control a critical function of a model!\
+These apps are tested with no other apps active. Interference with other apps cannot be precluded. Lua apps can be killed by the transmitter if cpu or memory usage exceeds the limits. As state by the license, the author is in no way liable for any damages that are related to using the apps listed in this repository.
