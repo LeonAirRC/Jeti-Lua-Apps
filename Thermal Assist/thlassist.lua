@@ -699,7 +699,12 @@ local function destroy()
     collectgarbage()
 end
 
-local text = json.decode(io.readall("/Apps/ThermalAssist/lang.json"))
+local text = io.readall("Apps/ThermalAssist/lang.json")
+if not text then
+    print("The file ThermalAssist/lang.json is missing")
+    return {}
+end
+text = json.decode(text)
 lang = text[system.getLocale()] or text["en"]
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.3.3", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.3.4", name = lang.appName }
