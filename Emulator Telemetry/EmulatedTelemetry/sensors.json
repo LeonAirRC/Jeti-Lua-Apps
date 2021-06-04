@@ -1,0 +1,101 @@
+[
+    {
+        "id" : 0,
+        "param" : 0,
+        "decimals" : 0,
+        "type" : 9,
+        "label" : "GPS Sensor",
+        "unit" : "",
+        "sensorName" : "GPS Sensor"
+    },
+    {
+        "id" : 0,
+        "param" : 1,
+        "decimals" : 0,
+        "type" : 9,
+        "label" : "Latitude",
+        "unit" : "°",
+        "sensorName" : "GPS Sensor",
+        "lowerBound" : 0,
+        "upperBound" : 0.001,
+        "input" : "P4"
+    },
+    {
+        "id" : 0,
+        "param" : 2,
+        "decimals" : 1,
+        "type" : 9,
+        "label" : "Longitude",
+        "unit" : "°",
+        "sensorName" : "GPS Sensor",
+        "lowerBound" : 0,
+        "upperBound" : 0.001,
+        "input" : "P3"
+    },
+    {
+        "id" : 1,
+        "param" : 0,
+        "decimals" : 3,
+        "type" : 1,
+        "label" : "Altitude Sensor",
+        "unit" : "",
+        "sensorName" : "Altitude Sensor"
+    },
+    {
+        "id" : 1,
+        "param" : 1,
+        "decimals" : 3,
+        "type" : 1,
+        "label" : "Altitude",
+        "unit" : "m",
+        "sensorName" : "Altitude Sensor",
+        "lowerBound" : 0,
+        "upperBound" : 10,
+        "input" : "P5"
+    },
+    {
+        "id" : 1,
+        "param" : 2,
+        "decimals" : 3,
+        "type" : 1,
+        "label" : "Vario",
+        "unit" : "m/s",
+        "sensorName" : "Altitude Sensor",
+        "lowerBound" : -1,
+        "upperBound" : 1,
+        "input" : "P6"
+    },
+    {
+        "id" : 2,
+        "param" : 0,
+        "decimals" : 0,
+        "type" : 5,
+        "label" : "Time",
+        "unit" : "",
+        "sensorName" : "Date/Time Sensor"
+    },
+    {
+        "id" : 2,
+        "param" : 1,
+        "decimals" : 0,
+        "type" : 5,
+        "label" : "Seconds",
+        "unit" : "",
+        "sensorName" : "Date/Time Sensor",
+        "lowerBound" : 0,
+        "upperBound" : 10000,
+        "input" : "P1"
+    },
+    {
+        "id" : 2,
+        "param" : 2,
+        "decimals" : 1,
+        "type" : 5,
+        "label" : "Days",
+        "unit" : "",
+        "sensorName" : "Date/Time Sensor",
+        "lowerBound" : 0,
+        "upperBound" : 1000,
+        "input" : "P2"
+    }
+]
