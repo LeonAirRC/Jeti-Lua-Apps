@@ -21,7 +21,6 @@ SOFTWARE.
 ]]
 
 local filepath = "Apps/EmulatedTelemetry/sensors.json"
-local appName = "Emulated Telemetry"
 local monthDays = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334}
 
 local sensors
@@ -79,7 +78,7 @@ end
 gps.getPosition = function (id, pLat, pLon)
     local sLat, sLon = system.getSensorByID(id, pLat), system.getSensorByID(id, pLon)
     if sLat and sLon and sLat.valid and sLon.valid and sLat.valGPS and sLon.valGPS then
-        local lat, lon = sLat.valGPS / 0xFFFF, sLon.valGPS / 0xFFFF
+        local lat, lon = sLat.valGPS / 0x1000, sLon.valGPS / 0x1000
         if sLat.decimals > 2 then lat = -lat end
         if sLon.decimals > 2 then lon = -lon end
         return gps.newPoint(lat, lon)
@@ -111,7 +110,7 @@ local function loop()
                     end
                 end
             elseif sensor.type == 9 then
-                local deg = math.floor(getSensorValue(sensor) * 0xFFFF)
+                local deg = math.floor(getSensorValue(sensor) * 0x10000)
                 if deg >= 0 then
                     sensor.decimals = sensor.decimals % 2
                     sensor.valGPS = deg
@@ -142,4 +141,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0", name = appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0", name = "Emulated Telemetry" }
