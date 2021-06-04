@@ -1,4 +1,4 @@
-# Jeti-Lua-Apps
+# Lua Apps
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate?hosted_button_id=749FB8DD5PZ8S)\
 \
 Jetiforum account: [LeonAir RC](https://jetiforum.de/index.php/user/7556-leonair)\
