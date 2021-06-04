@@ -5,7 +5,10 @@ The list of emulated sensors can be defined in the <i>/EmulatedTelemetry/sensors
 The current value of each sensor can be controlled by one of the inputs, eg. "P1" and "SA".\
 
 ### Warning
-Only use this app on the emulator! It overrides some functions of the Lua api which can lead to unexpected effects on other apps.\
+Only use this app on the emulator! It overrides some functions of the Lua api which can lead to unexpected effects on other apps.
+
+### Installation
+Move the <i>emutelem.lua</i> file and the <i>EmulatedTelemetry</i> folder into the emulator's Apps folder.\
 \
 \
 In <a href="https://github.com/LeonAirRC/Jeti-Lua-Apps/tree/main/Emulator%20Telemetry/EmulatedTelemetry/sensors.json">this</a> example there are three sensors:\
