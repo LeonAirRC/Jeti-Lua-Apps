@@ -1,4 +1,5 @@
 # Proportional Switch
+### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
 Registers up to ten new controls whose state can be moved up and down with two switches.\
 Example: The flaps slowly move up as long as the up-switch is triggered and move down if the down-switch is triggered.\
 The input switches can also be proportional which allows even more precise controls.\
