@@ -1,4 +1,5 @@
 # Sequential Button
+### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
 <p>
 <img src="https://user-images.githubusercontent.com/57962936/120362788-c01b4000-c30b-11eb-8da5-41d6ad2aeefa.png" width=300/>
 <img src="https://user-images.githubusercontent.com/57962936/120362791-c0b3d680-c30b-11eb-8623-7c84008b37dd.png" width=300/>
