@@ -5,7 +5,8 @@ Jetiforum account: [LeonAir RC](https://jetiforum.de/index.php/user/7556-leonair
 Please use [discussions](https://github.com/LeonAirRC/Jeti-Lua-Apps/discussions) to share your thoughts.
 
 ## Installation
-Add this [repository file](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/apps.json) to the list of repositories in Jeti Studio.\
+Add this [repository file](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/apps.json) to the list of repositories in Jeti Studio at\
+File > Configuration > Apps sources.\
 Then Jeti's app manager can be used to download the apps very comfortably.
 
 ## Overview
