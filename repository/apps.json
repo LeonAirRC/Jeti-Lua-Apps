@@ -317,8 +317,8 @@
             "files": [
                 {
                     "destination": "Apps/propswitch.lc",
-                    "hash": "5a77bd37588b7a6a00a61c73772308a8c16fcbaf",
-                    "size": 5277,
+                    "hash": "28c5fa8175d2b1493b7ca460f3e962fe79651257",
+                    "size": 5679,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Proportional%20Switch/propswitch.lc"
                 }
             ],
