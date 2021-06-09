@@ -48,7 +48,7 @@ system.getSensorByID = function(id, param)
     return nil
 end
 
-system.getSensorValueByID = function (id, param)
+system.getSensorValueByID = function(id, param)
     for _,sensor in pairs(sensors) do
         if sensor.id == id and sensor.param == param then
             local s = {type = sensor.type, valid = sensor.valid}
@@ -85,6 +85,44 @@ gps.getPosition = function (id, pLat, pLon)
     else
         return nil
     end
+end
+
+system.vibration = function(leftRight, vibrationProfile)
+    assert(type(leftRight) == "boolean", "Error in system.vibration: expected boolean: leftRight")
+    assert(type(vibrationProfile) == "integer", "Error in system.vibration: expected integer: vibrationProfile")
+    print(string.format("vibration(leftRight : %s, vibrationProfile : %s)", tostring(leftRight), tostring(vibrationProfile)))
+end
+
+system.playFile = function(fileName, playbackType)
+    assert(type(fileName) == "string", "Error in system.playFile: expected string: fileName")
+    assert(type(playbackType) == "integer", "Error in system.playFile: expected integer: playbackType")
+    assert(playbackType == AUDIO_BACKGROUND or playbackType == AUDIO_QUEUE or playbackType == AUDIO_QUEUE, "Error in system.playFile: playbackType " .. tostring(playbackType) .. " not allowed")
+    print(string.format("playFile(fileName : %s, playbackType : %s)", tostring(fileName), tostring(playbackType or "nil")))
+end
+
+system.playNumber = function(value, decimals, unit, label)
+    assert(type(value) == "number", "Error in system.playNumber: expected number: value")
+    assert(type(decimals) == "integer", "Error in system.playNumber: expected integer: decimals")
+    assert(not unit or type(unit) == "string", "Error in system.playNumber: expected string: unit")
+    assert(not label or type(label) == "number", "Error in system.playNumber: expected string: label")
+    assert(decimals >= 0 and decimals <= 2, "Error in system.playNumber: 'decimals' has to be between 0 and 2")
+    print(string.format("playNumber(value : %s, decimals : %s, unit : %s, label : %s)", tostring(value), tostring(decimals), unit or "nil", label or "nil"))
+    return true
+end
+
+system.playBeep = function(repeatCount, frequency, length)
+    assert(type(repeatCount) == "integer", "Error in system.playBeep: expected integer: repeatCount")
+    assert(type(frequency) == "integer", "Error in system.playBeep: expected integer: frequency")
+    assert(type(length) == "integer", "Error in system.playBeep: expected integer: length")
+    assert(repeatCount >= 0 and repeatCount <= 10, "Error in system.playBeep: 'repeatCount' has to be between 0 and 10")
+    assert(frequency >= 200 and frequency <= 10000, "Error in system.playBeep: 'frequency' has to be between 200 and 10000")
+    assert(length >= 20 and length <= 10000, "Error in system.playBeep: 'length' has to be between 20 and 10000")
+    print(string.format("playBeep(repeatCount : %s, frequency : %s, length : %s", tostring(repeatCount), tostring(frequency), tostring(length)))
+end
+
+system.playSystemSound = function(soundIndex)
+    assert(type(soundIndex) == "integer", "Error in system.playSystemSound: expected integer: soundIndex")
+    print(string.format("playSystemSound(soundIndex : %s)", tostring(soundIndex)))
 end
 
 local function loop()
