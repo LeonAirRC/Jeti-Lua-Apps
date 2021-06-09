@@ -77,6 +77,19 @@ The best point is always displayed as a square.
       </p>
     </li>
     <li>
+      <p><b>Toggle search mode:</b> Define a switch that enables the search mode. In this mode, the path is not shortened to one full circle and the announcement uses the current position as the reference point instead of the average position.</p>
+    </li>
+    <li>
+	<p>
+	<b>Always use algorithm 1 in search mode:</b> When this is checked and search mode is active, the app will always use the best-subsequence algorithm which is the obvious choice for searching thermals.
+	</p>
+    </li>
+    <li>
+	<p>
+	<b>Delay:</b> Adds an artificial delay to compensate the delay most vario/altitude sensors have.
+	</p>
+    </li>
+    <li>
       <p>
         <b>Latitude, Longitude, Vario EX, Altitude EX:</b> Select a sensor here.
       </p>
@@ -85,6 +98,11 @@ The best point is always displayed as a square.
       <p>
         <b>Mode:</b> The app features the modes 'vario' and 'altitude difference'. When 'altitude difference' is selected, the vario value at a point is calculated as the difference to the last point.
       </p>
+    </li>
+    <li>
+<p>
+<b>Algorithm switch:</b> This switch can be used to change the algorithm in flight. If no switch is assigned, the algorithm can be chosen manually.
+</p>
     </li>
     <li>
       <p>
@@ -98,13 +116,17 @@ The best point is always displayed as a square.
     </li>
     <li>
       <p>
-        <b>Optimal sequence length:</b> Sets the length of the subsequences that are examined by the 'best subsequence' algorithm. The higher it is the wider are the inspected areas.
+        <b>Best sequence length:</b> Sets the length of the subsequences that are examined by the 'best subsequence' algorithm. The higher it is the wider are the inspected areas.
       </p>
     </li>
     <li>
+<p>
+<b>Expected climb rate:</b> When checked, the app attempts to estimate the climb rate at the best point computed previously. This climb rate affects the size of the filled square in the telemetry frame and is also announced as part of the voice output.
+</p>
+    </li>
+    <li>
       <p>
-        <b>Zoom:</b> A [proportional] input for manual zoom of the telemetry frame. When no input is selected or if the input is in it's lowest position the autozoom feature is active. Autozoom is the highest zoom so that all points are in the frame.<br>
-The assigned switch can be deleted with <b>F(1)</b> [Clr].
+        <b>Zoom:</b> A [proportional] input for manual zoom of the telemetry frame. When no input is selected or if the input is in it's lowest position the autozoom feature is active. Autozoom is the highest zoom so that all points are in the frame.
       </p>
     </li>
     <li>
