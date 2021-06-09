@@ -84,9 +84,9 @@ local function controlRegistered(controlNo, limit)
     return false
 end
 
--------------------
--- callback methods
--------------------
+---------------------
+-- callback functions
+---------------------
 local function onSingleSwitchChanged(value)
     singleSwitch = value
     lastSingleSwitchVal = system.getInputsVal(singleSwitch)
