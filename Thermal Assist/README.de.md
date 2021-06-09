@@ -48,9 +48,7 @@ Details zu deren Funktionsweisen und Anwendungsfällen sind [hier](doc/algorithm
 Beispiel: 'Gewichtete Vektoren' vs 'Beste Teilsequenz'
 
 #### Switch
-Mit diesem Schalter kann der Auswertungsalgorithmus geändert werden. Wenn kein Schalter zugewiesen ist, kann die Auswahl manuell getroffen werden.\
-Aufgrund einer Schwachstelle in der Lua-API kann die App nicht erkennen, wenn der zugeordnete Geber gelöscht wurde.
-Daher muss der Knopf **F(1): Clr** genutzt werden, um den zugeordneten Geber zu löschen und die manuelle Auswahl zu erlauben (Das selbe gilt für den [Zoom](#Zoom)).
+Mit diesem Schalter kann der Auswertungsalgorithmus geändert werden. Wenn kein Schalter zugewiesen ist, kann die Auswahl manuell getroffen werden.
 
 #### Minimale Sequenzlänge
 Der optimale Punkt wird nicht berechnet, sofern die Anzahl an Messpunkten geringer als dieser Parameter ist.
@@ -70,9 +68,7 @@ Das erwartete Steigen wird als ein gewichteter Durchschnitt berechnet, wobei das
 #### Zoom
 Mit dem Zoom-Geber kann der Zoom auf der "Karte" von Punkten kontrolliert werden.\
 Wenn kein Geber ausgewählt ist oder sich der Geber in (-1)-Position befindet, wird der automatische Zoom aktiviert.\
-Dieser entspricht immer der höchsten Zoomstufe, bei der alle Punkte auf dem Bildschirm sind.\
-Aufgrund einer Schwachstelle in der Lua-API kann die App nicht erkennen, wenn der zugeordnete Geber gelöscht wurde.
-Daher muss der Knopf **F(1): Clr** genutzt werden, um den zugeordneten Geber zu löschen und automatischen Zoom zu aktivieren.
+Dieser entspricht immer der höchsten Zoomstufe, bei der alle Punkte auf dem Bildschirm sind.
 
 
 #### Kreisradius
