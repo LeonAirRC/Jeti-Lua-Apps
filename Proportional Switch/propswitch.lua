@@ -36,7 +36,7 @@ local delays
 local lastTime -- saves the last loop time for intergration
 local controlIndex = 0 -- index of the currently selected control (1-10) or 0 if the main page is displayed
 
-local checkboxIndex, upSwitchIndex, downSwitchIndex
+local checkboxIndex
 
 local locale = system.getLocale()
 local appName = {en = "Proportional Switches", de = "Proportionale Schalter", cz = "proporcionální spínač"}
@@ -78,12 +78,14 @@ local function onEnableChanged(value)
 end
 
 local function onUpSwitchChanged(value)
-    upSwitches[controlIndex] = value
+    local info = system.getSwitchInfo(value)
+    upSwitches[controlIndex] = (info and info.assigned) and value or nil
     system.pSave(upSwitchKey .. tostring(controlIndex), value)
 end
 
 local function onDownSwitchChanged(value)
-    downSwitches[controlIndex] = value
+    local info = system.getSwitchInfo(value)
+    downSwitches[controlIndex] = (info and info.assigned) and value or nil
     system.pSave(downSwitchKey .. tostring(controlIndex), value)
 end
 
@@ -102,14 +104,6 @@ local function onKeyPressed(keyCode)
         form.preventDefault()
         controlIndex = 0
         form.reinit()
-    elseif controlIndex ~= 0 and keyCode == KEY_1 then
-        if form.getFocusedRow() == 2 then
-            onUpSwitchChanged(nil)
-            form.setValue(upSwitchIndex, nil)
-        elseif form.getFocusedRow() == 3 then
-            onDownSwitchChanged(nil)
-            form.setValue(downSwitchIndex, nil)
-        end
     end
 end
 
@@ -128,9 +122,6 @@ local function loop()
                 system.messageBox(string.format(getTranslation(registerErrorText), i)) -- notify that the control was unassigned, probably due to intersection with another app
             end
         end
-    end
-    if controlIndex ~= 0 then
-        form.setButton(1, "Clr", (form.getFocusedRow() == 2 or form.getFocusedRow() == 3) and ENABLED or DISABLED)
     end
     lastTime = time
 end
@@ -172,10 +163,10 @@ local function initForm()
         if enabled[controlIndex] == 1 then
             form.addRow(2)
             form.addLabel({ label = getTranslation(switchText) .. " +" })
-            upSwitchIndex = form.addInputbox(upSwitches[controlIndex], true, onUpSwitchChanged)
+            form.addInputbox(upSwitches[controlIndex], true, onUpSwitchChanged)
             form.addRow(2)
             form.addLabel({ label = getTranslation(switchText) .. " -" })
-            downSwitchIndex = form.addInputbox(downSwitches[controlIndex], true, onDownSwitchChanged)
+            form.addInputbox(downSwitches[controlIndex], true, onDownSwitchChanged)
             form.addRow(2)
             form.addLabel({ label = getTranslation(neutralPointText) })
             form.addIntbox(neutralPoints[controlIndex], -1, 0, -1, 0, 1, onNeutralPointChanged)
@@ -217,4 +208,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.2", name = getTranslation(appName) }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.3", name = getTranslation(appName) }
