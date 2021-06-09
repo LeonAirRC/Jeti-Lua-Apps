@@ -36,7 +36,7 @@ local delays
 local lastTime -- saves the last loop time for intergration
 local controlIndex = 0 -- index of the currently selected control (1-10) or 0 if the main page is displayed
 
-local checkboxIndex
+local checkboxIndex, upSwitchIndex, downSwitchIndex
 
 local locale = system.getLocale()
 local appName = {en = "Proportional Switches", de = "Proportionale Schalter", cz = "proporcionální spínač"}
@@ -102,14 +102,23 @@ local function onKeyPressed(keyCode)
         form.preventDefault()
         controlIndex = 0
         form.reinit()
+    elseif controlIndex ~= 0 and keyCode == KEY_1 then
+        if form.getFocusedRow() == 2 then
+            onUpSwitchChanged(nil)
+            form.setValue(upSwitchIndex, nil)
+        elseif form.getFocusedRow() == 3 then
+            onDownSwitchChanged(nil)
+            form.setValue(downSwitchIndex, nil)
+        end
     end
 end
 
 local function loop()
     local time = system.getTimeCounter()
     for i = 1, 10 do
-        if upSwitches[i] and downSwitches[i] then
-            local total = (system.getInputsVal(upSwitches[i]) - neutralPoints[i]) / (1 - neutralPoints[i]) - (system.getInputsVal(downSwitches[i]) - neutralPoints[i]) / (1 - neutralPoints[i]) -- sum of switch inputs
+        if upSwitches[i] or downSwitches[i] then
+            local total = ((system.getInputsVal(upSwitches[i]) or neutralPoints[i]) - neutralPoints[i]) / (1 - neutralPoints[i])
+                        - ((system.getInputsVal(downSwitches[i]) or neutralPoints[i]) - neutralPoints[i]) / (1 - neutralPoints[i]) -- sum of switch inputs
             values[i] = values[i] + total * (time - lastTime) / (100 * delays[i]) -- add total multiplied by time to approximate the integral
             if values[i] > 1 then       values[i] = 1  -- max 1
             elseif values[i] < -1 then  values[i] = -1 -- min -1
@@ -119,6 +128,9 @@ local function loop()
                 system.messageBox(string.format(getTranslation(registerErrorText), i)) -- notify that the control was unassigned, probably due to intersection with another app
             end
         end
+    end
+    if controlIndex ~= 0 then
+        form.setButton(1, "Clr", (form.getFocusedRow() == 2 or form.getFocusedRow() == 3) and ENABLED or DISABLED)
     end
     lastTime = time
 end
@@ -160,10 +172,10 @@ local function initForm()
         if enabled[controlIndex] == 1 then
             form.addRow(2)
             form.addLabel({ label = getTranslation(switchText) .. " +" })
-            form.addInputbox(upSwitches[controlIndex], true, onUpSwitchChanged)
+            upSwitchIndex = form.addInputbox(upSwitches[controlIndex], true, onUpSwitchChanged)
             form.addRow(2)
             form.addLabel({ label = getTranslation(switchText) .. " -" })
-            form.addInputbox(downSwitches[controlIndex], true, onDownSwitchChanged)
+            downSwitchIndex = form.addInputbox(downSwitches[controlIndex], true, onDownSwitchChanged)
             form.addRow(2)
             form.addLabel({ label = getTranslation(neutralPointText) })
             form.addIntbox(neutralPoints[controlIndex], -1, 0, -1, 0, 1, onNeutralPointChanged)
@@ -202,6 +214,7 @@ local function destroy()
             system.unregisterControl(i)
         end
     end
+    collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.1", name = getTranslation(appName) }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.2", name = getTranslation(appName) }
