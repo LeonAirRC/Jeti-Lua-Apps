@@ -108,9 +108,9 @@ local function reset()
     lastAltitude = nil
 end
 
--------------------
--- callback methods
--------------------
+---------------------
+-- callback functions
+---------------------
 
 local function onSensorModeChanged(value)
     sensorMode = value
@@ -157,7 +157,8 @@ local function onAppModeSwitchChanged(value)
 end
 
 local function onZoomSwitchChanged(value)
-    zoomSwitch = value
+    local info = system.getSwitchInfo(value)
+    zoomSwitch = (info and info.assigned) and value or nil
     system.pSave(zoomSwitchKey, zoomSwitch)
 end
 
@@ -221,7 +222,8 @@ local function onMaxZoomChanged(value)
 end
 
 local function onAlgorithmSwitchChanged(value)
-    algorithmSwitch = value
+    local info = system.getSwitchInfo(value)
+    algorithmSwitch = (info and info.assigned) and value or nil
     system.pSave(algorithmSwitchKey, algorithmSwitch)
 end
 
@@ -475,12 +477,6 @@ local function onKeyPressed(keyCode)
     if currForm ~= MAIN_FORM and (keyCode == KEY_ESC or keyCode == KEY_5) then
         form.preventDefault()
         form.reinit(MAIN_FORM)
-    elseif currForm == TELEMETRY_FORM and keyCode == KEY_1 then
-        onZoomSwitchChanged(nil)
-        form.setValue(zoomInputboxIndex, nil)
-    elseif currForm == ALGORITHM_FORM and keyCode == KEY_1 then
-        onAlgorithmSwitchChanged(nil)
-        form.setValue(algorithmSwitchInputIndex, nil)
     end
 end
 
@@ -621,7 +617,6 @@ local function initForm(formID)
         form.addLabel({ label = lang.estimateClimbText, width = 280 })
         estimateCheckboxIndex = form.addCheckbox(estimateClimb, onEstimateClimbChanged)
         form.setFocusedRow(1)
-        form.setButton(1, "Clr", ENABLED)
 
     else
 
@@ -637,7 +632,6 @@ local function initForm(formID)
         minZoomIndex = form.addIntbox(minZoom, 1, 21, 15, 0, 1, onMinZoomChanged, { width = 50 })
         maxZoomIndex = form.addIntbox(maxZoom, 1, 21, 21, 0, 1, onMaxZoomChanged, { width = 50 })
         form.setFocusedRow(1)
-        form.setButton(1, "Clr", ENABLED)
     end
     currForm = formID
     collectgarbage()
@@ -707,4 +701,4 @@ end
 text = json.decode(text)
 lang = text[system.getLocale()] or text["en"]
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.3.4", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.3.5", name = lang.appName }
