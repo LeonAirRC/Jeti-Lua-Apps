@@ -44,8 +44,7 @@ For details on their usecases and how they work click [here](doc/algorithms.md).
 Example: 'Weighted vectors' vs 'Best subsequence'
 
 #### Switch
-This switch can be used to change the algorithm in flight. If no switch is assigned, the algorithm can be chosen manually.\
-Due to a bug in the Lua-api the app cannot detect if this switch was deleted/unassigned. Therefore the button **F(1): Clr** has to be used to clear the switch and allow manual algorithm selection. (The same applies to the [zoom](#zoom-switch).)
+This switch can be used to change the algorithm in flight. If no switch is assigned, the algorithm can be chosen manually.
 
 #### Minimum sequence length
 The best point will not be calculated if the current number of gps points is lower than the minimum length.
@@ -65,8 +64,7 @@ The expected climb rate is calculated as a weighted average, where the weight of
 #### Zoom switch
 The pilot can define a zoom switch for the 'map' of gps points.\
 If the switch is not set or in -1 position, the autozoom is enabled.\
-Autozoom is the highest zoom level at which all points are on the screen.\
-Due to a bug in the Lua-api the app cannot detect if the zoom-switch was deleted/unassigned. Therefore the button **F(1): Clr** has to be used to clear the zoom switch and enable autozoom.
+Autozoom is the highest zoom level at which all points are on the screen.
 
 #### Circle Radius
 Radius of the circles in pixels per m/s climb rate.
