@@ -2,7 +2,7 @@
 
 This app overrides the transmitter's functions for telemetry data retrieval which allows testing apps on the emulator that require telemetry sensors.\
 The list of emulated sensors can be defined in the <i>/EmulatedTelemetry/sensors.json</i> file.\
-The current value of each sensor can be controlled by one of the inputs, eg. "P1" and "SA".\
+The current value of each sensor can be controlled by one of the inputs, eg. "P1" and "SA".
 
 ```
 [
