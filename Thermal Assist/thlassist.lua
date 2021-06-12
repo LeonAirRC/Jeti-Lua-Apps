@@ -157,7 +157,7 @@ local function onAppModeSwitchChanged(value)
 end
 
 local function onZoomSwitchChanged(value)
-    local info = system.getSwitchInfo(value)
+    local info = value and system.getSwitchInfo(value) or nil
     zoomSwitch = (info and info.assigned) and value or nil
     system.pSave(zoomSwitchKey, zoomSwitch)
 end
@@ -222,7 +222,7 @@ local function onMaxZoomChanged(value)
 end
 
 local function onAlgorithmSwitchChanged(value)
-    local info = system.getSwitchInfo(value)
+    local info = value and system.getSwitchInfo(value) or nil
     algorithmSwitch = (info and info.assigned) and value or nil
     system.pSave(algorithmSwitchKey, algorithmSwitch)
 end
