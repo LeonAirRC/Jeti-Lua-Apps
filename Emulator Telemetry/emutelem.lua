@@ -22,8 +22,23 @@ SOFTWARE.
 
 local filepath = "Apps/EmulatedTelemetry/sensors.json"
 local monthDays = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334}
+local units = {"m", "km", "s", "min", "h", "m/s", "km/h", "V", "A", "mAh", "Ah", "W", "Wmi", "°C", "°", "%", "l", "ml", "hl", "l/m", "ml/m", "hPa", "kPa", "b",
+                "ft", "mi.", "yd.", "ft/s", "mph", "kt.", "F", "psi", "atm", "floz", "gal", "oz/m", "gpm"}
+local labels = {"Voltage", "Current", "Run time", "U Rx", "A1", "A2", "T", "Q", "Input A", "Input B", "Input C", "Output", "Power", "Velocity", "Speed", "Temp. A", "Temp. B",
+                "Cell 1", "Cell 2", "Cell 3", "Cell 4", "Cell 5", "Cell 6", "LowestVolt", "LowestCell", "Accu. volt", "Vario", "Abs. altit", "Rel. altit", "Air press.",
+                "U Battery", "I Battery", "U BEC", "I BEC", "Capacity", "Revolution", "Temp.", "Run Time", "PWM", "Quality", "SatCount", "Altitude", "AltRelat.", "Distance",
+                "Course", "Azimuth", "Impulse", "Trip", "R.volume", "R.volumeP", "Flow", "Pressure"}
 
 local sensors
+
+local function contains(table, value)
+    for _,v in pairs(table) do
+        if value == v then
+            return true
+        end
+    end
+    return false
+end
 
 local text = io.readall(filepath)
 if not text then
@@ -106,7 +121,7 @@ system.playNumber = function(value, decimals, unit, label)
     assert(not unit or type(unit) == "string", "Error in system.playNumber: expected string: unit")
     assert(not label or type(label) == "number", "Error in system.playNumber: expected string: label")
     assert(decimals >= 0 and decimals <= 2, "Error in system.playNumber: 'decimals' has to be between 0 and 2")
-    print(string.format("playNumber(value : %s, decimals : %s, unit : %s, label : %s)", tostring(value), tostring(decimals), unit or "nil", label or "nil"))
+    print(string.format("playNumber(value : %s, decimals : %s, unit : %s, label : %s)", tostring(value), tostring(decimals), contains(units, unit) and unit or "nil", contains(labels, label) and label or "nil"))
     return true
 end
 
@@ -168,6 +183,8 @@ end
 
 local function init()
     sensors = json.decode(text)
+    print("info:", ystem.getSwitchInfo(nil))
+    system.playNumber(10, 2, "m", "vario")
 end
 
 local function destroy()
@@ -179,4 +196,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0", name = "Emulated Telemetry" }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0.1", name = "Emulated Telemetry" }
