@@ -1,7 +1,7 @@
 # Lua Apps
 [![Donate](https://img.shields.io/badge/Donate-PayPal-green.svg)](https://www.paypal.com/donate?hosted_button_id=749FB8DD5PZ8S)\
 \
-Jetiforum account: [LeonAir RC](https://jetiforum.de/index.php/user/7556-leonair)\
+[Jetiforum account](https://jetiforum.de/index.php/user/7556-leonair)\
 Please use [discussions](https://github.com/LeonAirRC/Jeti-Lua-Apps/discussions) to share your thoughts.
 
 ## Installation
@@ -26,6 +26,8 @@ edit the beep/audiofile patterns that are used for timer signalization
 speaking timer for the glider competitions at German youth championships
 ### Sequential Button
 a control that can be set to user-defined deflections stepwise
+### Emulator Telemetry
+provides some tools for better debugging on the emulator, including virtual telemetry sensors
 
 # Disclaimer
 Never use a Lua app to control a critical function of a model!\
