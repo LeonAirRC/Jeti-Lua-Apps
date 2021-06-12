@@ -30,18 +30,19 @@ local switch
 local resetSwitch
 local mode
 
-local startTimeMillis
-local lastTimeMillis
+local startTime
+local lastTime
 local time
 local running
+local resetStart
 
 local function resetTime()
     time = mode == 1 and 150 or 120
 end
 
 local function start()
-    startTimeMillis = system.getTimeCounter()
-    lastTimeMillis = startTimeMillis
+    startTime = system.getTimeCounter()
+    lastTime = startTime
     resetTime()
     running = true
 end
@@ -52,47 +53,38 @@ local function stop()
 end
 
 local function onSwitchChanged(value)
-    local switchVal = system.getInputsVal(value)
-    if (switchVal and switchVal ~= 0) then
-        switch = value
-    else
-        switch = nil
-    end
+    switch = system.getInputsVal(value) ~= 0.0 and value or nil
     system.pSave(switchKey, switch)
 end
 
 local function onResetSwitchChanged(value)
-    local switchVal = system.getInputsVal(value)
-    if (switchVal and switchVal ~= 0) then
-        resetSwitch = value
-    else
-        resetSwitch = nil
-    end
+    resetSwitch = system.getInputsVal(value) ~= 0.0 and value or nil
     system.pSave(resetSwitchKey, resetSwitch)
 end
 
 local function onModeChanged(value)
-    stop()
     mode = value
-    resetTime()
+    if not running then
+        resetTime()
+    end
     system.pSave(modeKey, mode)
 end
 
 local function nextSecond()
     time = time - 1
-    if (time >= 60) then
-        if (time % 10 == 0) then
+    if time >= 60 then
+        if time % 10 == 0 then
             system.playNumber(time // 60, 0, "min")
-            if (time % 60 ~= 0) then
+            if time % 60 ~= 0 then
                 system.playNumber(time % 60, 0, nil)
             end
         end
-    elseif (time > 20) then
-        if (time % 5 == 0) then
+    elseif time > 20 then
+        if time % 5 == 0 then
             system.playNumber(time, 0, nil)
         end
     else
-        if (time == -11) then
+        if time == -11 then
             stop()
             return
         end
@@ -101,40 +93,47 @@ local function nextSecond()
 end
 
 local function printTelemetry(width, height)
-    local text = time < 0 and "-" or ""
-    text = text .. string.format("%02d:%02d", math.max(time, 0) // 60, math.abs(time) % 60)
-    lcd.drawText((width - lcd.getTextWidth(FONT_MAXI, text)) // 2, (height - lcd.getTextHeight(FONT_MAXI, text)) // 2, text, FONT_MAXI)
+    local text = (time < 0 and "-" or "") .. string.format("%02d:%02d", math.max(time, 0) // 60, math.abs(time) % 60)
+    lcd.drawText((width - lcd.getTextWidth(FONT_MAXI, text)) // 2, (height - lcd.getTextHeight(FONT_MAXI)) // 2, text, FONT_MAXI)
 end
 
 ---------------------------------------------------------------
 
 local function loop()
-    if (resetSwitch and system.getInputsVal(resetSwitch) == 1 and running) then
-        stop()
-        resetTime()
-        system.playBeep(1, 4238, 200)
-    elseif ((not running) and switch and system.getInputsVal(switch) == 1) then
+    if running and system.getInputsVal(resetSwitch) == 1 then
+        if not resetStart then
+            resetStart = system.getTimeCounter()
+        elseif system.getTimeCounter() - resetStart >= 2000 then
+            stop()
+            resetTime()
+            system.playBeep(1, 4238, 200)
+        end
+    else
+        resetStart = nil
+    end
+
+    if (not running) and system.getInputsVal(switch) == 1 then
         start()
         system.playBeep(0, 4000, 800)
-    elseif (running) then
-        local currTimeMillis = system.getTimeCounter()
-        if ((currTimeMillis - startTimeMillis) // 1000 > (lastTimeMillis - startTimeMillis) // 1000) then
+    elseif running then
+        local currTime = system.getTimeCounter()
+        if (currTime - startTime) // 1000 > (lastTime - startTime) // 1000 then
             nextSecond()
         end
-        lastTimeMillis = currTimeMillis
+        lastTime = currTime
     end
 end
 
-local function initForm(formID)
+local function initForm()
     form.addRow(2)
     form.addLabel({ label = "Mode" })
-    form.addSelectbox({"F-Schlepp", "Elektrosegelflug"}, mode, false, onModeChanged, { alignRight = true })
+    form.addSelectbox({"F-Schlepp", "Elektrosegelflug"}, mode, false, onModeChanged)
     form.addRow(2)
     form.addLabel({ label = "Switch" })
-    form.addInputbox(switch, false, onSwitchChanged, { alignRight = true })
+    form.addInputbox(switch, false, onSwitchChanged)
     form.addRow(2)
     form.addLabel({ label = "Reset" })
-    form.addInputbox(resetSwitch, false, onResetSwitchChanged, { alignRight = true })
+    form.addInputbox(resetSwitch, false, onResetSwitchChanged)
 end
 
 local function init()
@@ -150,4 +149,4 @@ local function destroy()
     system.unregisterTelemetry(2)
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0", name = appName}
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1", name = appName}
