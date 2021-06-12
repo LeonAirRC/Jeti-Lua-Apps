@@ -15,7 +15,7 @@ If a file is being played currently, this file is stopped and the next file is s
 Otherwise playback of the selected file is initiated.\
 \
 **Up/Down**\
-Moves the focused file to the row above/below.\
+Moves the focused file to the row above/below.
 
 
 ## Changelog
