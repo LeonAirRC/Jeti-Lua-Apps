@@ -78,8 +78,7 @@ Radius der Kreise im Telemetriefenster in Pixel je m/s Steigen.
 Bereich der Zoomstufen, die mit dem Zoom-Geber erreichbar sind.
 
 ## Screenshots
-![thlassist1](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist1.png)
-![thlassist1.1](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist1-1.png)
+![thlassist1-2](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist1-2.png)
 ![thlassist2](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist2.png)
 ![thlassist3](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist3.png)
 ![thlassist4](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist4.png)
