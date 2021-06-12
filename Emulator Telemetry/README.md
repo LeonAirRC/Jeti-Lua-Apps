@@ -4,6 +4,33 @@ This app overrides the transmitter's functions for telemetry data retrieval whic
 The list of emulated sensors can be defined in the <i>/EmulatedTelemetry/sensors.json</i> file.\
 The current value of each sensor can be controlled by one of the inputs, eg. "P1" and "SA".\
 
+```
+[
+  {
+    "id" : 0,
+    "param" : 0,
+    "decimals" : 0,
+    "type" : 1,
+    "label" : "MUI-30",
+    "unit" : "",
+    "sensorName" : "MUI-30"
+  },
+  {
+    "id" : 0,
+    "param" : 1,
+    "decimals" : 1,
+    "type" : 1,
+    "label" : "Current",
+    "unit" : "A",
+    "sensorName" : "MUI-30"
+    "input" : "P1",         // simulate a current between 0 and 30A with P1
+    "lowerBound" : 0,
+    "upperBound" : 30
+  }
+]
+```
+
+
 ### Warning
 Only use this app on the emulator! It overrides some functions of the Lua api which can lead to unexpected effects on other apps.
 
