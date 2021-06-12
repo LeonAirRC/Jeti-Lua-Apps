@@ -28,6 +28,7 @@ local labels = {"Voltage", "Current", "Run time", "U Rx", "A1", "A2", "T", "Q", 
                 "Cell 1", "Cell 2", "Cell 3", "Cell 4", "Cell 5", "Cell 6", "LowestVolt", "LowestCell", "Accu. volt", "Vario", "Abs. altit", "Rel. altit", "Air press.",
                 "U Battery", "I Battery", "U BEC", "I BEC", "Capacity", "Revolution", "Temp.", "Run Time", "PWM", "Quality", "SatCount", "Altitude", "AltRelat.", "Distance",
                 "Course", "Azimuth", "Impulse", "Trip", "R.volume", "R.volumeP", "Flow", "Pressure"}
+local systemSounds = {SOUND_START,   SOUND_BOUND,   SOUND_LOWTXVOLT,   SOUND_LOWSIGNAL, SOUND_SIGNALLOSS, SOUND_RANGETEST, SOUND_AUTOTRIM, SOUND_INACT, SOUND_LOWQ}
 
 local sensors
 
@@ -104,31 +105,31 @@ end
 
 system.vibration = function(leftRight, vibrationProfile)
     assert(type(leftRight) == "boolean", "Error in system.vibration: expected boolean: leftRight")
-    assert(type(vibrationProfile) == "integer", "Error in system.vibration: expected integer: vibrationProfile")
+    assert(type(vibrationProfile) == "number" and vibrationProfile == math.ceil(vibrationProfile), "Error in system.vibration: expected integer: vibrationProfile")
     print(string.format("vibration(leftRight : %s, vibrationProfile : %s)", tostring(leftRight), tostring(vibrationProfile)))
 end
 
 system.playFile = function(fileName, playbackType)
     assert(type(fileName) == "string", "Error in system.playFile: expected string: fileName")
-    assert(type(playbackType) == "integer", "Error in system.playFile: expected integer: playbackType")
+    assert(type(playbackType) == "number" and playbackType == math.ceil(playbackType), "Error in system.playFile: expected integer: playbackType")
     assert(playbackType == AUDIO_BACKGROUND or playbackType == AUDIO_QUEUE or playbackType == AUDIO_QUEUE, "Error in system.playFile: playbackType " .. tostring(playbackType) .. " not allowed")
     print(string.format("playFile(fileName : %s, playbackType : %s)", tostring(fileName), tostring(playbackType or "nil")))
 end
 
 system.playNumber = function(value, decimals, unit, label)
     assert(type(value) == "number", "Error in system.playNumber: expected number: value")
-    assert(type(decimals) == "integer", "Error in system.playNumber: expected integer: decimals")
+    assert(type(decimals) == "number" and decimals == math.ceil(decimals), "Error in system.playNumber: expected integer: decimals")
     assert(not unit or type(unit) == "string", "Error in system.playNumber: expected string: unit")
-    assert(not label or type(label) == "number", "Error in system.playNumber: expected string: label")
+    assert(not label or type(label) == "string", "Error in system.playNumber: expected string: label")
     assert(decimals >= 0 and decimals <= 2, "Error in system.playNumber: 'decimals' has to be between 0 and 2")
     print(string.format("playNumber(value : %s, decimals : %s, unit : %s, label : %s)", tostring(value), tostring(decimals), contains(units, unit) and unit or "nil", contains(labels, label) and label or "nil"))
     return true
 end
 
 system.playBeep = function(repeatCount, frequency, length)
-    assert(type(repeatCount) == "integer", "Error in system.playBeep: expected integer: repeatCount")
-    assert(type(frequency) == "integer", "Error in system.playBeep: expected integer: frequency")
-    assert(type(length) == "integer", "Error in system.playBeep: expected integer: length")
+    assert(type(repeatCount) == "number" and repeatCount == math.ceil(repeatCount), "Error in system.playBeep: expected integer: repeatCount")
+    assert(type(frequency) == "number" and frequency == math.ceil(frequency), "Error in system.playBeep: expected integer: frequency")
+    assert(type(length) == "number" and length == math.ceil(length), "Error in system.playBeep: expected integer: length")
     assert(repeatCount >= 0 and repeatCount <= 10, "Error in system.playBeep: 'repeatCount' has to be between 0 and 10")
     assert(frequency >= 200 and frequency <= 10000, "Error in system.playBeep: 'frequency' has to be between 200 and 10000")
     assert(length >= 20 and length <= 10000, "Error in system.playBeep: 'length' has to be between 20 and 10000")
@@ -136,7 +137,8 @@ system.playBeep = function(repeatCount, frequency, length)
 end
 
 system.playSystemSound = function(soundIndex)
-    assert(type(soundIndex) == "integer", "Error in system.playSystemSound: expected integer: soundIndex")
+    assert(type(soundIndex) == "number" and soundIndex == math.ceil(soundIndex), "Error in system.playSystemSound: expected integer: soundIndex")
+    assert(contains(systemSounds, soundIndex), "Error in system.playSystemSound: soundIndex " .. tostring(soundIndex) .. " not allowed")
     print(string.format("playSystemSound(soundIndex : %s)", tostring(soundIndex)))
 end
 
@@ -183,8 +185,6 @@ end
 
 local function init()
     sensors = json.decode(text)
-    print("info:", ystem.getSwitchInfo(nil))
-    system.playNumber(10, 2, "m", "vario")
 end
 
 local function destroy()
@@ -196,4 +196,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0.1", name = "Emulated Telemetry" }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.1", name = "Emulated Telemetry" }
