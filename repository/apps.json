@@ -107,8 +107,8 @@
             "files": [
                 {
                     "destination": "Apps/thlassist.lc",
-                    "hash": "7800088a311d0be1f62f9adc86c7a60d11ba04ce",
-                    "size": 14232,
+                    "hash": "152b5c78b535118d2cccc084d9c78223504e2fe3",
+                    "size": 14272,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/thlassist.lc"
                 },
                 {
@@ -286,8 +286,8 @@
             "files": [
                 {
                     "destination": "Apps/DJM Timer.lc",
-                    "hash": "c1359b647d51ad562c42e654ce03ecc76b18806c",
-                    "size": 2842,
+                    "hash": "bfe2cbea1c5f382729031be5aaa07b59c595fbcc",
+                    "size": 2839,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/DJM%20Timer/DJM%20Timer.lc"
                 }
             ],
@@ -317,8 +317,8 @@
             "files": [
                 {
                     "destination": "Apps/propswitch.lc",
-                    "hash": "a38946ada7108d436af1ec920d10449f0ab008a9",
-                    "size": 5471,
+                    "hash": "288c4700dd023cc5e6bf48bd98ad0a2f70dfce7c",
+                    "size": 5511,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Proportional%20Switch/propswitch.lc"
                 }
             ],
