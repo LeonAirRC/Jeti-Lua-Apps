@@ -16,17 +16,15 @@ The announcement then contains the bearing and distance of the best point relati
 If no switch is selected, it is considered to be in on-position.\
 When a switch is selected and in off-position, no more data points are added and the speech output is disabled.
 
-#### Reading interval
-Interval at which gps and vario values are queried [ms].
-
-#### Announcement Interval
-Interval at which the announcement occurs [s].
-
 #### Toggle search mode
 Define a switch that enables the search mode. In this mode, the path is not shortened to one full circle and the announcement uses the current position as the reference point instead of the average position.
 
 #### Always use algorithm 1 in search mode
 When this is checked and search mode is active, the app will always use the best-subsequence algorithm which is the obvious choice for searching thermals.
+
+### Sensors
+#### Reading interval
+Interval at which gps and vario values are queried [ms].
 
 #### Delay
 Adds an artificial delay to compensate the delay most vario/altitude sensors have. This number is the amount of data points that the vario values are shifted 'back'. For example, if the reading interval is 0.8s and the vario has a delay of 1.5s, it is beneficial to set this number to 2.
@@ -39,12 +37,12 @@ Currently there are three different algorithms to calculate the best point:
 
 For details on their usecases and how they work click [here](doc/algorithms.md).\
 \
-<img src="https://user-images.githubusercontent.com/57962936/115938774-0a530b00-a49c-11eb-8f15-e7ce81d31ad9.png" width=320/>
-<img src="https://user-images.githubusercontent.com/57962936/115938776-0aeba180-a49c-11eb-8280-065e14868b05.png" width=320/>\
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist6.png" width=320/>
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist7.png" width=320/>\
 Example: 'Weighted vectors' vs 'Best subsequence'
 
 #### Switch
-This switch can be used to change the algorithm in flight. If no switch is assigned, the algorithm can be chosen manually.
+This switch can be used to change the algorithm in flight. If no switch is assigned, algorithm 2 is selected as default.
 
 #### Minimum sequence length
 The best point will not be calculated if the current number of gps points is lower than the minimum length.
@@ -60,29 +58,33 @@ Then the best point is the middle point of the best subsequence.
 When checked, the app attempts to estimate the climb rate at the best point computed previously. This climb rate affects the size of the filled square in the telemetry frame and is also announced as part of the voice output.\
 The expected climb rate is calculated as a weighted average, where the weight of each point is the inverse square of it's distance to the optimal point.
 
-### Telemetry Frame
-#### Zoom switch
-The pilot can define a zoom switch for the 'map' of gps points.\
-If the switch is not set or in -1 position, the autozoom is enabled.\
-Autozoom is the highest zoom level at which all points are on the screen.
+### Voice output
+#### Announcement Interval
+Interval at which the announcement occurs [s].
 
+#### Announce bearing in degrees
+When checked, the bearing to the optimal point is announced in degrees. Otherwise the included soundfiles are used to announce the direction, eg. "northwest".
+
+#### Announce altitude
+When checked and if an altitude sensor is selected in on the sensors page, the current altitude is announced at the end of each announcement.
+
+### Telemetry Frame
 #### Circle Radius
 Radius of the circles in pixels per m/s climb rate.
 
-#### Zoom range
-Range of the zoom levels reachable with the zoom switch.
-
 ## Screenshots
-![thlassist1-2](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist1-2.png)
-![thlassist2](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist2.png)
-![thlassist3](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist3.png)
-![thlassist4](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist4.png)
+<p>
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist1.png" />
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist2.png" />
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist3.png" />
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist4.png" />
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist5.png" />
+</p>
 
 ## Update Schedule
 ### v1.4
 - adjustments based on real-world testing experiences
 - add automatic algorithm selection
-- UI improvements
 - use color display
 - set delay in ms rather than points -> better precision
 
@@ -95,3 +97,8 @@ Range of the zoom levels reachable with the zoom switch.
 - added climb rate estimation
 - added algorithm selection switch
 - minor fixes
+#### v1.4
+- UI improvements
+- forms reorganized
+- altitude announcement added
+- reduced memory usage
