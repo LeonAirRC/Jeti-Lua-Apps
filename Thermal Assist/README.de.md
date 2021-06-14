@@ -18,17 +18,15 @@ Außerdem wird die Steigrate ausgegeben, die dort zu erwarten ist, falls diese b
 Die App ist genau dann nicht aktiv, wenn hier ein Schalter ausgewählt ist und er sich in der Aus-Position befindet.
 Dann werden keine neuen Messpunkte hinzugefügt und die Sprachausgabe ist deaktiviert.
 
-#### Messintervall
-Der zeitliche Abstand zwischen zwei Messungen [ms].
-
-#### Ansageintervall
-Der zeitliche Abstand zwischen zwei Sprachansagen [s].
-
 #### Suchmodus umschalten
 Dieser Schalter schaltet den Suchmodus ein. In diesem Modus wird der Flugweg nicht mehr auf einen Kreis begrenzt und die Sprachansage nutzt anstelle des Mittelpunkts nun die aktuelle Position als Bezugspunkt.
 
 #### Im Suchmodus immer Algorithmus 1 nutzen
 Wenn dies ausgewählt ist, wird im Suchmodus immer der Beste-Teilsequenz Algorithmus genutzt, da dieser zum suchen am besten geeignet ist.
+
+### Sensoren
+#### Messintervall
+Der zeitliche Abstand zwischen zwei Messungen [ms].
 
 #### Verzögerung
 Fügt eine künstliche Verzögerung hinzu, um das häufig stark verzögerte Verhalten von Varios zu kompensieren.
@@ -43,12 +41,12 @@ Aktuell gibt es drei verschiedene Algorithmen, die den besten Punkt berechnen:
 
 Details zu deren Funktionsweisen und Anwendungsfällen sind [hier](doc/algorithms-de.md) aufgeführt.\
 \
-<img src="https://user-images.githubusercontent.com/57962936/115938774-0a530b00-a49c-11eb-8f15-e7ce81d31ad9.png" width=320/>
-<img src="https://user-images.githubusercontent.com/57962936/115938776-0aeba180-a49c-11eb-8280-065e14868b05.png" width=320/>\
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist6.png" width=320/>
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist7.png" width=320/>\
 Beispiel: 'Gewichtete Vektoren' vs 'Beste Teilsequenz'
 
 #### Switch
-Mit diesem Schalter kann der Auswertungsalgorithmus geändert werden. Wenn kein Schalter zugewiesen ist, kann die Auswahl manuell getroffen werden.
+Mit diesem Schalter kann der Auswertungsalgorithmus geändert werden. Wenn kein Schalter zugewiesen ist, ist Algorithmus 2 standardmäßig aktiviert.
 
 #### Minimale Sequenzlänge
 Der optimale Punkt wird nicht berechnet, sofern die Anzahl an Messpunkten geringer als dieser Parameter ist.
@@ -64,21 +62,22 @@ Der optimale Punkt entspricht dann dem mittleren Punkt dieser optimalen Teilsequ
 Wenn dies ausgewählt ist, versucht die App das erwartete Steigen am optimalen Punkt zu bestimmen. Dieser Wert wird dann mit der Sprachausgabe angesagt und beeinflusst zudem die Größe des optimalen Punktes in der Darstellung.\
 Das erwartete Steigen wird als ein gewichteter Durchschnitt berechnet, wobei das Gewicht eines Punktes das inverse Quadrat der Entfernung zum optimalen Punkt ist.
 
+### Sprachausgabe
+#### Ansageintervall
+Der zeitliche Abstand zwischen zwei Sprachansagen [s].
+
+#### Höhe ausgeben
+Wenn dies ausgewählt ist und eine Höhensensor ausgewählt ist, wird am Ende jeder Sprachausgabe die aktuelle Höhe mit angesagt. 
+
 ### Telemetriefenster
-#### Zoom
-Mit dem Zoom-Geber kann der Zoom auf der "Karte" von Punkten kontrolliert werden.\
-Wenn kein Geber ausgewählt ist oder sich der Geber in (-1)-Position befindet, wird der automatische Zoom aktiviert.\
-Dieser entspricht immer der höchsten Zoomstufe, bei der alle Punkte auf dem Bildschirm sind.
-
-
 #### Kreisradius
 Radius der Kreise im Telemetriefenster in Pixel je m/s Steigen.
 
-#### Zoombereich
-Bereich der Zoomstufen, die mit dem Zoom-Geber erreichbar sind.
-
 ## Screenshots
-![thlassist1-2](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist1-2.png)
-![thlassist2](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist2.png)
-![thlassist3](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist3.png)
-![thlassist4](https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist4.png)
+<p>
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist1.png" />
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist2.png" />
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist3.png" />
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist4.png" />
+<img src="https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/doc/img/thlassist5.png" />
+</p>
