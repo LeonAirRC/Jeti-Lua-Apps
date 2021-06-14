@@ -20,85 +20,64 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ]]
 
-local MAIN_FORM = 1
-local SENSORS_FORM = 2
-local ALGORITHM_FORM = 3
-local TELEMETRY_FORM = 4
 local currForm
 
-local minSequenceLengthKey = "ta_minsequence"
-local maxSequenceLengthKey = "ta_maxsequence"
-local bestSequenceLengthKey = "ta_best"
-local enableSwitchKey = "ta_enable"
-local zoomSwitchKey = "ta_zoom"
-local lonSensorIndexKey = "ta_lons"
-local latSensorIndexKey = "ta_lats"
-local sensorIndicesKey = "ta_sens"
-local sensorModeKey = "ta_smode"
-local delayKey = "ta_delay"
-local algorithmKey = "ta_alg"
-local readingInteravlKey = "ta_readingint"
-local intervalKey = "ta_interval"
-local estimateClimbKey = "ta_eclmb"
-local circleRadiusKey = "ta_radius"
-local minZoomKey = "ta_minzoom"
-local maxZoomKey = "ta_maxzoom"
-local algorithmSwitchKey = "ta_algsw"
-local appModeSwitchKey = "ta_amode"
-local searchModeForceKey = "ta_smforce"
-local numericBearingKey = "ta_numbear"
+local abs = math.abs
+local estimateCheckboxIndex, algorithmLabelIndex, searchModeForceIndex, numericBearingIndex, announceAltitudeIndex
 
-local sensorLabelIndex, sensorInputIndex, minZoomIndex, maxZoomIndex, zoomInputboxIndex, estimateCheckboxIndex, algorithmSelectIndex, algorithmSwitchInputIndex, searchModeForceIndex, numericBearingIndex
-local abs = math.abs -- minimizes calls to math lib
+local minSequenceLength
+local maxSequenceLength
+local bestSequenceLength
+local enableSwitch
+local latSensorIndex
+local lonSensorIndex
+local sensorIndices
+local bearingSensorIndex
+local delay
+local sensorMode
+local readingInterval
+local interval
+local estimateClimb
+local circleRadius
+local algorithm = 2
+local algorithmSwitch
+local appModeSwitch
+local searchModeForce
+local numericBearing
+local announceAltitude
 
-local minSequenceLength     -- the minimal amount of gps points required for a speech output
-local maxSequenceLength     -- the maximum amount of gps points. This limit prevents the readings array from becoming too long if there is no full 360° turn on the path
-local bestSequenceLength    -- length of the subsequences that are examined to get the highest climb rate on the path
-local enableSwitch          -- sensor reading and speech output are disabled if this switch is defined and in off position
-local zoomSwitch            -- switch that can be used for manual zoom. When in -1 position, the autozoom is used.
-local latSensorIndex        -- selected latitude sensor
-local lonSensorIndex        -- selected longitude sensor
-local sensorIndices         -- table with two entries representing - index 1: selected vario sensor index - index 2: selected altitude sensor index
-local delay                 -- [int] the number of steps by which then vario values are shifted back in time
-local sensorMode            -- mode 1: vario, mode 2: altitude difference
-local algorithm             -- algorithm 1: best subsequence, algorithm 2: weighted vectors, algorithm 3: weighted vectors [bias]
-local readingInterval   -- interval of sensor readings [ms]
-local interval          -- interval of speech ouputs [s]
-local estimateClimb     -- true if the estimated climb rate at 'bestPoint' should be computed
-local circleRadius      -- radius of the circles in the telemetry frame in px per m/s
-local minZoom, maxZoom  -- zoom range for the zoom switch
-local algorithmSwitch   -- switch to select the algorithm in flight
-local appModeSwitch     -- switch to toggle search mode
-local searchModeForce   -- [boolean] true if the best-subsequence algorithm should always be used in search mode
-local numericBearing    -- [boolean] true if the bearing should be announced as a number
+local zoom = 1
+local switchOn
+local bestPoint
+local bestClimb
 
-local zoom = 1          -- current zoom
-local switchOn          -- [boolean] saves the last state of the enable switch
-local bestPoint         -- [GpsPoint] the best point on the path
-local bestClimb         -- the (expected) climb at the best point, only valid if 'bestPoint ~= nil'
+local gpsSensorIDs
+local gpsSensorParams
+local otherSensorIDs
+local otherSensorParams
+local gpsSensorLabels
+local otherSensorLabels
 
-local gpsSensorIDs      -- array of the gps sensor ids, each index contains the sensor's id that corresponds to the entry in gpsSensorLabels at the same index
-local gpsSensorParams   -- array of the gps sensor params, also corresponding to gpsSensorLabels
-local otherSensorIDs    -- array of the single-value sensor ids
-local otherSensorParams -- array of the single-value sensor params
-local gpsSensorLabels   -- array of strings representing all params of gps sensors
-local otherSensorLabels -- array of strings represensting all params of single-value sensors
+local gpsReadings
+local sensorReadings
+local avgPoint
+local lastTime
+local lastSpeech
+local lastAltitude
 
-local gpsReadings       -- array of GpsPoints representing the most recent sensor readings. New values are always inserted at index 1
-local sensorReadings    -- array of vario or altitude values
-local avgPoint          -- GpsPoint that has the average lat/lon values of all points in 'gpsReadings'
-local lastTime          -- time of the last reading [ms]
-local lastSpeech        -- time of the last speech output [ms]
-local lastAltitude      -- last altitude, only used in sensor mode 2
+local text = io.readall("Apps/ThermalAssist/lang.json")
+assert(text ~= nil, "The file ThermalAssist/lang.json is missing")
+text = json.decode(text)
+local lang = text[system.getLocale()] or text["en"]
+text = nil
 
-local lang
 local bearingFilenames = {"north", "northeast", "east", "southeast", "south", "southwest", "west", "northwest"}
+local renderer -- also used as an indicator whether the transmitter has a color display
+local planeShape
 
------------------------------------------
--- clear all values, go to initial state
------------------------------------------
+
 local function reset()
-    gpsReadings = {}    -- delete all points
+    gpsReadings = {}
     sensorReadings = {}
     avgPoint = nil
     bestPoint = nil
@@ -115,128 +94,108 @@ end
 local function onSensorModeChanged(value)
     sensorMode = value
     reset()
-    form.setProperties(sensorLabelIndex, { label = lang.sensorInputText[sensorMode] })
-    form.setValue(sensorInputIndex, sensorIndices[sensorMode] + 1) -- add 1 to the value to compensate the ... option
-    system.pSave(sensorModeKey, sensorMode)
+    system.pSave("smode", sensorMode)
 end
 
 local function onLatSensorChanged(value)
-    latSensorIndex = value - 1  -- reduce by 1 to compensate the ... option
-    system.pSave(latSensorIndexKey, latSensorIndex)
+    latSensorIndex = value - 1
+    system.pSave("lat", latSensorIndex)
 end
 
 local function onLonSensorChanged(value)
-    lonSensorIndex = value - 1  -- reduce by 1 to compensate the ... option
-    system.pSave(lonSensorIndexKey, lonSensorIndex)
+    lonSensorIndex = value - 1
+    system.pSave("lon", lonSensorIndex)
 end
 
-local function onOtherSensorChanged(value)
-    sensorIndices[sensorMode] = value - 1   -- reduce by 1 to compensate the ... option
-    system.pSave(sensorIndicesKey, sensorIndices)
+local function onOtherSensorChanged(value, index)
+    sensorIndices[index] = value - 1
+    system.pSave("sensi", sensorIndices)
 end
 
 local function onDelayChanged(value)
     delay = value
     reset()
-    system.pSave(delayKey, delay)
+    system.pSave("delay", delay)
 end
 
-local function onAlgorithmChanged(value)
-    algorithm = value
-    system.pSave(algorithmKey, algorithm)
+local function onBearingSensorChanged(value)
+    bearingSensorIndex = value - 1
+    system.pSave("bear", bearingSensorIndex)
 end
 
 local function onEnableSwitchChanged(value)
     enableSwitch = system.getInputsVal(value) ~= 0.0 and value or nil
-    system.pSave(enableSwitchKey, enableSwitch)
+    system.pSave("enable", enableSwitch)
 end
 
 local function onAppModeSwitchChanged(value)
     appModeSwitch = system.getInputsVal(value) ~= 0.0 and value or nil
-    system.pSave(appModeSwitchKey, appModeSwitch)
-end
-
-local function onZoomSwitchChanged(value)
-    local info = value and system.getSwitchInfo(value) or nil
-    zoomSwitch = (info and info.assigned) and value or nil
-    system.pSave(zoomSwitchKey, zoomSwitch)
+    system.pSave("amodesw", appModeSwitch)
 end
 
 local function onMinSequenceLengthChanged(value)
     minSequenceLength = value
     reset()
-    system.pSave(minSequenceLengthKey, minSequenceLength)
+    system.pSave("minseq", minSequenceLength)
 end
 
 local function onMaxSequenceLengthChanged(value)
     maxSequenceLength = value
     reset()
-    system.pSave(maxSequenceLengthKey, maxSequenceLength)
+    system.pSave("maxseq", maxSequenceLength)
 end
 
 local function onBestSequenceLengthChanged(value)
     bestSequenceLength = value
     reset()
-    system.pSave(bestSequenceLengthKey, bestSequenceLength)
+    system.pSave("bestseq", bestSequenceLength)
 end
 
 local function onReadingIntervalChanged(value)
     readingInterval = value
     reset()
-    system.pSave(readingInteravlKey, readingInterval)
+    system.pSave("rint", readingInterval)
 end
 
 local function onIntervalChanged(value)
     interval = value
     reset()
-    system.pSave(intervalKey, interval)
+    system.pSave("aint", interval)
 end
 
 local function onEstimateClimbChanged(value)
     estimateClimb = not value
     form.setValue(estimateCheckboxIndex, estimateClimb)
-    system.pSave(estimateClimbKey, estimateClimb and 1 or 0)
+    system.pSave("estclmb", estimateClimb and 1 or 0)
 end
 
 local function onCircleRadiusChanged(value)
     circleRadius = value
-    system.pSave(circleRadiusKey, circleRadius)
-end
-
-local function onMinZoomChanged(value)
-    if value <= maxZoom then
-        minZoom = value
-        system.pSave(minZoomKey, minZoom)
-    else
-        form.setValue(minZoomIndex, minZoom)
-    end
-end
-
-local function onMaxZoomChanged(value)
-    if value >= minZoom then
-        maxZoom = value
-        system.pSave(maxZoomKey, maxZoom)
-    else
-        form.setValue(maxZoomIndex, maxZoom)
-    end
+    system.pSave("rad", circleRadius)
 end
 
 local function onAlgorithmSwitchChanged(value)
     local info = value and system.getSwitchInfo(value) or nil
     algorithmSwitch = (info and info.assigned) and value or nil
-    system.pSave(algorithmSwitchKey, algorithmSwitch)
+    system.pSave("algsw", algorithmSwitch)
 end
 
 local function onSearchModeForceChanged(value)
     searchModeForce = not value
     form.setValue(searchModeForceIndex, searchModeForce)
-    system.pSave(searchModeForceKey, searchModeForce and 1 or 0)
+    system.pSave("searchf", searchModeForce and 1 or 0)
 end
 
 local function onNumericBearingChanged(value)
     numericBearing = not value
     form.setValue(numericBearingIndex, numericBearing)
-    system.pSave(numericBearingKey, numericBearing and 1 or 0)
+    system.pSave("numbear", numericBearing and 1 or 0)
+end
+
+local function onAnnounceAltitudeChanged(value)
+    announceAltitude = not value
+    form.setValue(announceAltitudeIndex, announceAltitude)
+    system.pSave("annalt", announceAltitude and 1 or 0)
 end
 
 -------------------------------------------------------------------------
@@ -244,24 +203,24 @@ end
 -- returns true if and only if a turn of at least 360° was detected
 -------------------------------------------------------------------------
 local function filterReadings()
-    while #sensorReadings > maxSequenceLength do -- remove excessive values
+    while #sensorReadings > maxSequenceLength do
         table.remove(gpsReadings)
         table.remove(sensorReadings)
     end
-    if system.getInputsVal(appModeSwitch) == 1 then -- when search mode is enabled
-        return false -- skip further filtering by returning false
+    if system.getInputsVal(appModeSwitch) == 1 then
+        return false
     end
-                    -- track the flight path until the sum of bends is greater than 360°. Therefore the angles at all inner points are added
-    local i = 2     -- the current angle is made of the points (i-1),(i),(i+1), thus the angle at point i is calculated in each iteration
-    local sum = 0   -- sum of angles
-    while i < #gpsReadings and abs(sum) < 360 do    -- loop until i is the second last point or the path contains a 360° turn
-        local angle = gps.getBearing(gpsReadings[i], gpsReadings[i - 1]) - gps.getBearing(gpsReadings[i + 1], gpsReadings[i])   -- calculate the difference between bearings i relative to (i-1) and (i+1) relative to i
-        if angle < -180 then angle = angle + 360        -- correct angle to be within -180° and +180°
+
+    local i = 2
+    local sum = 0
+    while i < #gpsReadings and abs(sum) < 360 do
+        local angle = gps.getBearing(gpsReadings[i], gpsReadings[i - 1]) - gps.getBearing(gpsReadings[i + 1], gpsReadings[i])
+        if angle < -180 then angle = angle + 360
         elseif angle > 180 then angle = angle - 360 end
-        sum = sum + angle   -- add to sum
+        sum = sum + angle
         i = i + 1
     end
-    for j = 1, #gpsReadings - math.max(i, minSequenceLength) do -- delete all points older than the i-th point, while not passing a minimum length
+    for _ = 1, #gpsReadings - math.max(i, minSequenceLength) do
         table.remove(gpsReadings)
         table.remove(sensorReadings)
     end
@@ -275,19 +234,23 @@ end
 -------------------------------------------------------------------------------------------------------
 local function voiceOutput()
     if avgPoint and bestPoint then
-        local relPoint = system.getInputsVal(appModeSwitch) == 1 and gpsReadings[1] or avgPoint -- use current position in search mode and the average otherwise
-        local bearing = gps.getBearing(relPoint, bestPoint)   -- bearing from the current center point towards the optimal point
-        local distance = gps.getDistance(relPoint, bestPoint) -- distance from the current center point to the optimal point
+        local relPoint = system.getInputsVal(appModeSwitch) == 1 and gpsReadings[1] or avgPoint
+        local bearing = gps.getBearing(relPoint, bestPoint)
+        local distance = gps.getDistance(relPoint, bestPoint)
         if numericBearing then
-            system.playNumber(bearing, 0, string.char(176))       -- ° char as unicode
+            system.playNumber(bearing, 0, string.char(176))
         else
-            -- convert bearing to file: add 22.5 to prepare for integer division, substract 360 if necessary
-            -- integer division by 45 categorizes blocks of 45° into one direction
             system.playFile(string.format("/Apps/ThermalAssist/%s-%s.wav", bearingFilenames[((bearing + 22.4) % 360) // 45 + 1], lang.bearingLang), AUDIO_QUEUE)
         end
         system.playNumber(distance, 0, "m")
         if bestClimb then
-            system.playNumber(bestClimb, 1, "m/s") -- play optimal climb
+            system.playNumber(bestClimb, 1, "m/s")
+        end
+        if announceAltitude and sensorIndices[2] ~= 0 then
+            local altitude = system.getSensorValueByID(otherSensorIDs[sensorIndices[2]], otherSensorParams[sensorIndices[2]])
+            if altitude and altitude.valid then
+                system.playNumber(altitude.value, 0, "m", lang.altLabel)
+            end
         end
         collectgarbage()
     end
@@ -298,11 +261,11 @@ end
 -- Uses the inverse square of distances to the point as a weight.
 ---------------------------------------------------------------------------------
 local function estimateClimbRate(point)
-    local sum = 0       -- sum of weighted climb rates
-    local weightSum = 0 -- sum of weights
+    local sum = 0
+    local weightSum = 0
     for i = 1, #gpsReadings - delay do
         local dist = gps.getDistance(point, gpsReadings[i + delay])
-        if dist < 0.1 then -- avoid division by 0 at the inverse square
+        if dist < 0.1 then
             return sensorReadings[i]
         end
         local weight = 1 / (dist * dist)
@@ -318,70 +281,68 @@ end
 --------------------------------------------------------
 local function calcBestPoint(fullTurn)
     collectgarbage()
-    local alg1 = searchModeForce and system.getInputsVal(appModeSwitch) == 1 -- true if searchMode is enabled and algorithm 1 should be used
-    if (algorithm == 1 or alg1) and #sensorReadings >= math.max(minSequenceLength, bestSequenceLength) + delay then -- best subsequence
+    local alg1 = searchModeForce and system.getInputsVal(appModeSwitch) == 1
+    if (algorithm == 1 or alg1) and #sensorReadings >= math.max(minSequenceLength, bestSequenceLength) + delay then
 
-        local sums = {} -- finding the best subsequence, sums[i] is the sum of the following 'bestSequenceLength' vario values
+        local sums = {}
         sums[1] = 0
-        for i = 1, bestSequenceLength do sums[1] = sums[1] + sensorReadings[i] end  -- calculate the first sum
+        for i = 1, bestSequenceLength do sums[1] = sums[1] + sensorReadings[i] end
         for i = 2, #sensorReadings - bestSequenceLength + 1 do
-            table.insert(sums, i, sums[i - 1] + sensorReadings[i + bestSequenceLength - 1] - sensorReadings[i - 1]) -- calculate all other sums
+            table.insert(sums, i, sums[i - 1] + sensorReadings[i + bestSequenceLength - 1] - sensorReadings[i - 1])
         end
-        if fullTurn then                                                            -- if a full turn was detected:
-            for i = #sensorReadings - bestSequenceLength + 2, #sensorReadings do    -- calculate the last sums that exceed the array's last element and continue at the front
+        if fullTurn then
+            for i = #sensorReadings - bestSequenceLength + 2, #sensorReadings do
                 table.insert(sums, i, sums[i - 1] + sensorReadings[i + bestSequenceLength - 1 - #sensorReadings] - sensorReadings[i - 1])
             end
         end
-        -- find the highest sum
         local best = 1
         for i = 2, #sums do
             if sums[i] > sums[best] then best = i end
         end
-        -- get center point of the best subsequence
-        if fullTurn and best + delay + (bestSequenceLength - 1 // 2) > #sensorReadings then -- special case where the middle of the chosen subsequence exceeds the array's end
+        if fullTurn and best + delay + (bestSequenceLength - 1 // 2) > #sensorReadings then
             bestPoint = gpsReadings[best + delay + (bestSequenceLength - 1) // 2 - #sensorReadings]
         else
-            bestPoint = gpsReadings[best + delay + (bestSequenceLength - 1) // 2]   -- take the middle point of the best subsequence
+            bestPoint = gpsReadings[best + delay + (bestSequenceLength - 1) // 2]
         end
         bestClimb = sums[best] / bestSequenceLength
 
-    elseif algorithm == 2 and (not alg1) and #sensorReadings >= minSequenceLength + delay then -- weighted vectors
+    elseif algorithm == 2 and (not alg1) and #sensorReadings >= minSequenceLength + delay then
 
-        local varioSum = 0 -- sum of the absolute values of all climb rates
+        local varioSum = 0
         for i = 1, #sensorReadings - delay do varioSum = varioSum + abs(sensorReadings[i]) end
-        if varioSum == 0.0 then bestPoint = avgPoint -- all numbers in 'sensorReadings' are zeros, thus no better point can be determined - this avoids division by 0
+        if varioSum == 0.0 then bestPoint = avgPoint
         else
-            local latSum, lonSum = 0,0  -- sums of latitudes and longitudes
+            local latSum, lonSum = 0,0
             local centerLat, centerLon = gps.getValue(avgPoint)
             for i = 1, #gpsReadings - delay do
                 local lat,lon = gps.getValue(gpsReadings[i + delay])
-                latSum = latSum + sensorReadings[i] * (lat - centerLat) -- the sum of weights (sensorReadings[1..n] / varioSum) can be less than 1
-                lonSum = lonSum + sensorReadings[i] * (lon - centerLon) -- hence the avg vector (centerLat,centerLon) cannot be reduced and has to be subtracted here, then added later
+                latSum = latSum + sensorReadings[i] * (lat - centerLat)
+                lonSum = lonSum + sensorReadings[i] * (lon - centerLon)
             end
-            bestPoint = gps.newPoint(centerLat + latSum / varioSum, centerLon + lonSum / varioSum) -- best point is the weighted average
+            bestPoint = gps.newPoint(centerLat + latSum / varioSum, centerLon + lonSum / varioSum)
         end
         bestClimb = estimateClimb and estimateClimbRate(bestPoint) or nil
 
-    elseif algorithm == 3 and (not alg1) and #sensorReadings >= minSequenceLength then -- weighted vectors [bias]
+    elseif algorithm == 3 and (not alg1) and #sensorReadings >= minSequenceLength then
 
-        local bias = 0 -- the lowest vario value in 'sensorReadings' and at most 0
-        local varioSum = 0  -- sum of all vario values
+        local bias = 0
+        local varioSum = 0
         for i = 1, #sensorReadings - delay do
-            if sensorReadings[i] < bias then bias = sensorReadings[i] end   -- set bias to lowest value so far (always negative at this point)
+            if sensorReadings[i] < bias then bias = sensorReadings[i] end
             varioSum = varioSum + sensorReadings[i]
         end
-        if varioSum == 0.0 then bestPoint = avgPoint -- avoid division by 0
+        if varioSum == 0.0 then bestPoint = avgPoint
         else
-            bias = -bias -- invert bias to a positive number
-            varioSum = varioSum + (#sensorReadings - delay) * bias -- modify the sum of all values to get an overall weight of 1
+            bias = -bias
+            varioSum = varioSum + (#sensorReadings - delay) * bias
             local latSum, lonSum = 0,0
             for i = 1, #gpsReadings - delay do
                 local lat,lon = gps.getValue(gpsReadings[i + delay])
                 local weight = sensorReadings[i] + bias
-                latSum = latSum + lat * weight  -- in contrast to algorithm 2 the center point is irrelevant here since the sum of all weights is 1
+                latSum = latSum + lat * weight
                 lonSum = lonSum + lon * weight
             end
-            bestPoint = gps.newPoint(latSum / varioSum, lonSum / varioSum) -- best point is the weighted average
+            bestPoint = gps.newPoint(latSum / varioSum, lonSum / varioSum)
         end
         bestClimb = estimateClimb and estimateClimbRate(bestPoint) or nil
     end
@@ -393,25 +354,23 @@ end
 -----------------------------------------------------------------------------------------------
 local function calcAutozoom(width, height)
     local centerLat, centerLon = gps.getValue(avgPoint)
-    local maxLatPoint = gpsReadings[1] -- finding points with the highest latitude/longitude deviation relative to the average point
+    local maxLatPoint = gpsReadings[1]
     local maxLonPoint = gpsReadings[1]
     local maxLatVal, maxLonVal = gps.getValue(gpsReadings[1])
-    maxLatVal = abs(maxLatVal - centerLat) -- highest latitude deviation relative to the center point
-    maxLonVal = abs(maxLonVal - centerLon) -- highest longitude deviation
+    maxLatVal = abs(maxLatVal - centerLat)
+    maxLonVal = abs(maxLonVal - centerLon)
     for i = 2, #gpsReadings do
         local lat,lon = gps.getValue(gpsReadings[i])
-        if abs(lat - centerLat) > maxLatVal then -- new point with highest latitude deviation
+        if abs(lat - centerLat) > maxLatVal then
             maxLatPoint = gpsReadings[i]
             maxLatVal = abs(lat - centerLat)
         end
-        if abs(lon - centerLon) > maxLonVal then -- new point with highest longitude deviation
+        if abs(lon - centerLon) > maxLonVal then
             maxLonPoint = gpsReadings[i]
             maxLonVal = abs(lon - centerLon)
         end
     end
-    local autozoom = math.min(zoom, 20) + 2 -- add 1 to last zoom to allow it getting bigger while avoiding a high iteration quantity | another +1 since it is immediately subtracted again
-    -- decrease zoom until the most extreme points are on screen, maximum 2 iterations
-    -- => autozoom can become 'zoom + 1', 'zoom' or 'zoom - 1'
+    local autozoom = math.min(zoom, 20) + 2
     repeat
         autozoom = autozoom - 1
         local _,y1 = gps.getLcdXY(maxLatPoint, avgPoint, autozoom)
@@ -428,42 +387,53 @@ end
 ------------------------------------------------------------------------------------------------------------
 local function printTelemetry(width, height)
     if gpsReadings and avgPoint and #gpsReadings > 0 then
-        local zoomSwitchVal = system.getInputsVal(zoomSwitch)
-        if (not zoomSwitch) or zoomSwitchVal == -1.0 then
-            calcAutozoom(width, height)
-        else
-            zoom = math.floor(zoomSwitchVal * abs(maxZoom - minZoom) / 2 + (minZoom + maxZoom) / 2 + 0.5) -- get zoom level from switch and round to integer
-        end
-
+        calcAutozoom(width, height)
         local hWidth = width // 2
         local hHeight = height // 2
 
-        for i = 1, #gpsReadings do -- draw points
-            if i > delay and (sensorReadings[i - delay] > 0 or gpsReadings[i] == bestPoint) then -- positive climb at the i-th point
-                local x,y = gps.getLcdXY(gpsReadings[i], avgPoint, zoom) -- pixel position relative to the average point
+        local x,y = gps.getLcdXY(gpsReadings[1], avgPoint, zoom)
+        -- lcd.drawLine(hWidth + x - 6, hHeight + y - 6, hWidth + x + 6, hHeight + y + 6) -- draw X at current position
+        -- lcd.drawLine(hWidth + x - 6, hHeight + y + 6, hWidth + x + 6, hHeight + y - 6)
+        local rotation = bearingSensorIndex > 0 and system.getSensorValueByID(otherSensorIDs[bearingSensorIndex], otherSensorParams[bearingSensorIndex]) or nil
+        rotation = math.rad((rotation and rotation.valid) and rotation.value or (#gpsReadings >= 2 and gps.getBearing(gpsReadings[2], gpsReadings[1]) or 0))
+        local sin, cos = math.sin(rotation), math.cos(rotation)
+        if not renderer then
+            for i = 1, #planeShape - 1 do
+                lcd.drawLine(hWidth + x + cos * planeShape[i][1] - sin * planeShape[i][2], hHeight + y + cos * planeShape[i][2] + sin * planeShape[i][1],
+                            hWidth + x + cos * planeShape[i + 1][1] - sin * planeShape[i + 1][2], hHeight + y + cos * planeShape[i + 1][2] + sin * planeShape[i + 1][1])
+            end
+        else
+            renderer:reset()
+            for _,point in ipairs(planeShape) do
+                renderer:addPoint(hWidth + x + point[1] * cos - point[2] * sin, hHeight + y + point[1] * sin + point[2] * cos)
+            end
+            renderer:renderPolygon()
+        end
+        lcd.drawLine(hWidth, hHeight - 3, hWidth, hHeight + 3)
+        lcd.drawLine(hWidth - 3, hHeight, hWidth + 3, hHeight)
+
+        for i = 1, #gpsReadings do
+            if i > delay and (sensorReadings[i - delay] > 0 or gpsReadings[i] == bestPoint) then
+                x,y = gps.getLcdXY(gpsReadings[i], avgPoint, zoom)
                 if gpsReadings[i] == bestPoint then
                     local size = math.max(math.ceil(circleRadius * bestClimb), 2)
-                    lcd.drawRectangle(hWidth + x - size, hHeight + y - size, size + size, size + size)   -- draw square at optimal position
+                    lcd.drawRectangle(hWidth + x - size, hHeight + y - size, size + size, size + size)
                 else
                     local radius = math.floor(circleRadius * sensorReadings[i - delay]) + 1
-                    lcd.drawCircle(hWidth + x, hHeight + y, radius) -- draw circle with the specified radius
+                    lcd.drawCircle(hWidth + x, hHeight + y, radius)
                 end
-            elseif i ~= 1 then -- no climb, not current position
-                local x,y = gps.getLcdXY(gpsReadings[i], avgPoint, zoom)
+            elseif i ~= 1 then
+                x,y = gps.getLcdXY(gpsReadings[i], avgPoint, zoom)
                 lcd.drawFilledRectangle(x + hWidth - 1, y + hHeight - 1, 2, 2)
             end
         end
-        if bestPoint and algorithm ~= 1 and not (searchModeForce and system.getInputsVal(appModeSwitch) == 1) then -- draw square at the optimal point
-            local x,y = gps.getLcdXY(bestPoint, avgPoint, zoom)
-            local size = (estimateClimb and bestClimb) and math.max(math.ceil(bestClimb * circleRadius), 3) or 3 -- half size of the square
-            lcd.drawFilledRectangle(hWidth + x - size, hHeight + y - size, size + size, size + size) -- draw best point
+        if bestPoint and algorithm ~= 1 and not (searchModeForce and system.getInputsVal(appModeSwitch) == 1) then
+            x,y = gps.getLcdXY(bestPoint, avgPoint, zoom)
+            local size = (estimateClimb and bestClimb) and math.max(math.ceil(bestClimb * circleRadius), 3) or 3
+            lcd.drawFilledRectangle(hWidth + x - size, hHeight + y - size, size + size, size + size, 100)
         end
-        local x,y = gps.getLcdXY(gpsReadings[1], avgPoint, zoom)
-        lcd.drawLine(hWidth + x - 6, hHeight + y - 6, hWidth + x + 6, hHeight + y + 6) -- draw X at current position
-        lcd.drawLine(hWidth + x - 6, hHeight + y + 6, hWidth + x + 6, hHeight + y - 6)
-        lcd.drawLine(hWidth, hHeight - 3, hWidth, hHeight + 3) -- draw + at average point (center of the frame)
-        lcd.drawLine(hWidth - 3, hHeight, hWidth + 3, hHeight)
-        if enableSwitch and system.getInputsVal(enableSwitch) ~= 1 and system.getTime() % 2 == 0 then -- blinking "disabled" to indicate that the displayed path is invalid
+
+        if enableSwitch and system.getInputsVal(enableSwitch) ~= 1 and system.getTime() % 2 == 0 then
             lcd.drawText((width - lcd.getTextWidth(FONT_BOLD, "disabled")) / 2, 3, "disabled", FONT_BOLD)
         end
         collectgarbage()
@@ -474,9 +444,9 @@ end
 -- key event callback function
 --------------------------------------------------------------------------------------
 local function onKeyPressed(keyCode)
-    if currForm ~= MAIN_FORM and (keyCode == KEY_ESC or keyCode == KEY_5) then
+    if currForm ~= 1 and (keyCode == KEY_ESC or keyCode == KEY_5) then
         form.preventDefault()
-        form.reinit(MAIN_FORM)
+        form.reinit(1)
     end
 end
 
@@ -485,49 +455,46 @@ end
 local function loop()
     if enableSwitch and system.getInputsVal(enableSwitch) ~= 1 then
         switchOn = false
-    elseif not switchOn then -- switch was just moved to enabled position or deleted
+    elseif not switchOn then
         switchOn = true
         reset()
     end
-    if algorithmSwitch then
-        local switchAlg = math.floor(system.getInputsVal(algorithmSwitch)) + 2
-        if switchAlg ~= algorithm then
-            onAlgorithmChanged(switchAlg)
-            if currForm == ALGORITHM_FORM then
-                form.setValue(algorithmSelectIndex, algorithm)
-            end
+    local alg = algorithmSwitch and math.floor(system.getInputsVal(algorithmSwitch)) + 2 or 2
+    if alg ~= algorithm then
+        algorithm = alg
+        if currForm == 3 then
+            form.setProperties(algorithmLabelIndex, { label = lang.algorithSelectionText[algorithm] })
         end
     end
     if switchOn and latSensorIndex ~= 0 and lonSensorIndex ~= 0 and sensorIndices[sensorMode] ~= 0 then
         local time = system.getTimeCounter()
         if time >= lastTime + readingInterval then
-            -- new reading
             local gpsPoint = gps.getPosition(gpsSensorIDs[latSensorIndex], gpsSensorParams[latSensorIndex], gpsSensorParams[lonSensorIndex])
             local sensorReading = system.getSensorValueByID(otherSensorIDs[sensorIndices[sensorMode]],
                                                             otherSensorParams[sensorIndices[sensorMode]])
             if gpsPoint and sensorReading and sensorReading.valid then
                 if sensorMode == 1 then
                     table.insert(gpsReadings, 1, gpsPoint)
-                    table.insert(sensorReadings, 1, sensorReading.value) -- add new point and vario/altitude value
-                elseif lastAltitude then -- add new point in sensor mode 2 when there is a previous altitude value
+                    table.insert(sensorReadings, 1, sensorReading.value)
+                elseif lastAltitude then
                     table.insert(gpsReadings, 1, gpsPoint)
-                    table.insert(sensorReadings, 1, (sensorReading.value - lastAltitude) * 1000 / readingInterval) -- add virtual vario value to the path
+                    table.insert(sensorReadings, 1, (sensorReading.value - lastAltitude) * 1000 / readingInterval)
                     lastAltitude = sensorReading.value
-                else -- sensor mode 2, this is the first reading
-                    lastAltitude = sensorReading.value -- save altitude and ignore gps point
+                else
+                    lastAltitude = sensorReading.value
                 end
-                if #gpsReadings > 0 then    -- #gps points can be 0 if the first altitude after a reset was measured
-                    local fullTurn = filterReadings()   -- delete excessive data points
-                    local latSum, lonSum = gps.getValue(gpsReadings[1]) -- calculating the latitude/longitude sums
+                if #gpsReadings > 0 then
+                    local fullTurn = filterReadings()
+                    local latSum, lonSum = gps.getValue(gpsReadings[1])
                     for i = 2, #gpsReadings do
                         local lat, lon = gps.getValue(gpsReadings[i])
                         latSum = latSum + lat
                         lonSum = lonSum + lon
                     end
-                    avgPoint = gps.newPoint(latSum / #gpsReadings, lonSum / #gpsReadings) -- new average point
+                    avgPoint = gps.newPoint(latSum / #gpsReadings, lonSum / #gpsReadings)
                     calcBestPoint(fullTurn)
                 end
-            elseif #gpsReadings > 0 then -- delete readings if not valid
+            elseif #gpsReadings > 0 then
                 reset()
             else
                 lastTime = time
@@ -546,36 +513,29 @@ end
 
 local function initForm(formID)
     collectgarbage()
-    if not formID or formID == MAIN_FORM then
+    if not formID or formID == 1 then
 
         form.setTitle(lang.appName)
         form.addRow(2)
         form.addLabel({ label = lang.enableSwitchText })
         form.addInputbox(enableSwitch, false, onEnableSwitchChanged)
         form.addRow(1)
-        form.addLink(function () form.reinit(SENSORS_FORM) end, { label = lang.sensorsFormTitle .. " >>" })
+        form.addLink(function () form.reinit(2) end, { label = lang.sensorsFormTitle .. " >>" })
         form.addRow(1)
-        form.addLink(function () form.reinit(ALGORITHM_FORM) end, { label = lang.algorithmsFormTitle .. " >>" })
+        form.addLink(function () form.reinit(3) end, { label = lang.algorithmsFormTitle .. " >>" })
         form.addRow(1)
-        form.addLink(function () form.reinit(TELEMETRY_FORM) end, { label = lang.telemetryFormTitle .. " >>" })
-        form.addRow(2)
-        form.addLabel({ label = lang.readingsText })
-        form.addIntbox(readingInterval, 500, 5000, 1000, 0, 100, onReadingIntervalChanged)
-        form.addRow(2)
-        form.addLabel({ label = lang.intervalText, width = 250 })
-        form.addIntbox(interval, 3, 30, 10, 0, 1, onIntervalChanged)
+        form.addLink(function () form.reinit(4) end, { label = lang.voiceFormTitle .. " >>" })
+        form.addRow(1)
+        form.addLink(function () form.reinit(5) end, { label = lang.telemetryFormTitle .. " >>" })
         form.addRow(2)
         form.addLabel({ label = lang.searchModeText, width = 250 })
         form.addInputbox(appModeSwitch, false, onAppModeSwitchChanged)
         form.addRow(2)
         form.addLabel({ label = lang.searchModeForceText, width = 280 })
         searchModeForceIndex = form.addCheckbox(searchModeForce, onSearchModeForceChanged)
-        form.addRow(2)
-        form.addLabel({ label = lang.numericBearingText, width = 280 })
-        numericBearingIndex = form.addCheckbox(numericBearing, onNumericBearingChanged)
         form.setFocusedRow(currForm or 1)
 
-    elseif formID == SENSORS_FORM then
+    elseif formID == 2 then
 
         form.setTitle(lang.sensorsFormTitle)
         form.addRow(2)
@@ -585,25 +545,34 @@ local function initForm(formID)
         form.addLabel({ label = lang.lonInputText })
         form.addSelectbox(gpsSensorLabels, lonSensorIndex + 1, true, onLonSensorChanged)
         form.addRow(2)
-        form.addLabel({ label = lang.sensorModeText })
-        form.addSelectbox(lang.modeSelectionText, sensorMode, false, onSensorModeChanged)
+        form.addLabel({ label = lang.sensorModeText, width = 100 })
+        form.addSelectbox(lang.modeSelectionText, sensorMode, false, onSensorModeChanged, { width = 220 })
         form.addRow(2)
-        sensorLabelIndex = form.addLabel({ label = lang.sensorInputText[sensorMode], width = 100 })
-        sensorInputIndex = form.addSelectbox(otherSensorLabels, sensorIndices[sensorMode] + 1, true, onOtherSensorChanged, { width = 220 })
+        form.addLabel({ label = lang.varioInputText, width = 110 })
+        form.addSelectbox(otherSensorLabels, sensorIndices[1] + 1, true, function(value) onOtherSensorChanged(value, 1) end, { width = 210 })
+        form.addRow(2)
+        form.addLabel({ label = lang.altitudeInputText, width = 110 })
+        form.addSelectbox(otherSensorLabels, sensorIndices[2] + 1, true, function(value) onOtherSensorChanged(value, 2) end, { width = 210 })
+        form.addRow(2)
+        form.addLabel({ label = lang.readingsText })
+        form.addIntbox(readingInterval, 500, 5000, 1000, 0, 100, onReadingIntervalChanged)
         form.addRow(2)
         form.addLabel({ label = lang.delayText })
         form.addIntbox(delay, 0, 5, 0, 0, 1, onDelayChanged)
+        form.addRow(2)
+        form.addLabel({ label = lang.bearingSensorText, width = 110 })
+        form.addSelectbox(otherSensorLabels, bearingSensorIndex + 1, true, onBearingSensorChanged, { width = 210 })
         form.setFocusedRow(1)
 
-    elseif formID == ALGORITHM_FORM then
+    elseif formID == 3 then
 
         form.setTitle(lang.algorithmsFormTitle)
         form.addRow(2)
         form.addLabel({ label = lang.algorithmText, width = 100 })
-        algorithmSelectIndex = form.addSelectbox(lang.algorithSelectionText, algorithm, true, onAlgorithmChanged, { width = 220 })
+        algorithmLabelIndex = form.addLabel({ label = lang.algorithSelectionText[algorithm], alignRight = true, width = 220 })
         form.addRow(2)
         form.addLabel({ label = lang.enableSwitchText })
-        algorithmSwitchInputIndex = form.addInputbox(algorithmSwitch, true, onAlgorithmSwitchChanged)
+        form.addInputbox(algorithmSwitch, true, onAlgorithmSwitchChanged)
         form.addRow(2)
         form.addLabel({ label = lang.minSequenceLengthText, width = 250 })
         form.addIntbox(minSequenceLength, 5, 60, 5, 0, 1, onMinSequenceLengthChanged)
@@ -618,20 +587,28 @@ local function initForm(formID)
         estimateCheckboxIndex = form.addCheckbox(estimateClimb, onEstimateClimbChanged)
         form.setFocusedRow(1)
 
+    elseif formID == 4 then
+
+        form.setTitle(lang.voiceFormTitle)
+        form.addRow(2)
+        form.addLabel({ label = lang.intervalText, width = 250 })
+        form.addIntbox(interval, 3, 30, 10, 0, 1, onIntervalChanged)
+        form.addRow(2)
+        form.addLabel({ label = lang.numericBearingText, width = 280 })
+        numericBearingIndex = form.addCheckbox(numericBearing, onNumericBearingChanged)
+        form.addRow(2)
+        form.addLabel({ label = lang.announceAltitudeText, width = 280 })
+        announceAltitudeIndex = form.addCheckbox(announceAltitude, onAnnounceAltitudeChanged)
+        form.setFocusedRow(1)
+
     else
 
         form.setTitle(lang.telemetryFormTitle)
         form.addRow(2)
-        form.addLabel({ label = lang.zoomSwitchText })
-        zoomInputboxIndex = form.addInputbox(zoomSwitch, true, onZoomSwitchChanged)
-        form.addRow(2)
         form.addLabel({ label = lang.circleRadiusText, width = 250 })
         form.addIntbox(circleRadius, 1, 50, 15, 0, 1, onCircleRadiusChanged)
-        form.addRow(3)
-        form.addLabel({ label = lang.zoomRangeText, width = 210 })
-        minZoomIndex = form.addIntbox(minZoom, 1, 21, 15, 0, 1, onMinZoomChanged, { width = 50 })
-        maxZoomIndex = form.addIntbox(maxZoom, 1, 21, 21, 0, 1, onMaxZoomChanged, { width = 50 })
         form.setFocusedRow(1)
+
     end
     currForm = formID
     collectgarbage()
@@ -645,7 +622,8 @@ local function init()
     gpsSensorParams = {}
     otherSensorIDs = {}
     otherSensorParams = {}
-    for _,sensor in ipairs(system.getSensors()) do
+    local sensors = system.getSensors()
+    for _,sensor in ipairs(sensors) do
         if sensor.param ~= 0 and sensor.type == 9 then
             gpsSensorLabels[#gpsSensorLabels+1] = string.format("%s: %s", sensor.sensorName, sensor.label)
             gpsSensorIDs[#gpsSensorIDs+1] = sensor.id
@@ -657,33 +635,41 @@ local function init()
         end
         collectgarbage()
     end
-    minSequenceLength = system.pLoad(minSequenceLengthKey, 5)
-    maxSequenceLength = system.pLoad(maxSequenceLengthKey, 40)
-    bestSequenceLength = system.pLoad(bestSequenceLengthKey, 3)
-    enableSwitch = system.pLoad(enableSwitchKey)
-    zoomSwitch = system.pLoad(zoomSwitchKey)
-    latSensorIndex = system.pLoad(latSensorIndexKey, 0)
-    lonSensorIndex = system.pLoad(lonSensorIndexKey, 0)
-    sensorIndices = system.pLoad(sensorIndicesKey) or {0, 0}
-    delay = system.pLoad(delayKey, 0)
+    minSequenceLength = system.pLoad("minseq", 5)
+    maxSequenceLength = system.pLoad("maxseq", 40)
+    bestSequenceLength = system.pLoad("bestseq", 3)
+    enableSwitch = system.pLoad("enable")
+    latSensorIndex = system.pLoad("lat", 0)
+    lonSensorIndex = system.pLoad("lon", 0)
+    sensorIndices = system.pLoad("sensi") or {0, 0}
+    delay = system.pLoad("delay", 0)
+    bearingSensorIndex = system.pLoad("bear", 0)
     if latSensorIndex > #gpsSensorIDs then latSensorIndex = 0 end
     if lonSensorIndex > #gpsSensorIDs then lonSensorIndex = 0 end
     if sensorIndices[1] > #otherSensorIDs then sensorIndices[1] = 0 end
     if sensorIndices[2] > #otherSensorIDs then sensorIndices[2] = 0 end
-    sensorMode = system.pLoad(sensorModeKey, 1)
-    algorithm = system.pLoad(algorithmKey, 2)
-    readingInterval = system.pLoad(readingInteravlKey, 1000)
-    interval = system.pLoad(intervalKey, 10)
-    estimateClimb = (system.pLoad(estimateClimbKey, 1) == 1) -- create boolean from integer
-    circleRadius = system.pLoad(circleRadiusKey, 15)
-    minZoom = system.pLoad(minZoomKey, 15)
-    maxZoom = system.pLoad(maxZoomKey, 21)
-    algorithmSwitch = system.pLoad(algorithmSwitchKey)
-    appModeSwitch = system.pLoad(appModeSwitchKey)
-    searchModeForce = (system.pLoad(searchModeForceKey, 1) == 1)
-    numericBearing = (system.pLoad(numericBearingKey, 1) == 1)
+    if bearingSensorIndex > #otherSensorIDs then bearingSensorIndex = 0 end
+    sensorMode = system.pLoad("smode", 1)
+    readingInterval = system.pLoad("rint", 1000)
+    interval = system.pLoad("aint", 10)
+    estimateClimb = (system.pLoad("estclmb", 1) == 1)
+    circleRadius = system.pLoad("rad", 10)
+    algorithmSwitch = system.pLoad("algsw")
+    appModeSwitch = system.pLoad("amodesw")
+    searchModeForce = (system.pLoad("searchf", 1) == 1)
+    numericBearing = (system.pLoad("numbear", 1) == 1)
+    announceAltitude = (system.pLoad("annalt", 0) == 1)
     system.registerForm(1, MENU_APPS, lang.appName, initForm, onKeyPressed)
     system.registerTelemetry(2, lang.appName, 4, printTelemetry)
+
+    pcall(function() renderer = lcd.renderer() end)
+    if renderer then
+        planeShape = {{0, -8}, {-0.5, -7.7}, {-1.1, -5.8}, {-1.1, -1.6}, {-7.1, 2.2}, {-7.1, 3.7}, {-1.1, 1.8}, {-1.1, 6}, {-2.6, 7.1}, {-2.6, 8.2}, {0, 7.4},
+                    {2.6, 8.2}, {2.6, 7.1}, {1.1, 6}, {1.1, 1.8}, {7.1, 3.7}, {7.1, 2.2}, {1.1, -1.6}, {1.1, -5.8}, {0.5, -7.7}}
+    else
+        planeShape = {{0, -7}, {-6, 7}, {0, 4}, {6, 7}, {0, -7}}
+    end
+
     reset()
     collectgarbage()
 end
@@ -693,12 +679,5 @@ local function destroy()
     collectgarbage()
 end
 
-local text = io.readall("Apps/ThermalAssist/lang.json")
-if not text then
-    print("The file ThermalAssist/lang.json is missing")
-    return {}
-end
-text = json.decode(text)
-lang = text[system.getLocale()] or text["en"]
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.3.5", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.4.0", name = lang.appName }
