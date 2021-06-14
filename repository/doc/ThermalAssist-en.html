@@ -14,8 +14,8 @@ Therefore a gps and a variometer or altitude sensor are required.
   </p>
   <br>
   <p>
-	<img src="img/thlassist5.png" alt="weighted vectors example"/>
-	<img src="img/thlassist6.png" alt="best subsequence example"/><br>
+	<img src="img/thlassist6.png" alt="weighted vectors example"/>
+	<img src="img/thlassist7.png" alt="best subsequence example"/><br>
 	Example: 'Weighted vectors' vs 'Best subsequence'
   </p>
   <br>
@@ -53,10 +53,11 @@ The best point is always displayed as a square.
   </p>
   <br>
   <p>
-	<img src="img/thlassist1-2.png" alt="main page"/>
+	<img src="img/thlassist1.png" alt="main page"/>
 	<img src="img/thlassist2.png" alt="sensors page"/>
 	<img src="img/thlassist3.png" alt="algorithm settings"/>
-	<img src="img/thlassist4.png" alt="telemetry frame settings"/>
+	<img src="img/thlassist4.png" alt="voice output"/>
+	<img src="img/thlassist5.png" alt="telemetry frame settings"/>
   </p>
   <h2>Parameters</h2>
   <ul>
@@ -100,7 +101,7 @@ The best point is always displayed as a square.
     </li>
     <li>
 <p>
-<b>Algorithm switch:</b> This switch can be used to change the algorithm in flight. If no switch is assigned, the algorithm can be chosen manually.
+<b>Algorithm switch:</b> This switch can be used to change the algorithm in flight. If no switch is assigned, algorithm 2 is chosen by default.
 </p>
     </li>
     <li>
@@ -119,23 +120,13 @@ The best point is always displayed as a square.
       </p>
     </li>
     <li>
-<p>
-<b>Expected climb rate:</b> When checked, the app attempts to estimate the climb rate at the best point computed previously. This climb rate affects the size of the filled square in the telemetry frame and is also announced as part of the voice output.
-</p>
-    </li>
-    <li>
-      <p>
-        <b>Zoom:</b> A [proportional] input for manual zoom of the telemetry frame. When no input is selected or if the input is in it's lowest position the autozoom feature is active. Autozoom is the highest zoom so that all points are in the frame.
-      </p>
+	<p>
+	<b>Expected climb rate:</b> When checked, the app attempts to estimate the climb rate at the best point computed previously. This climb rate affects the size of the filled square in the telemetry frame and is also announced as part of the voice output.
+	</p>
     </li>
     <li>
       <p>
         <b>Circle radius:</b> The radius of the circles in the telemetry frame equals this value multiplied by the climb rate.
-      </p>
-    </li>
-    <li>
-      <p>
-        <b>Zoom range:</b> The range of zoom levels that can be reached with the zoom switch/input.
       </p>
     </li>
   </ul>
