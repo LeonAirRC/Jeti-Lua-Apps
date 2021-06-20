@@ -32,7 +32,6 @@ local enableSwitch
 local latSensorIndex
 local lonSensorIndex
 local sensorIndices
-local bearingSensorIndex
 local delay
 local sensorMode
 local readingInterval
@@ -116,11 +115,6 @@ local function onDelayChanged(value)
     delay = value
     reset()
     system.pSave("delay", delay)
-end
-
-local function onBearingSensorChanged(value)
-    bearingSensorIndex = value - 1
-    system.pSave("bear", bearingSensorIndex)
 end
 
 local function onEnableSwitchChanged(value)
@@ -392,10 +386,7 @@ local function printTelemetry(width, height)
         local hHeight = height // 2
 
         local x,y = gps.getLcdXY(gpsReadings[1], avgPoint, zoom)
-        -- lcd.drawLine(hWidth + x - 6, hHeight + y - 6, hWidth + x + 6, hHeight + y + 6) -- draw X at current position
-        -- lcd.drawLine(hWidth + x - 6, hHeight + y + 6, hWidth + x + 6, hHeight + y - 6)
-        local rotation = bearingSensorIndex > 0 and system.getSensorValueByID(otherSensorIDs[bearingSensorIndex], otherSensorParams[bearingSensorIndex]) or nil
-        rotation = math.rad((rotation and rotation.valid) and rotation.value or (#gpsReadings >= 2 and gps.getBearing(gpsReadings[2], gpsReadings[1]) or 0))
+        local rotation = math.rad(#gpsReadings >= 2 and gps.getBearing(gpsReadings[2], gpsReadings[1]) or 0)
         local sin, cos = math.sin(rotation), math.cos(rotation)
         if not renderer then
             for i = 1, #planeShape - 1 do
@@ -559,9 +550,6 @@ local function initForm(formID)
         form.addRow(2)
         form.addLabel({ label = lang.delayText })
         form.addIntbox(delay, 0, 5, 0, 0, 1, onDelayChanged)
-        form.addRow(2)
-        form.addLabel({ label = lang.bearingSensorText, width = 110 })
-        form.addSelectbox(otherSensorLabels, bearingSensorIndex + 1, true, onBearingSensorChanged, { width = 210 })
         form.setFocusedRow(1)
 
     elseif formID == 3 then
@@ -643,12 +631,10 @@ local function init()
     lonSensorIndex = system.pLoad("lon", 0)
     sensorIndices = system.pLoad("sensi") or {0, 0}
     delay = system.pLoad("delay", 0)
-    bearingSensorIndex = system.pLoad("bear", 0)
     if latSensorIndex > #gpsSensorIDs then latSensorIndex = 0 end
     if lonSensorIndex > #gpsSensorIDs then lonSensorIndex = 0 end
     if sensorIndices[1] > #otherSensorIDs then sensorIndices[1] = 0 end
     if sensorIndices[2] > #otherSensorIDs then sensorIndices[2] = 0 end
-    if bearingSensorIndex > #otherSensorIDs then bearingSensorIndex = 0 end
     sensorMode = system.pLoad("smode", 1)
     readingInterval = system.pLoad("rint", 1000)
     interval = system.pLoad("aint", 10)
@@ -680,4 +666,4 @@ local function destroy()
 end
 
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.4.0", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.4.1", name = lang.appName }
