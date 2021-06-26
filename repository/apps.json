@@ -242,8 +242,8 @@
             "files": [
                 {
                     "destination": "Apps/virtsens.lc",
-                    "hash": "4910c997dd7060c4618b0db2f1cc08749ad4dbae",
-                    "size": 14177,
+                    "hash": "b757425a6655230bbc360f43773bdeed554408e9",
+                    "size": 14459,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Virtual%20Sensor/virtsens.lc"
                 },
                 {
