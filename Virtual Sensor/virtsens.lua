@@ -453,6 +453,31 @@ local function close()
     collectgarbage()
 end
 
+local function updateIntegrals(node, dt)
+    if node.type > specialTypes then
+        updateIntegrals(node.p1, dt)
+        if node.type <= twoOpTypes then
+            updateIntegrals(node.p2, dt)
+        end
+        if node.type == #nodeTypes then
+            local p1 = evalFunctions[node.p1.type](node.p1)
+            node.integral = node.integral + (p1 and (dt * p1 * 0.001) or 0)
+        end
+    end
+end
+
+local function resetIntegrals(node)
+    if node.type > specialTypes then
+        resetIntegrals(node.p1)
+        if node.type <= twoOpTypes then
+            resetIntegrals(node.p2)
+        end
+        if node.type == #nodeTypes then
+            node.integral = 0
+        end
+    end
+end
+
 local function init()
     collectgarbage()
     local telSensors = system.getSensors()
@@ -475,9 +500,7 @@ local function init()
     end
 
     for i,sensor in ipairs(sensors) do
-        if sensor.type == #nodeTypes then
-            sensor.integral = 0
-        end
+        resetIntegrals(sensor)
         if sensor.control > 0 and (controlRegistered(sensor.control, i - 1) or system.registerControl(sensor.control, sensor.label, controls[sensor.control + 1]) == nil) then
             system.messageBox(string.format(lang.registerErrorText, sensor.control))
             sensor.control = 0
@@ -495,10 +518,7 @@ local function loop()
         form.setProperties(valueLabelIndex, { label = tostring(evalFunctions[nodeStack[1].type](nodeStack[1])) })
     end
     for _,sensor in pairs(sensors) do
-        if sensor.type == #nodeTypes then
-            local p1 = evalFunctions[sensor.p1.type](sensor.p1)
-            sensor.integral = sensor.integral + (p1 and ((time - lastTime) * p1 * 0.001) or 0)
-        end
+        updateIntegrals(sensor, time - lastTime)
         if sensor.control > 0 and system.setControl(sensor.control, evalFunctions[sensor.type](sensor) or 0, 0) == nil then
             system.unregisterControl(sensor.control)
             system.messageBox(string.format(lang.registerErrorText, sensor.control))
@@ -507,9 +527,7 @@ local function loop()
     end
     if system.getInputsVal(integralResetSwitch) == 1 then
         for _,sensor in pairs(sensors) do
-            if sensor.type == #nodeTypes then
-                sensor.integral = 0
-            end
+            resetIntegrals(sensor)
         end
     end
     lastTime = time
