@@ -13,12 +13,7 @@
         "controlText" : "Control",
         "valueText" : "Value",
         "levelText" : "level",
-        "speechLinkText" : "Voice Output",
         "integralResetSwitch" : "Reset integrals",
-        "singleSwitchText" : "Single announcement",
-        "intervalText" : "Interval announcement [s]",
-        "priorityText" : "Priority",
-        "voiceLabelText" : "Label",
         "registerErrorText" : "Control %d is already in use"
     },
     "de" : {
@@ -35,12 +30,7 @@
         "controlText" : "Geber",
         "valueText" : "Wert",
         "levelText" : "Ebene",
-        "speechLinkText" : "Sprachausgabe",
         "integralResetSwitch" : "Integrale zurücksetzen",
-        "singleSwitchText" : "Einzelsprachansage",
-        "intervalText" : "Intervallansage [s]",
-        "priorityText" : "Priorität",
-        "voiceLabelText" : "Bezeichnung",
         "registerErrorText" : "Geber %d wird bereits verwendet"
     },
     "cz" : {
@@ -57,12 +47,7 @@
         "controlText" : "Ovladač",
         "valueText" : "hodnota",
         "levelText" : "úroveň",
-        "speechLinkText" : "Hlasový výstup",
         "integralResetSwitch" : "Resetovat integrál",
-        "singleSwitchText" : "Jednotlivá hlasová oznámení",
-        "intervalText" : "intervalové oznámení [s]",
-        "priorityText" : "Priorita",
-        "voiceLabelText" : "název",
         "registerErrorText" : "ovládání %d se již používá"
     }
 }
