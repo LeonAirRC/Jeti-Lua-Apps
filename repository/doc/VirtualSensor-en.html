@@ -6,8 +6,8 @@
 </head>
 <body>
   <h1>Virtual Sensor</h1>
-  <p>Calculates a virtual telemetry value and registers virtual log variables.
-The numeric inputs can be constants, telemetry values, proportional controls, switches, trainer inputs, ppm inputs and servo outputs.
+  <p>Calculates virtual telemetry values.
+The numeric inputs can be constants, telemetry values, proportional controls and switches.
 Numeric values are processed in a tree of mathematical operations that take either one or two parameters, eg ADD, MIN, SQRT, SIN, ABS.<br>
 One sensor value can also be displayed in a telemetry frame.</p>
   <p>
@@ -15,9 +15,9 @@ One sensor value can also be displayed in a telemetry frame.</p>
 	<img src="img/virtsens3.png" alt="ADD-node page"/>
   </p>
   <h2>Example</h2>
-  <p>A sensor with this structure can calculate the glide ratio as <b>1 : x</b> :</p>
+  <p>A sensor with this structure can calculate the energy in Wmin:</p>
   <p>
-	<img src="img/virtsensEx.png" width=500 alt="glide ratio structure example"/>
+	<img src="img/virtsensEx2.png"/>
   </p>
   <h2>Node types</h2>
   <ul>
@@ -31,7 +31,7 @@ One sensor value can also be displayed in a telemetry frame.</p>
       <b>input:</b> control sticks, switches, trainer inputs, PPM inputs, servo outputs
     </li>
     <li>
-      <b>arithmetic operations:</b> ADD, SUB, MUL, DIV, MIN, MAX, =, &lt;, &gt;, &lt;=, &gt;=, AND, OR, XOR, IMPL, NOT, ABS, ROUND, FLOOR, CEIL, SQRT, SIN, COS, TAN, ASIN, ACOS, ATAN
+      <b>arithmetic operations:</b> ADD, SUB, MUL, DIV, MIN, MAX, =, &lt;, &gt;, &lt;=, &gt;=, AND, OR, XOR, IMPL, NOT, ABS, ROUND, FLOOR, CEIL, SQRT, SIN, COS, TAN, ASIN, ACOS, ATAN, Integral
     </li>
   </ul>
   <h2>Usage</h2>
