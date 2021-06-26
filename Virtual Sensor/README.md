@@ -22,29 +22,8 @@ This sensor calculates the glide ratio:\
 ### Control
 Each sensor can be assigned to one of the ten virtual controls, C1 - C10. These can be assigned wherever a control(-stick) can be assigned.
 
-
-### Output specification
-| Input | Output |
-| :---- | :----: |
-| **Sensor** ||
-| &nbsp;&nbsp;&nbsp;&nbsp;Sensor not selected | nil |
-| &nbsp;&nbsp;&nbsp;&nbsp;Sensor invalid | nil |
-| **Input** | **[-1;1]** |
-| &nbsp;&nbsp;&nbsp;&nbsp;Input not selected | nil |
-| **ADD,SUB,MUL,DIV** ||
-| &nbsp;&nbsp;&nbsp;&nbsp;1 or 2 parameters *nil* | nil |
-| &nbsp;&nbsp;&nbsp;&nbsp;**DIV** parameter 1 valid,<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parameter 2 is 0 | nil |
-| **MIN,MAX** ||
-| &nbsp;&nbsp;&nbsp;&nbsp;both parameters *nil* | nil |
-| &nbsp;&nbsp;&nbsp;&nbsp;parameter 1 *nil* | parameter 2 |
-| &nbsp;&nbsp;&nbsp;&nbsp;parameter 2 *nil* | parameter 1 |
-| **ABS,ROUND,FLOOR,CEIL**||
-| &nbsp;&nbsp;&nbsp;&nbsp;parameter *nil* | nil |
-| **SQRT** ||
-| &nbsp;&nbsp;&nbsp;&nbsp;parameter *nil* | nil |
-| &nbsp;&nbsp;&nbsp;&nbsp;parameter < 0 | nil |
-| **SIN,COS,TAN<br>ASIN,ACOS,ATAN** | **unit: °** |
-| &nbsp;&nbsp;&nbsp;&nbsp;parameter *nil* | nil |
+### Integral
+Integrates the parameter over time. All integrals can be reset with the integral reset switch.
 
 ## Changelog
 #### v1.1
@@ -54,3 +33,6 @@ Each sensor can be assigned to one of the ten virtual controls, C1 - C10. These 
 #### v1.2
 - added boolean operators
 - fixed control assignment on initialization
+#### v1.3
+- removed log variables and voice output to reduce memory usage
+- added integral node
