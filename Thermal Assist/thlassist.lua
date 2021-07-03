@@ -23,7 +23,7 @@ SOFTWARE.
 local currForm
 
 local abs = math.abs
-local estimateCheckboxIndex, algorithmLabelIndex, searchModeForceIndex, numericBearingIndex, announceAltitudeIndex
+local estimateCheckboxIndex, algorithmLabelIndex, numericBearingIndex, announceAltitudeIndex
 
 local minSequenceLength
 local maxSequenceLength
@@ -41,7 +41,6 @@ local circleRadius
 local algorithm = 2
 local algorithmSwitch
 local appModeSwitch
-local searchModeForce
 local numericBearing
 local announceAltitude
 
@@ -61,7 +60,7 @@ local gpsReadings
 local sensorReadings
 local avgPoint
 local lastTime
-local lastSpeech
+local lastAnnouncement
 local lastAltitude
 
 local text = io.readall("Apps/ThermalAssist/lang.json")
@@ -82,7 +81,7 @@ local function reset()
     bestPoint = nil
     bestClimb = nil
     lastTime = system.getTimeCounter()
-    lastSpeech = lastTime
+    lastAnnouncement = lastTime
     lastAltitude = nil
 end
 
@@ -172,12 +171,6 @@ local function onAlgorithmSwitchChanged(value)
     local info = value and system.getSwitchInfo(value) or nil
     algorithmSwitch = (info and info.assigned) and value or nil
     system.pSave("algsw", algorithmSwitch)
-end
-
-local function onSearchModeForceChanged(value)
-    searchModeForce = not value
-    form.setValue(searchModeForceIndex, searchModeForce)
-    system.pSave("searchf", searchModeForce and 1 or 0)
 end
 
 local function onNumericBearingChanged(value)
@@ -275,12 +268,14 @@ end
 --------------------------------------------------------
 local function calcBestPoint(fullTurn)
     collectgarbage()
-    local alg1 = searchModeForce and system.getInputsVal(appModeSwitch) == 1
+    local alg1 = system.getInputsVal(appModeSwitch) == 1
     if (algorithm == 1 or alg1) and #sensorReadings >= math.max(minSequenceLength, bestSequenceLength) + delay then
 
         local sums = {}
         sums[1] = 0
-        for i = 1, bestSequenceLength do sums[1] = sums[1] + sensorReadings[i] end
+        for i = 1, bestSequenceLength do
+            sums[1] = sums[1] + sensorReadings[i]
+        end
         for i = 2, #sensorReadings - bestSequenceLength + 1 do
             table.insert(sums, i, sums[i - 1] + sensorReadings[i + bestSequenceLength - 1] - sensorReadings[i - 1])
         end
@@ -303,8 +298,11 @@ local function calcBestPoint(fullTurn)
     elseif algorithm == 2 and (not alg1) and #sensorReadings >= minSequenceLength + delay then
 
         local varioSum = 0
-        for i = 1, #sensorReadings - delay do varioSum = varioSum + abs(sensorReadings[i]) end
-        if varioSum == 0.0 then bestPoint = avgPoint
+        for i = 1, #sensorReadings - delay do
+            varioSum = varioSum + abs(sensorReadings[i])
+        end
+        if varioSum == 0.0 then
+            bestPoint = avgPoint
         else
             local latSum, lonSum = 0,0
             local centerLat, centerLon = gps.getValue(avgPoint)
@@ -322,10 +320,13 @@ local function calcBestPoint(fullTurn)
         local bias = 0
         local varioSum = 0
         for i = 1, #sensorReadings - delay do
-            if sensorReadings[i] < bias then bias = sensorReadings[i] end
+            if sensorReadings[i] < bias then
+                bias = sensorReadings[i]
+            end
             varioSum = varioSum + sensorReadings[i]
         end
-        if varioSum == 0.0 then bestPoint = avgPoint
+        if varioSum == 0.0 then
+            bestPoint = avgPoint
         else
             bias = -bias
             varioSum = varioSum + (#sensorReadings - delay) * bias
@@ -380,10 +381,10 @@ end
 -- Depending on the selected algorithm, the best point is displayed as a square.
 ------------------------------------------------------------------------------------------------------------
 local function printTelemetry(width, height)
+    local hWidth = width // 2
+    local hHeight = height // 2
     if gpsReadings and avgPoint and #gpsReadings > 0 then
         calcAutozoom(width, height)
-        local hWidth = width // 2
-        local hHeight = height // 2
 
         local x,y = gps.getLcdXY(gpsReadings[1], avgPoint, zoom)
         local rotation = math.rad(#gpsReadings >= 2 and gps.getBearing(gpsReadings[2], gpsReadings[1]) or 0)
@@ -400,8 +401,6 @@ local function printTelemetry(width, height)
             end
             renderer:renderPolygon()
         end
-        lcd.drawLine(hWidth, hHeight - 3, hWidth, hHeight + 3)
-        lcd.drawLine(hWidth - 3, hHeight, hWidth + 3, hHeight)
 
         for i = 1, #gpsReadings do
             if i > delay and (sensorReadings[i - delay] > 0 or gpsReadings[i] == bestPoint) then
@@ -418,16 +417,18 @@ local function printTelemetry(width, height)
                 lcd.drawFilledRectangle(x + hWidth - 1, y + hHeight - 1, 2, 2)
             end
         end
-        if bestPoint and algorithm ~= 1 and not (searchModeForce and system.getInputsVal(appModeSwitch) == 1) then
+        if bestPoint and algorithm ~= 1 and system.getInputsVal(appModeSwitch) ~= 1 then
             x,y = gps.getLcdXY(bestPoint, avgPoint, zoom)
             local size = (estimateClimb and bestClimb) and math.max(math.ceil(bestClimb * circleRadius), 3) or 3
             lcd.drawFilledRectangle(hWidth + x - size, hHeight + y - size, size + size, size + size, 100)
         end
-
-        if enableSwitch and system.getInputsVal(enableSwitch) ~= 1 and system.getTime() % 2 == 0 then
-            lcd.drawText((width - lcd.getTextWidth(FONT_BOLD, "disabled")) / 2, 3, "disabled", FONT_BOLD)
-        end
         collectgarbage()
+    end
+
+    lcd.drawLine(hWidth, hHeight - 3, hWidth, hHeight + 3)
+    lcd.drawLine(hWidth - 3, hHeight, hWidth + 3, hHeight)
+    if enableSwitch and system.getInputsVal(enableSwitch) ~= 1 and system.getTime() % 2 == 0 then
+        lcd.drawText((width - lcd.getTextWidth(FONT_BOLD, "disabled")) / 2, 3, "disabled", FONT_BOLD)
     end
 end
 
@@ -489,14 +490,14 @@ local function loop()
                 reset()
             else
                 lastTime = time
-                lastSpeech = time
+                lastAnnouncement = time
                 lastAltitude = nil
             end
             lastTime = lastTime + readingInterval
         end
-        if gpsReadings and time >= lastSpeech + 1000 * interval then
+        if gpsReadings and time >= lastAnnouncement + 1000 * interval then
             voiceOutput()
-            lastSpeech = lastSpeech + 1000 * interval
+            lastAnnouncement = lastAnnouncement + 1000 * interval
         end
     end
     collectgarbage()
@@ -521,9 +522,6 @@ local function initForm(formID)
         form.addRow(2)
         form.addLabel({ label = lang.searchModeText, width = 250 })
         form.addInputbox(appModeSwitch, false, onAppModeSwitchChanged)
-        form.addRow(2)
-        form.addLabel({ label = lang.searchModeForceText, width = 280 })
-        searchModeForceIndex = form.addCheckbox(searchModeForce, onSearchModeForceChanged)
         form.setFocusedRow(currForm or 1)
 
     elseif formID == 2 then
@@ -642,7 +640,6 @@ local function init()
     circleRadius = system.pLoad("rad", 10)
     algorithmSwitch = system.pLoad("algsw")
     appModeSwitch = system.pLoad("amodesw")
-    searchModeForce = (system.pLoad("searchf", 1) == 1)
     numericBearing = (system.pLoad("numbear", 1) == 1)
     announceAltitude = (system.pLoad("annalt", 0) == 1)
     system.registerForm(1, MENU_APPS, lang.appName, initForm, onKeyPressed)
@@ -666,4 +663,4 @@ local function destroy()
 end
 
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.4.1", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.4.2", name = lang.appName }
