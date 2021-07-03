@@ -26,7 +26,6 @@
 		"circleRadiusText" : "Circle radius [px / m/s]",
 		"zoomRangeText" : "Zoom range",
 		"searchModeText" : "Enable search mode",
-		"searchModeForceText" : "Always use alg. 1 in search mode",
 		"numericBearingText" : "Announce bearing in degrees",
 		"bearingLang" : "en",
 		"altLabel" : "Rel. altit"
@@ -58,7 +57,6 @@
 		"circleRadiusText" : "Kreisradius [px / m/s]",
 		"zoomRangeText" : "Zoombereich",
 		"searchModeText" : "Suchmodus einschalten",
-		"searchModeForceText" : "Im Suchmodus immer Alg. 1 nutzen",
 		"numericBearingText" : "Richtung in Grad ausgeben",
 		"bearingLang" : "de",
 		"altLabel" : "Hoehe"
@@ -90,7 +88,6 @@
 		"circleRadiusText" : "Poloměr kruhu [px / m/s]",
 		"zoomRangeText" : "rozsah zvětšení",
 		"searchModeText" : "Přepnout režim vyhledávání",
-		"searchModeForceText" : "použijte alg. 1 v režimu vyhledávání",
 		"numericBearingText" : "oznamte směr ve stupních",
 		"bearingLang" : "en",
 		"altLabel" : "Rel. vyska"

@@ -20,9 +20,7 @@ Dann werden keine neuen Messpunkte hinzugefügt und die Sprachausgabe ist deakti
 
 #### Suchmodus umschalten
 Dieser Schalter schaltet den Suchmodus ein. In diesem Modus wird der Flugweg nicht mehr auf einen Kreis begrenzt und die Sprachansage nutzt anstelle des Mittelpunkts nun die aktuelle Position als Bezugspunkt.
-
-#### Im Suchmodus immer Algorithmus 1 nutzen
-Wenn dies ausgewählt ist, wird im Suchmodus immer der Beste-Teilsequenz Algorithmus genutzt, da dieser zum suchen am besten geeignet ist.
+Standardmäßig wird Algorithmus 1 genutzt.
 
 ### Sensoren
 #### Messintervall

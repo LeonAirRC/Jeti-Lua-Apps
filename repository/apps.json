@@ -107,8 +107,8 @@
             "files": [
                 {
                     "destination": "Apps/thlassist.lc",
-                    "hash": "6d1742177f5f12f71044dfc05dccb5313ff3a939",
-                    "size": 14958,
+                    "hash": "a1c1147b2a9e7596072f38b9f6ecf85278bb5d39",
+                    "size": 14608,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/thlassist.lc"
                 },
                 {
@@ -125,8 +125,8 @@
                 },
                 {
                     "destination": "Apps/ThermalAssist/lang.json",
-                    "hash": "9a20902c4d6c7e68d99198d31b3b4f491aee5c63",
-                    "size": 4097,
+                    "hash": "ec069a88cdf813f30d234198e9c8dbad474ba052",
+                    "size": 3899,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/lang.json"
                 },
                 {
@@ -231,7 +231,7 @@
             },
             "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021",
-            "version": "1.4.1"
+            "version": "1.4.2"
         },
         {
             "author": "LeonAir RC",

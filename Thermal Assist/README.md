@@ -18,9 +18,7 @@ When a switch is selected and in off-position, no more data points are added and
 
 #### Toggle search mode
 Define a switch that enables the search mode. In this mode, the path is not shortened to one full circle and the announcement uses the current position as the reference point instead of the average position.
-
-#### Always use algorithm 1 in search mode
-When this is checked and search mode is active, the app will always use the best-subsequence algorithm which is the obvious choice for searching thermals.
+Algorithm 1 is used by default.
 
 ### Sensors
 #### Reading interval
