@@ -67,12 +67,12 @@ local function onEnergyChanged(value)
 end
 
 local function onVoiceCapSwitchChanged(value)
-    local voiceCapSwitch = system.getInputsVal(value) ~= 0 and value or nil
+    voiceCapSwitch = system.getInputsVal(value) ~= 0 and value or nil
     system.pSave("voicecapsw", voiceCapSwitch)
 end
 
 local function onVoiceAltSwitchChanged(value)
-    local voiceAltSwitch = system.getInputsVal(value) ~= 0 and value or nil
+    voiceAltSwitch = system.getInputsVal(value) ~= 0 and value or nil
     system.pSave("voicealtsw", voiceAltSwitch)
 end
 
@@ -210,4 +210,4 @@ local function destroy()
     end
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.2", name = "Altitude Gain" }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.3", name = "Altitude Gain" }
