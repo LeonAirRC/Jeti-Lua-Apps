@@ -372,6 +372,37 @@
             "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Di Jun 1 00:00:00 2021",
             "version": "1.0"
+        },
+        {
+            "author": "LeonAir RC",
+            "description": {
+                "en": "/doc/AltitudeGain-en.html"
+            },
+            "files": [
+                {
+                    "destination": "Apps/altgain.lc",
+                    "hash": "50665460b878630e5cab15b536e708e334e5dc38",
+                    "size": 5164,
+                    "url": "/altgain.lc"
+                }
+            ],
+            "hw": [
+                674,
+                675,
+                676,
+                677,
+                678,
+                679,
+                680
+            ],
+            "id": 0,
+            "name": {
+                "de": "Höhengewinn",
+                "en": "Altitude Gain"
+            },
+            "previewIcon": "/logo.png",
+            "releaseDate": "So Aug 1 00:00:00 2021",
+            "version": "1.1.2"
         }
     ]
 }
