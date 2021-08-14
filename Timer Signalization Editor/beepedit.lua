@@ -43,7 +43,8 @@ local MIN_INT = -32768 -- min and max values for intboxes
 local MAX_INT = 32767
 
 
-local vibrationOptions = {"off", "1", "2", "3", "4", "5", "6", "7", "8"}
+local vibrationOptions = {en = {"off", "left 1x long", "left 1x", "left 2x", "left 3x", "right 1x long", "right 1x", "right 2x", "right 3x"},
+                            de = {"aus", "links 1x lang", "links 1x", "links 2x", "links 3x", "rechts 1x lang", "rechts 1x", "rechts 2x", "rechts 3x"}}
 local files = {"TimerB1.jsn", "TimerB2.jsn", "TimerV.jsn"}
 local file -- number of selected file (1-3) or nil if the form shows the file selection
 local elements -- list
@@ -110,7 +111,7 @@ local function fileChanged(index, value)
 end
 
 local function vibrationChanged(index, value)
-    elements[index].Vib = value ~= 1 and tonumber(vibrationOptions[value]) or nil
+    elements[index].Vib = value ~= 1 and value - 1 or nil
     changed = true
 end
 
@@ -285,9 +286,9 @@ local function initForm(formID)
             form.addLabel({ label = getTranslation(vibrationText), enabled = false, font = FONT_BOLD, alignRight = true })
             for i, element in ipairs(elements) do
                 form.addRow(3)
-                form.addLabel({ label = string.format("%is", element.Time), width = 80 })
-                form.addLabel({ label = element.Type == 1 and string.format("%ix%iHz", element.Cnt, element.Freq) or element.File, width = 130 })
-                form.addSelectbox(vibrationOptions, element.Vib and element.Vib + 1 or 1, false, function (value) vibrationChanged(i, value) end)
+                form.addLabel({ label = string.format("%is", element.Time), width = 70 })
+                form.addLabel({ label = element.Type == 1 and string.format("%ix%iHz", element.Cnt, element.Freq) or element.File, width = 100 })
+                form.addSelectbox(getTranslation(vibrationOptions), element.Vib and element.Vib + 1 or 1, false, function (value) vibrationChanged(i, value) end, { width = 150 })
             end
             form.setFocusedRow(formID or 1)
         end
