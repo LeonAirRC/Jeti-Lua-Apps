@@ -42,8 +42,8 @@
             "files": [
                 {
                     "destination": "Apps/beepedit.lc",
-                    "hash": "d6fd216028210567cd01b794f1622497c31f4d06",
-                    "size": 6636,
+                    "hash": "a7b05bd0a750a31d5c19a527eae1eaeac2b7bcc6",
+                    "size": 7478,
                     "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Timer%20Signalization%20Editor/beepedit.lc"
                 }
             ],
@@ -64,7 +64,7 @@
             },
             "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
-            "version": "1.1"
+            "version": "1.2.0"
         },
         {
             "author": "LeonAir RC",
