@@ -62,9 +62,9 @@ end
 -- Change is not applied if the time exceeds the previous or following element
 ------------------------------------------------------------------------------
 local function timeChanged(index, value)
-    if (index > 1 and value <= elements[index - 1].Time) then
+    if index > 1 and value <= elements[index - 1].Time then
         form.setValue(timeIndices[index], elements[index].Time)
-    elseif (index < #elements and value >= elements[index + 1].Time) then
+    elseif index < #elements and value >= elements[index + 1].Time then
         form.setValue(timeIndices[index], elements[index].Time)
     else
         elements[index].Time = value
@@ -74,7 +74,7 @@ end
 
 local function typeChanged(index, value)
     elements[index].Type = value
-    if (value == 1) then
+    if value == 1 then
         elements[index].File = nil
         elements[index].Freq = DEFAULT_FREQ
         elements[index].Cnt = DEFAULT_CNT
@@ -119,18 +119,18 @@ end
 -- Saves the current file. json.encode is not used to allow a readable multiline output
 ---------------------------------------------------------------------------------------
 local function save()
-    if (not file or not changed) then
+    if not file or not changed then
         return
     end
     local fileObject = io.open("/Config/" .. files[file], "w")
-    if (not fileObject) then
+    if not fileObject then
         system.messageBox(getTranslation(saveErrorText))
         return
     end
 
     io.write(fileObject, "[\n")
     for i,element in ipairs(elements) do
-        if (element.Type == 1) then
+        if element.Type == 1 then
             io.write(fileObject, "{\"Time\":", math.floor(element.Time), ",\"Type\":1,\"Freq\":", math.floor(element.Freq), ",\"Cnt\":", math.floor(element.Cnt), ",\"Length\":", math.floor(element.Length))
         else
             io.write(fileObject, "{\"Time\":", math.floor(element.Time), ",\"Type\":2,\"File\":\"", element.File, "\"")
@@ -138,7 +138,7 @@ local function save()
         if element.Vib then
             io.write(fileObject, ",\"Vib\":", math.floor(element.Vib))
         end
-        if (i < #elements) then
+        if i < #elements then
             io.write(fileObject, "},\n")
         else
             io.write(fileObject, "}\n")
@@ -151,11 +151,11 @@ local function save()
 end
 
 local function keyPressed(keyCode)
-    if (file) then -- the list of elements is displayed currently
+    if file then -- the list of elements is displayed currently
         form.preventDefault()
         if not vibrationPage then
             local focused = form.getFocusedRow() - 2
-            if (keyCode == KEY_1 and focused > 1) then -- swap focused element with the row above
+            if keyCode == KEY_1 and focused > 1 then -- swap focused element with the row above
                 local element = elements[focused - 1] -- swap elements
                 elements[focused - 1] = elements[focused]
                 elements[focused] = element
@@ -164,7 +164,7 @@ local function keyPressed(keyCode)
                 elements[focused].Time = time
                 changed = true
                 form.reinit(focused + 1) -- go one row up
-            elseif (keyCode == KEY_2 and focused > 0 and focused < #elements) then -- swap focused element with the row above
+            elseif keyCode == KEY_2 and focused > 0 and focused < #elements then -- swap focused element with the row above
                 local element = elements[focused] -- swap elements
                 elements[focused] = elements[focused + 1]
                 elements[focused + 1] = element
@@ -173,35 +173,35 @@ local function keyPressed(keyCode)
                 elements[focused + 1].Time = time
                 changed = true
                 form.reinit(focused + 3) -- go one row down
-            elseif (keyCode == KEY_3 and (focused > 0 or #elements == 0) and #elements < 100) then -- add element
+            elseif keyCode == KEY_3 and (focused > 0 or #elements == 0) and #elements < 100 then -- add element
                 local minTime = focused > 0 and (elements[focused].Time + 1) or MIN_INT -- min and max values are calculated to find a default value for the new element
                 local maxTime = (focused > 0 and focused < #elements) and (elements[focused + 1].Time - 1) or MAX_INT
-                if (minTime <= maxTime) then -- element cannot be added if there is no free "timeslot" between the two adjacent rows
+                if minTime <= maxTime then -- element cannot be added if there is no free "timeslot" between the two adjacent rows
                     table.insert(elements, focused < 1 and 1 or (focused + 1), { Time = minTime, Type = 1, Freq = DEFAULT_FREQ, Cnt = DEFAULT_CNT, Length = DEFAULT_LENGTH })
                     changed = true
                     form.reinit(focused + 3)
                 else
                     system.messageBox(getTranslation(cannotInsertText))
                 end
-            elseif (keyCode == KEY_4 and focused > 0) then -- remove focused element
+            elseif keyCode == KEY_4 and focused > 0 then -- remove focused element
                 table.remove(elements, focused)
                 changed = true
                 form.reinit(math.min(#elements, focused) + 2) -- focus row below if the last element was deleted
-            elseif (keyCode == KEY_5 and not vibrationEnabled) then -- OK pressed to exit
-                if (changed) then
+            elseif keyCode == KEY_5 and not vibrationEnabled then -- OK pressed to exit
+                if changed then
                     save()
                 end
                 elements = nil
                 file = nil
                 timeIndices = nil
                 form.reinit()
-            elseif (keyCode == KEY_5 and vibrationEnabled) then -- OK pressed, go to vibration page
+            elseif keyCode == KEY_5 and vibrationEnabled then -- OK pressed, go to vibration page
                 vibrationPage = true
                 form.reinit(focused + 1)
-            elseif (keyCode == KEY_ESC) then -- ESC pressed
-                if (changed) then
+            elseif keyCode == KEY_ESC then -- ESC pressed
+                if changed then
                     local result = form.question(getTranslation(saveChangesText), nil, nil, 0, false, 0)
-                    if (result == 1) then
+                    if result == 1 then
                         save()
                     end
                 end
@@ -225,10 +225,10 @@ end
 --------------------------------------------------------------------------------
 local function initForm(formID)
     form.setTitle("")
-    if (file) then -- a file is selected
-        if (not elements) then -- load elements from file if not yet loaded
+    if file then -- a file is selected
+        if not elements then -- load elements from file if not yet loaded
             local content = io.readall("Config/" .. files[file]) -- read content of file
-            if (not content) then
+            if not content then
                 system.messageBox(getTranslation(fileErrorText))
                 file = nil
                 form.reinit()
@@ -239,10 +239,10 @@ local function initForm(formID)
 
             for i = 2, #elements do -- Sorting the elements by time (ascending). Insertion-sort is used because the table is usually already sorted
                 local j = i
-                while (j > 1 and elements[j - 1].Time > elements[i].Time) do
+                while j > 1 and elements[j - 1].Time > elements[i].Time do
                     j = j - 1
                 end
-                if (j ~= i) then
+                if j ~= i then
                     local element = elements[i]
                     table.remove(elements, i)
                     table.insert(elements, j, element)
@@ -264,7 +264,7 @@ local function initForm(formID)
                 timeIndices[i] = form.addIntbox(element.Time, MIN_INT, MAX_INT, element.Time, 0, 1, function (value) timeChanged(i, value) end,
                                                 { width = tableHeaderWidth[1] })
                 form.addIntbox(element.Type, 1, 2, DEFAULT_TYPE, 0, 1, function (value) typeChanged(i, value) end, { width = tableHeaderWidth[2] })
-                if (element.Type == 1) then
+                if element.Type == 1 then
                     form.addIntbox(element.Freq, 200, 10000, DEFAULT_FREQ, 0, 1, function (value) frequencyChanged(i, value) end, { width = tableHeaderWidth[3] })
                     form.addIntbox(element.Cnt, 1, 10, DEFAULT_CNT, 0, 1, function (value) countChanged(i, value) end, { width = tableHeaderWidth[4] })
                     form.addIntbox(element.Length, 20, 10000, DEFAULT_LENGTH, 0, 10, function (value) lengthChanged(i, value) end, { width = tableHeaderWidth[5] })
@@ -313,6 +313,11 @@ local function init()
     if hw == "JETI DC-24" or hw == "JETI DS-24" or hw == "JETI DS-12" then
         vibrationEnabled = true
     end
+    local v2File = io.open("Config/TimerV2.jsn")
+    if v2File then
+        io.close(v2File)
+        files[#files+1] = "TimerV2.jsn"
+    end
     system.registerForm(1, MENU_APPS, getTranslation(appName), initForm, keyPressed)
 end
 
@@ -321,4 +326,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, destroy = destroy, author = "LeonAir RC", version = "1.2.0", name = getTranslation(appName) }
+return { init = init, destroy = destroy, author = "LeonAir RC", version = "1.2.1", name = getTranslation(appName) }
