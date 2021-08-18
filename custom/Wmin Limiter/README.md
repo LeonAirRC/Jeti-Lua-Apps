@@ -1,4 +1,6 @@
 <h1>Wmin Limiter</h1>
+
+### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps/tree/main/custom#installation)
 <p>
 Diese App begrenzt das Gas, wenn der Antrieb eine bestimmte Energie verbraucht hat oder eine bestimmte Motorlaufzeit erreicht wurde.<br/>
 Die Energie in Wmin wird mit der Telemetrie eines Spannungs- und eines Stromsensors berechnet.
