@@ -1,0 +1,53 @@
+{
+    "en" : {
+        "appName" : "Virtual Sensor",
+        "sensorsTitle" : "Sensors",
+        "sensorLabelText" : "Sensor label",
+        "decimalsText" : "Decimals",
+        "unitText" : "Unit",
+        "fileInexistentText" : "Sensors could not be saved",
+        "constantText" : "constant",
+        "sensorText" : "Sensor",
+        "operandText" : "Parameter",
+        "inputText" : "Input",
+        "controlText" : "Control",
+        "valueText" : "Value",
+        "levelText" : "level",
+        "integralResetSwitch" : "Reset integrals",
+        "registerErrorText" : "Control %d is already in use"
+    },
+    "de" : {
+        "appName" : "Virtueller Sensor",
+        "sensorsTitle" : "Sensoren",
+        "sensorLabelText" : "Bezeichner",
+        "decimalsText" : "Dezimalstellen",
+        "unitText" : "Einheit",
+        "fileInexistentText" : "Speichern fehlgeschlagen",
+        "constantText" : "konstant",
+        "sensorText" : "Sensor",
+        "operandText" : "Parameter",
+        "inputText" : "Eingabe",
+        "controlText" : "Geber",
+        "valueText" : "Wert",
+        "levelText" : "Ebene",
+        "integralResetSwitch" : "Integrale zurücksetzen",
+        "registerErrorText" : "Geber %d wird bereits verwendet"
+    },
+    "cz" : {
+        "appName" : "Virtuální senzor",
+        "sensorsTitle" : "Senzory",
+        "sensorLabelText" : "název",
+        "decimalsText" : "Desetinná místa",
+        "unitText" : "Jednotka měření",
+        "fileInexistentText" : "Uložení se nezdařilo",
+        "constantText" : "konstantní",
+        "sensorText" : "senzor",
+        "operandText" : "parametr",
+        "inputText" : "vstup",
+        "controlText" : "Ovladač",
+        "valueText" : "hodnota",
+        "levelText" : "úroveň",
+        "integralResetSwitch" : "Resetovat integrál",
+        "registerErrorText" : "ovládání %d se již používá"
+    }
+}
