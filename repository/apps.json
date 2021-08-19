@@ -11,7 +11,7 @@
                     "destination": "Apps/audplayer.lc",
                     "hash": "74f87729a5f57b0950fb776ea2e28ff779f0dfbe",
                     "size": 6926,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Audio%20Player/audplayer.lc"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/audplayer.lc"
                 }
             ],
             "hw": [
@@ -29,7 +29,7 @@
                 "de": "Audio Player",
                 "en": "Audio Player"
             },
-            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.1"
         },
@@ -44,7 +44,7 @@
                     "destination": "Apps/beepedit.lc",
                     "hash": "1a920cf03b1d174d1c4abc258fcaee72fa63e55b",
                     "size": 7802,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Timer%20Signalization%20Editor/beepedit.lc"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/beepedit.lc"
                 }
             ],
             "hw": [
@@ -62,7 +62,7 @@
                 "de": "Beep Editor",
                 "en": "Beep Editor"
             },
-            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.2.1"
         },
@@ -77,7 +77,7 @@
                     "destination": "Apps/integrator.lc",
                     "hash": "64f388e48698b2914c9a9b35fa3248de381307ef",
                     "size": 4707,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Vario%20Integrator/integrator.lc"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/integrator.lc"
                 }
             ],
             "hw": [
@@ -94,7 +94,7 @@
                 "de": "Vario Integrator",
                 "en": "Vario Integrator"
             },
-            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.1"
         },
@@ -109,109 +109,109 @@
                     "destination": "Apps/thlassist.lc",
                     "hash": "a1c1147b2a9e7596072f38b9f6ecf85278bb5d39",
                     "size": 14608,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/thlassist.lc"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/thlassist.lc"
                 },
                 {
                     "destination": "Apps/ThermalAssist/east-de.wav",
                     "hash": "7919b95a306c8b343de53cc54cb6fc53342f2e52",
                     "size": 27894,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/east-de.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/east-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/east-en.wav",
                     "hash": "d3556c2ecf477efa53f819db6ef427fd98f48a6e",
                     "size": 27894,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/east-en.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/east-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/lang.json",
                     "hash": "ec069a88cdf813f30d234198e9c8dbad474ba052",
                     "size": 3899,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/lang.json"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/lang.json"
                 },
                 {
                     "destination": "Apps/ThermalAssist/north-de.wav",
                     "hash": "e9a8bf8943f5799d241ff89729b015688d2f573f",
                     "size": 50832,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/north-de.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/north-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/north-en.wav",
                     "hash": "abd500c8465d957cfa9eb2a8f9207a424f83d42f",
                     "size": 27894,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/north-en.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/north-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/northeast-de.wav",
                     "hash": "a606f4f289e498e62e21547cdb32873106ace864",
                     "size": 38496,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/northeast-de.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/northeast-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/northeast-en.wav",
                     "hash": "8975ed1253886d444b9662eb6155e3839a306ab0",
                     "size": 43230,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/northeast-en.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/northeast-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/northwest-de.wav",
                     "hash": "fc46c87223339fc2221158a07049bc69a0eb27f1",
                     "size": 45534,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/northwest-de.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/northwest-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/northwest-en.wav",
                     "hash": "03613f3de1d3eee725cb847230eab38cabbc1e15",
                     "size": 43318,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/northwest-en.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/northwest-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/south-de.wav",
                     "hash": "3f904d4da65ade659efe9d16a06a1468130a92bf",
                     "size": 28980,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/south-de.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/south-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/south-en.wav",
                     "hash": "2350449566e7a2c92906222e55499dbf901aa264",
                     "size": 40364,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/south-en.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/south-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/southeast-de.wav",
                     "hash": "b4e4858b3fb6c16b34cce6a52a7979f7db375c1b",
                     "size": 37126,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/southeast-de.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/southeast-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/southeast-en.wav",
                     "hash": "ccb5f9c09a41a6b8dd37396322ea25be771b130c",
                     "size": 44144,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/southeast-en.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/southeast-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/southwest-de.wav",
                     "hash": "1b2d9a275baac347f8a3b5e7f8fc64b9b3750f0d",
                     "size": 44610,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/southwest-de.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/southwest-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/southwest-en.wav",
                     "hash": "93fed65242c3975ab3c93be2b24769b6bb8ca5a9",
                     "size": 52006,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/southwest-en.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/southwest-en.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/west-de.wav",
                     "hash": "b1164fb919150dcdc89e1aa846d47bc636add986",
                     "size": 31408,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/west-de.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/west-de.wav"
                 },
                 {
                     "destination": "Apps/ThermalAssist/west-en.wav",
                     "hash": "e3c5cc818c8bcab19a689fe8848e85a5047f603b",
                     "size": 35092,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Thermal%20Assist/ThermalAssist/west-en.wav"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/west-en.wav"
                 }
             ],
             "hw": [
@@ -229,8 +229,8 @@
                 "de": "Thermikassistent",
                 "en": "Thermal Assistant"
             },
-            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.4.2"
         },
         {
@@ -244,19 +244,19 @@
                     "destination": "Apps/virtsens.lc",
                     "hash": "b757425a6655230bbc360f43773bdeed554408e9",
                     "size": 14459,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Virtual%20Sensor/virtsens.lc"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/virtsens.lc"
                 },
                 {
                     "destination": "Apps/VirtualSensor/lang.json",
                     "hash": "2dd2c8b4a943a3d103655f2aa87e493dfff08d49",
                     "size": 1944,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Virtual%20Sensor/VirtualSensor/lang.json"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/VirtualSensor/lang.json"
                 },
                 {
                     "destination": "Apps/VirtualSensor/sensors.json",
                     "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
                     "size": 2,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Virtual%20Sensor/VirtualSensor/sensors.json"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/VirtualSensor/sensors.json"
                 }
             ],
             "hw": [
@@ -274,8 +274,8 @@
                 "de": "Virtueller Sensor",
                 "en": "Virtual Sensor"
             },
-            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.3.0"
         },
         {
@@ -288,7 +288,7 @@
                     "destination": "Apps/DJM Timer.lc",
                     "hash": "bfe2cbea1c5f382729031be5aaa07b59c595fbcc",
                     "size": 2839,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/DJM%20Timer/DJM%20Timer.lc"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/DJM Timer.lc"
                 }
             ],
             "hw": [
@@ -304,9 +304,9 @@
             "name": {
                 "en": "DJM Timer"
             },
-            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Mi Mai 26 00:00:00 2021",
-            "version": "1.0"
+            "version": "1.1"
         },
         {
             "author": "LeonAir RC",
@@ -319,7 +319,7 @@
                     "destination": "Apps/propswitch.lc",
                     "hash": "288c4700dd023cc5e6bf48bd98ad0a2f70dfce7c",
                     "size": 5511,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Proportional%20Switch/propswitch.lc"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/propswitch.lc"
                 }
             ],
             "hw": [
@@ -337,7 +337,7 @@
                 "de": "Proportionaler Schalter",
                 "en": "Proportional Switch"
             },
-            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Do Mai 27 00:00:00 2021",
             "version": "1.1.3"
         },
@@ -352,7 +352,7 @@
                     "destination": "Apps/seqbtn.lc",
                     "hash": "665ffc708850a8b5024ba303683a3046cc937987",
                     "size": 5836,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Sequential%20Button/seqbtn.lc"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/seqbtn.lc"
                 }
             ],
             "hw": [
@@ -369,7 +369,7 @@
                 "de": "Sequentieller Taster",
                 "en": "Sequential Button"
             },
-            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Di Jun 1 00:00:00 2021",
             "version": "1.0"
         },
@@ -383,7 +383,7 @@
                     "destination": "Apps/altgain.lc",
                     "hash": "b9deea2b29ecab15139104137a9ed3616f67b119",
                     "size": 5176,
-                    "url": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/Altitude%20Gain/altgain.lc"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/altgain.lc"
                 }
             ],
             "hw": [
@@ -400,9 +400,9 @@
                 "de": "Höhengewinn",
                 "en": "Altitude Gain"
             },
-            "previewIcon": "https://github.com/LeonAirRC/Jeti-Lua-Apps/raw/main/repository/logo.png",
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "So Aug 1 00:00:00 2021",
-            "version": "1.1.2"
+            "version": "1.1.3"
         }
     ]
 }
