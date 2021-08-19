@@ -107,8 +107,8 @@
             "files": [
                 {
                     "destination": "Apps/thlassist.lc",
-                    "hash": "a1c1147b2a9e7596072f38b9f6ecf85278bb5d39",
-                    "size": 14608,
+                    "hash": "26e4e3acf42227926582e8aa8cbba8c3d97d5233",
+                    "size": 14606,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/thlassist.lc"
                 },
                 {
@@ -242,8 +242,8 @@
             "files": [
                 {
                     "destination": "Apps/virtsens.lc",
-                    "hash": "b757425a6655230bbc360f43773bdeed554408e9",
-                    "size": 14459,
+                    "hash": "be0f98c1877cb9f6da59df58df90d7a779c3a4c9",
+                    "size": 14458,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/virtsens.lc"
                 },
                 {
