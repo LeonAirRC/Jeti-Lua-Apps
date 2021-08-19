@@ -25,15 +25,10 @@ local units = {"", "m", "km", "s", "min", "h", "m/s", "km/h", "V", "A", "mAh", "
 
 local inputs = {"...", "P1", "P2", "P3", "P4", "P5", "P6", "P7", "P8", "P9", "P10", "SA", "SB", "SC", "SD", "SE", "SF", "SG", "SH", "SI", "SJ", "SK", "SL", "SM", "SN", "SO", "SP"}
 local controls = {"...", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "C10"}
-local specialTypes = 3
-local twoOpTypes = 18
 
 local sensors
-local nodeStack = {}
-local evalFunctions
-local valueLabelIndex
+local sensorIndex
 local controlSelectIndex
-local activeTelemetryIndex
 local integralResetSwitch
 local lastTime
 
@@ -44,12 +39,9 @@ local sensorLabels = {"..."}
 local lang = json.decode(io.readall("Apps/VirtualSensor/lang.jsn"))
 lang = lang[system.getLocale()] or lang["en"]
 
-local nodeTypes = {lang.constantText, lang.sensorText, lang.inputText, "ADD", "SUB", "MUL", "DIV", "MIN", "MAX", "=", "<", ">", "<=", ">=", "AND", "OR", "XOR", "IMPL", "NOT",
-"ABS", "ROUND", "FLOOR", "CEIL", "SQRT", "SIN", "COS", "TAN", "ASIN", "ACOS", "ATAN", "Integral"}
-
-local function toNumber(boolean)
-    return boolean and 1 or 0
-end
+local nodeTypes = {lang.constant, lang.sensor, lang.input, "ADD", "SUB", "MUL", "DIV", "MIN/AND", "MAX/OR", "=", "<", ">", "ABS", "FLOOR", "SQRT", "Integral"}
+local specialTypes = 3
+local twoOpTypes = 12
 
 local function controlRegistered(controlNo, limit)
     limit = limit or #sensors
@@ -66,84 +58,49 @@ local function onIntegralResetChanged(value)
     system.pSave("int_reset", integralResetSwitch)
 end
 
-local function onSensorLabelChanged(index, value)
-    sensors[index].label = value
-end
-
-local function onDecimalsChanged(index, value)
-    sensors[index].decimals = value
-end
-
-local function onSensorUnitChanged(index, value)
-    sensors[index].unit = value
-end
-
-local function onNodeTypeChanged(value)
-    if nodeStack[1].type ~= value then
-        local node = nodeStack[1]
-        node.type = value
-        node.const = nil
-        node.sensor = nil
-        node.input = nil
-        node.integral = nil
+local function onTypeChanged(value)
+    if sensors[sensorIndex].type ~= value then
+        local sensor = sensors[sensorIndex]
+        sensor.type = value
+        sensor.value = 0
+        sensor.sensor = nil
+        sensor.input = nil
         if value <= specialTypes then
-            node.p1 = nil
-            node.p2 = nil
-            if value == 1 then
-                node.const = 0
-            elseif value == 2 then
-                node.sensor = 0
+            sensor.p1 = nil
+            sensor.p2 = nil
+            if value == 2 then
+                sensor.sensor = 0
             elseif value == 3 then
-                node.input = 1
+                sensor.input = 1
             end
         else
             if value <= twoOpTypes then
-                node.p2 = node.p2 or {type = 1, const = 0}
+                sensor.p2 = sensor.p2 or 0
             else
-                node.p2 = nil
+                sensor.p2 = nil
             end
-            node.p1 = node.p1 or {type = 1, const = 0}
-            if value == #nodeTypes then
-                node.integral = 0
-            end
+            sensor.p1 = sensor.p1 or 0
         end
         form.reinit()
         collectgarbage()
     end
 end
 
-local function onConstChanged(value)
-    nodeStack[1].const = value
-end
-
-local function onSensorChanged(value)
-    nodeStack[1].sensor = value - 1
-end
-
-local function onInputChanged(value)
-    nodeStack[1].input = value
-end
-
-local function onOperandSelected(opNum)
-    table.insert(nodeStack, 1, opNum == 1 and nodeStack[1].p1 or nodeStack[1].p2)
-    form.reinit()
-end
-
 local function onControlChanged(value)
-    if value ~= nodeStack[1].control + 1 then
+    if value ~= sensors[sensorIndex].control + 1 then
         if value == 1 then
-            system.unregisterControl(nodeStack[1].control)
-            nodeStack[1].control = 0
+            system.unregisterControl(sensors[sensorIndex].control)
+            sensors[sensorIndex].control = 0
         else
-            if nodeStack[1].control > 0 then
-                system.unregisterControl(nodeStack[1].control)
+            if sensors[sensorIndex].control > 0 then
+                system.unregisterControl(sensors[sensorIndex].control)
             end
-            if (not controlRegistered(value - 1)) and system.registerControl(value - 1, nodeStack[1].label, controls[value]) ~= nil then
-                nodeStack[1].control = value - 1
+            if (not controlRegistered(value - 1)) and system.registerControl(value - 1, sensors[sensorIndex].label, controls[value]) ~= nil then
+                sensors[sensorIndex].control = value - 1
             else
-                nodeStack[1].control = 0
+                sensors[sensorIndex].control = 0
                 form.setValue(controlSelectIndex, 1)
-                system.messageBox(string.format(lang.registerErrorText, value - 1))
+                system.messageBox(string.format(lang.registerError, value - 1))
             end
         end
     end
@@ -154,187 +111,21 @@ local function save()
         local file = io.open("Apps/VirtualSensor/sensors.json", "w")
         if file then
             if not io.write(file, json.encode(sensors)) then
-                system.messageBox(lang.fileInexistentText)
+                system.messageBox(lang.fileInexistent)
             end
             io.close(file)
         else
-            system.messageBox(lang.fileInexistentText)
+            system.messageBox(lang.fileInexistent)
         end
     end
 end
 
-evalFunctions = {
-    function(node) -- CONST
-        return node.const
-    end,
-    function(node) -- SENSOR
-        local id,param = sensorIDs[node.sensor], sensorParams[node.sensor]
-        if id and param then
-            local val = system.getSensorValueByID(id, param)
-            return (val and val.valid) and val.value or nil
-        else
-            return nil
-        end
-    end,
-    function(node) -- INPUT
-        return node.input > 1 and system.getInputs(inputs[node.input]) or nil
-    end,
-    function(node) -- ADD
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and (firstVal + secondVal) or nil
-    end,
-    function(node) -- SUB
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and (firstVal - secondVal) or nil
-    end,
-    function(node) -- MUL
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and (firstVal * secondVal) or nil
-    end,
-    function(node) -- DIV
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal and secondVal ~= 0.0) and (firstVal / secondVal) or nil
-    end,
-    function(node) -- MIN
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        if firstVal then
-            return secondVal and math.min(firstVal, secondVal) or firstVal
-        else
-            return secondVal
-        end
-    end,
-    function(node) -- MAX
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        if firstVal then
-            return secondVal and math.max(firstVal, secondVal) or firstVal
-        else
-            return secondVal
-        end
-    end,
-    function(node) -- =
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and toNumber(firstVal == secondVal) or nil
-    end,
-    function(node) -- <
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and toNumber(firstVal < secondVal) or nil
-    end,
-    function(node) -- >
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and toNumber(firstVal > secondVal) or nil
-    end,
-    function(node) -- <=
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and toNumber(firstVal <= secondVal) or nil
-    end,
-    function(node) -- >=
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and toNumber(firstVal >= secondVal) or nil
-    end,
-    function(node) -- AND
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and toNumber(firstVal >= 1 and secondVal >= 1) or nil
-    end,
-    function(node) -- OR
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and toNumber(firstVal >=1 or secondVal >= 1) or nil
-    end,
-    function(node) -- XOR
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and toNumber((firstVal >= 1) ~= (secondVal >= 1)) or nil
-    end,
-    function(node) -- IMPL
-        local firstVal = evalFunctions[node.p1.type](node.p1)
-        local secondVal = evalFunctions[node.p2.type](node.p2)
-        return (firstVal and secondVal) and toNumber(firstVal < 1 or secondVal >= 1) or nil
-    end,
-    function(node) -- NOT
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and toNumber(val < 1) or nil
-    end,
-    function(node) -- ABS
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and math.abs(val) or nil
-    end,
-    function(node) -- ROUND
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and math.floor(val + 0.5) or nil
-    end,
-    function(node) -- FLOOR
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and math.floor(val) or nil
-    end,
-    function(node) -- CEIL
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and math.ceil(val) or nil
-    end,
-    function(node) --ROOT
-        local val = evalFunctions[node.p1.type](node.p1)
-        return (val and val >= 0) and math.sqrt(val) or nil
-    end,
-    function(node) -- SIN
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and math.sin(math.rad(val)) or nil
-    end,
-    function(node) -- COS
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and math.cos(math.rad(val)) or nil
-    end,
-    function(node) -- TAN
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and math.tan(math.rad(val)) or nil
-    end,
-    function(node) -- ASIN
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and math.deg(math.asin(val)) or nil
-    end,
-    function(node) -- ACOS
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and math.deg(math.acos(val)) or nil
-    end,
-    function(node) -- ATAN
-        local val = evalFunctions[node.p1.type](node.p1)
-        return val and math.deg(math.atan(val)) or nil
-    end,
-    function(node) -- Integral
-        return node.integral
-    end
-}
-
 local function onKeyPressed(keyCode)
-    if #nodeStack > 0 then
-        form.preventDefault()
-        if keyCode == KEY_ESC or keyCode == KEY_5 then
-            nodeStack = {}
-            form.reinit()
-        elseif keyCode == KEY_1 then
-            table.remove(nodeStack, 1)
-            form.reinit()
-        elseif keyCode == KEY_2 and nodeStack[1].type > specialTypes then
-            onOperandSelected(1)
-        elseif keyCode == KEY_3 and nodeStack[1].type > specialTypes and nodeStack[1].type <= twoOpTypes then
-            onOperandSelected(2)
-        end
-    else
-        local focused = form.getFocusedRow() - 1
+    if not sensorIndex then
+        local focused = form.getFocusedRow()
         if keyCode == KEY_1 and #sensors < 8 then
 
-            local defaultSensor = { label = "vsensor " .. tostring(#sensors + 1), unit = 1, decimals = 1, type = 1, const = 0, control = 0 }
-            table.insert(sensors, defaultSensor)
+            table.insert(sensors, { label = "vsensor " .. tostring(#sensors + 1), type = 1, unit = 1, decimals = 1, value = 0, control = 0, tel = false })
             form.reinit()
 
         elseif keyCode == KEY_2 and focused > 0 and focused <= #sensors then
@@ -342,108 +133,132 @@ local function onKeyPressed(keyCode)
             if sensors[focused].control > 0 then
                 system.unregisterControl(sensors[focused].control)
             end
-            table.remove(sensors, focused)
-            if activeTelemetryIndex then
-                if activeTelemetryIndex == focused then
-                    activeTelemetryIndex = nil
-                    system.pSave("vs_acttel", activeTelemetryIndex)
-                elseif activeTelemetryIndex > focused then
-                    activeTelemetryIndex = activeTelemetryIndex - 1
-                    system.pSave("vs_acttel", activeTelemetryIndex)
+            for _,sensor in pairs(sensors) do
+                if sensor.p1 and sensor.p1 == focused then
+                    sensor.p1 = 0
+                elseif sensor.p1 and sensor.p1 > focused then
+                    sensor.p1 = sensor.p1 - 1
+                end
+                if sensor.p2 and sensor.p2 == focused then
+                    sensor.p2 = 0
+                elseif sensor.p2 and sensor.p2 > focused then
+                    sensor.p2 = sensor.p2 - 1
                 end
             end
+            table.remove(sensors, focused)
             form.reinit()
 
-        elseif keyCode == KEY_3 and #sensors > 0 and focused > 0 and focused <= #sensors then
+        elseif keyCode == KEY_3 and focused > 0 and focused <= #sensors then
 
-            table.insert(nodeStack, sensors[focused])
-            form.reinit()
-
-        elseif keyCode == KEY_4 and #sensors > 0 and focused > 0 and focused <= #sensors then
-
-            activeTelemetryIndex = focused
-            system.pSave("vs_acttel", activeTelemetryIndex)
+            sensors[focused].tel = not sensors[focused].tel
             form.reinit()
 
         end
+    elseif keyCode == KEY_5 or keyCode == KEY_ESC then
+        form.preventDefault()
+        sensorIndex = nil
+        form.reinit()
     end
     collectgarbage()
 end
 
 local function printTelemetry(width, height)
-    if activeTelemetryIndex then
-        local font = height > 30 and FONT_MAXI or FONT_BOLD
-        local val = evalFunctions[sensors[activeTelemetryIndex].type](sensors[activeTelemetryIndex])
-        local text = val and string.format("%." .. string.format("%d", sensors[activeTelemetryIndex].decimals) .. "f %s", val, units[sensors[activeTelemetryIndex].unit]) or "-"
-        lcd.drawText(width - 10 - lcd.getTextWidth(font, text), (height - lcd.getTextHeight(font)) / 2, text, font)
+    if width < 160 then
+        for i = 1, #sensors do
+            if sensors[i].tel then
+                local font = height > 30 and FONT_MAXI or FONT_BOLD
+                local text = sensors[i].value and string.format("%." .. string.format("%d", sensors[i].decimals) .. "f %s", sensors[i].value, units[sensors[i].unit]) or "-"
+                lcd.drawText(width - 10 - lcd.getTextWidth(font, text), (height - lcd.getTextHeight(font)) // 2, text, font)
+                return
+            end
+        end
+    else
+        local count = 0
+        for i = 1, #sensors do
+            if sensors[i].tel and count < 6 then
+                local text = sensors[i].value and string.format("%." .. string.format("%d", sensors[i].decimals) .. "f %s", sensors[i].value, units[sensors[i].unit]) or "-"
+                local x = (count < 3 and width or width // 2) - 10
+                local y = 51 * (count % 3) + 5
+                local font = lcd.getTextWidth(FONT_MAXI, text) > width // 2 - 10 and FONT_BIG or FONT_MAXI
+                lcd.drawText(x - lcd.getTextWidth(font, text), y + 8, text, font)
+                lcd.drawText(x - lcd.getTextWidth(FONT_MINI, sensors[i].label), y, sensors[i].label, FONT_MINI)
+
+                count = count + 1
+            end
+        end
     end
 end
 
 local function initForm()
-    if #nodeStack > 0 then
+    if sensorIndex then
 
-        form.setTitle(string.format("%s - %s %d", nodeStack[#nodeStack].label, lang.levelText, #nodeStack))
-        form.addRow(1)
-        form.addSelectbox(nodeTypes, nodeStack[1].type, true, onNodeTypeChanged)
-        if nodeStack[1].type == 1 then
+        local sensor = sensors[sensorIndex]
+        form.setTitle(sensor.label)
+        form.addRow(2)
+        form.addLabel({ label = lang.type })
+        form.addSelectbox(nodeTypes, sensor.type, true, onTypeChanged)
+        if sensor.type == 1 then
             form.addRow(1)
-            form.addIntbox(nodeStack[1].const, -32768, 32767, 0, 0, 1, onConstChanged)
-        elseif nodeStack[1].type == 2 then
+            form.addIntbox(sensor.value, -32768, 32767, 0, 0, 1, function (value) sensor.value = value end)
+        elseif sensor.type == 2 then
             form.addRow(1)
-            form.addSelectbox(sensorLabels, nodeStack[1].sensor + 1, true, onSensorChanged)
-        elseif nodeStack[1].type == 3 then
+            form.addSelectbox(sensorLabels, sensor.sensor + 1, true, function (value) sensor.sensor = value - 1 end)
+        elseif sensor.type == 3 then
             form.addRow(1)
-            form.addSelectbox(inputs, nodeStack[1].input, true, onInputChanged)
-        elseif nodeStack[1].type <= twoOpTypes then
-            form.addRow(1)
-            form.addLink(function () onOperandSelected(1) end, { label = string.format("%s %d", lang.operandText, 1) .. " >>" })
-            form.addRow(1)
-            form.addLink(function () onOperandSelected(2) end, { label = string.format("%s %d", lang.operandText, 2) .. " >>" })
-            form.setButton(2, "P1", ENABLED)
-            form.setButton(3, "P2", ENABLED)
+            form.addSelectbox(inputs, sensor.input, true, function (value) sensor.input = value end)
         else
-            form.addRow(1)
-            form.addLink(function () onOperandSelected(1) end, { label = lang.operandText .. " >>" })
-            form.setButton(2, "P1", ENABLED)
+            local virtualSensorLabels = {"..."}
+            for i = 1, #sensors do
+                virtualSensorLabels[#virtualSensorLabels+1] = sensors[i].label
+            end
+            if sensor.type <= twoOpTypes then
+                form.addRow(2)
+                form.addLabel({ label = lang.operand .. " 1" })
+                form.addSelectbox(virtualSensorLabels, sensor.p1 + 1, true, function (value) sensor.p1 = value - 1 end)
+                form.addRow(2)
+                form.addLabel({ label = lang.operand .. " 2" })
+                form.addSelectbox(virtualSensorLabels, sensor.p2 + 1, true, function (value) sensor.p2 = value - 1 end)
+            else
+                form.addRow(2)
+                form.addLabel({ label = lang.operand })
+                form.addSelectbox(virtualSensorLabels, sensor.p1 + 1, true, function (value) sensor.p1 = value - 1 end)
+            end
         end
-        if #nodeStack == 1 then
-            form.addRow(2)
-            form.addLabel({ label = lang.controlText })
-            controlSelectIndex = form.addSelectbox(controls, nodeStack[1].control + 1, true, onControlChanged)
-        end
-        if nodeStack[1].type > 1 then
-            form.addSpacer(300, #nodeStack == 1 and 20 or 30)
-            form.addRow(2)
-            form.addLabel({ label = lang.valueText, width = 80 })
-            valueLabelIndex = form.addLabel({ font = FONT_BOLD, alignRight = true, width = 220 })
-        else
-            valueLabelIndex = nil
-        end
-
-        form.setButton(1, ":left", ENABLED)
+        form.addSpacer(0, 15)
+        form.addRow(2)
+        form.addLabel({ label = lang.sensorLabel, font = FONT_BOLD })
+        form.addTextbox(sensor.label, 20, function (value)
+            sensor.label = value
+            form.setTitle(sensor.label)
+        end, { font = FONT_BOLD })
+        form.addRow(2)
+        form.addLabel({ label = lang.unit })
+        form.addSelectbox(units, sensor.unit, true, function (value) sensor.unit = value end)
+        form.addRow(2)
+        form.addLabel({ label = lang.decimals })
+        form.addIntbox(sensor.decimals, 0, 8, 1, 0, 1, function (value) sensor.decimals = value end)
+        form.addRow(2)
+        form.addLabel({ label = lang.control })
+        controlSelectIndex = form.addSelectbox(controls, sensor.control + 1, true, onControlChanged)
+        form.setFocusedRow(1)
 
     else
 
         form.setTitle(lang.sensorsTitle)
-        form.addRow(3)
-        form.addLabel({ label = lang.sensorLabelText, font = FONT_BOLD, width = 120 })
-        form.addLabel({ label = lang.decimalsText, font = FONT_BOLD, width = 120 })
-        form.addLabel({ label = lang.unitText, font = FONT_BOLD, alignRight = true })
-        for i,sensor in ipairs(sensors) do
-            form.addRow(3)
-            form.addTextbox(sensor.label, 10, function (value) onSensorLabelChanged(i, value) end, { width = 180, font = i == activeTelemetryIndex and FONT_BOLD or FONT_NORMAL })
-            form.addIntbox(sensor.decimals, 0, 8, 1, 0, 1, function (value) onDecimalsChanged(i, value) end, { width = 60 })
-            form.addSelectbox(units, sensor.unit, true, function (value) onSensorUnitChanged(i, value) end)
+        for i = 1, #sensors do
+            form.addRow(1)
+            form.addLink(function ()
+                sensorIndex = i
+                form.reinit()
+            end, { label = sensors[i].label .. " >>", font = sensors[i].tel and FONT_BOLD or FONT_NORMAL })
         end
         form.addSpacer(0, 20)
         form.addRow(2)
         form.addLabel({ label = lang.integralResetSwitch, width = 220 })
         form.addInputbox(integralResetSwitch, false, onIntegralResetChanged)
-        form.setButton(1, ":add", #sensors < 8 and ENABLED or DISABLED)
+        form.setButton(1, ":add", #sensors < 16 and ENABLED or DISABLED)
         form.setButton(2, ":delete", #sensors > 0 and ENABLED or DISABLED)
-        form.setButton(3, "Edit", #sensors > 0 and ENABLED or DISABLED)
-        form.setButton(4, ":ok", #sensors > 0 and ENABLED or DISABLED)
-        valueLabelIndex = nil
+        form.setButton(3, ":graphBig", #sensors > 0 and ENABLED or DISABLED)
     end
     collectgarbage()
 end
@@ -451,31 +266,6 @@ end
 local function close()
     save()
     collectgarbage()
-end
-
-local function updateIntegrals(node, dt)
-    if node.type > specialTypes then
-        updateIntegrals(node.p1, dt)
-        if node.type <= twoOpTypes then
-            updateIntegrals(node.p2, dt)
-        end
-        if node.type == #nodeTypes then
-            local p1 = evalFunctions[node.p1.type](node.p1)
-            node.integral = node.integral + (p1 and (dt * p1 * 0.001) or 0)
-        end
-    end
-end
-
-local function resetIntegrals(node)
-    if node.type > specialTypes then
-        resetIntegrals(node.p1)
-        if node.type <= twoOpTypes then
-            resetIntegrals(node.p2)
-        end
-        if node.type == #nodeTypes then
-            node.integral = 0
-        end
-    end
 end
 
 local function init()
@@ -490,44 +280,87 @@ local function init()
         collectgarbage()
     end
 
-    activeTelemetryIndex = system.pLoad("vs_acttel")
     integralResetSwitch = system.pLoad("int_reset")
 
-    local content = io.readall("Apps/VirtualSensor/sensors.json")
-    sensors = (content and json.decode(content) or {}) or {}
-    if activeTelemetryIndex and activeTelemetryIndex > #sensors then
-        activeTelemetryIndex = nil
-    end
+    sensors = io.readall("Apps/VirtualSensor/sensors.json")
+    sensors = (sensors and json.decode(sensors) or {}) or {}
 
+    local telCount = 0
     for i,sensor in ipairs(sensors) do
-        resetIntegrals(sensor)
+        if sensor.type ~= 1 then sensor.value = 0 end
         if sensor.control > 0 and (controlRegistered(sensor.control, i - 1) or system.registerControl(sensor.control, sensor.label, controls[sensor.control + 1]) == nil) then
-            system.messageBox(string.format(lang.registerErrorText, sensor.control))
+            system.messageBox(string.format(lang.registerError, sensor.control))
             sensor.control = 0
+        end
+        if sensor.tel then
+            telCount = telCount + 1
         end
     end
     system.registerForm(1, MENU_APPS, lang.appName, initForm, onKeyPressed, nil, close)
-    system.registerTelemetry(2, lang.appName, 0, printTelemetry)
+    system.registerTelemetry(1, lang.appName, telCount > 1 and 4 or 0, printTelemetry)
     lastTime = system.getTimeCounter()
     collectgarbage()
 end
 
 local function loop()
     local time = system.getTimeCounter()
-    if valueLabelIndex and #nodeStack > 0 then
-        form.setProperties(valueLabelIndex, { label = tostring(evalFunctions[nodeStack[1].type](nodeStack[1])) })
-    end
-    for _,sensor in pairs(sensors) do
-        updateIntegrals(sensor, time - lastTime)
-        if sensor.control > 0 and system.setControl(sensor.control, evalFunctions[sensor.type](sensor) or 0, 0) == nil then
+
+    for _,sensor in ipairs(sensors) do
+        if sensor.type == 2 then
+            local id,param = sensorIDs[sensor.sensor], sensorParams[sensor.sensor]
+            if id and param then
+                local val = system.getSensorValueByID(id, param)
+                sensor.value = (val and val.valid) and val.value or nil
+            else
+                sensor.value = nil
+            end
+        elseif sensor.type == 3 then
+            sensor.value = sensor.input > 1 and system.getInputs(inputs[sensor.input]) or nil
+        elseif sensor.type == #nodeTypes then
+            local p1 = sensor.p1 > 0 and sensors[sensor.p1].value or nil
+            if p1 then
+                sensor.value = sensor.value + (time - lastTime) * p1 * 0.001
+            end
+        elseif sensor.type > specialTypes then
+            local p1 = sensor.p1 > 0 and sensors[sensor.p1].value or nil
+            local p2 = sensor.p2 and sensor.p2 > 0 and sensors[sensor.p2].value or nil
+            if not p1 or (sensor.type <= twoOpTypes and not p2) then
+                sensor.value = nil
+            elseif sensor.type == 4 then
+                sensor.value = p1 + p2
+            elseif sensor.type == 5 then
+                sensor.value = p1 - p2
+            elseif sensor.type == 6 then
+                sensor.value = p1 * p2
+            elseif sensor.type == 7 then
+                sensor.value = p2 ~= 0.0 and p1 / p2 or nil
+            elseif sensor.type == 8 then
+                sensor.value = math.min(p1, p2)
+            elseif sensor.type == 9 then
+                sensor.value = math.max(p1, p2)
+            elseif sensor.type == 10 then
+                sensor.value = (p1 == p2) and 1 or 0
+            elseif sensor.type == 11 then
+                sensor.value = (p1 < p2) and 1 or 0
+            elseif sensor.type == 12 then
+                sensor.value = (p1 > p2) and 1 or 0
+            elseif sensor.type == 13 then
+                sensor.value = math.abs(p1)
+            elseif sensor.type == 14 then
+                sensor.value = math.floor(p1)
+            elseif sensor.type == 15 then
+                sensor.value = math.sqrt(p1)
+            end
+        end
+        if sensor.control > 0 and system.setControl(sensor.control, math.max(math.min(sensor.value or 0, 1), -1), 0) == nil then
             system.unregisterControl(sensor.control)
-            system.messageBox(string.format(lang.registerErrorText, sensor.control))
+            system.messageBox(string.format(lang.registerError, sensor.control))
             sensor.control = 0
         end
     end
     if system.getInputsVal(integralResetSwitch) == 1 then
-        for _,sensor in pairs(sensors) do
-            resetIntegrals(sensor)
+        for i = 1, #sensors do
+            if sensors[i].type == #nodeTypes then sensors[i].value = 0 end
         end
     end
     lastTime = time
@@ -540,6 +373,7 @@ local function destroy()
             system.unregisterControl(sensor.control)
         end
     end
+    system.unregisterTelemetry(2)
     if sensors then
         save()
         sensors = nil
@@ -548,4 +382,4 @@ local function destroy()
 end
 
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.3.0", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.4.0", name = lang.appName }
