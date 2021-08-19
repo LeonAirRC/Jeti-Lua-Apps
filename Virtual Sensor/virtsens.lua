@@ -41,7 +41,7 @@ local sensorIDs = {}
 local sensorParams = {}
 local sensorLabels = {"..."}
 
-local lang = json.decode(io.readall("Apps/VirtualSensor/lang.json"))
+local lang = json.decode(io.readall("Apps/VirtualSensor/lang.jsn"))
 lang = lang[system.getLocale()] or lang["en"]
 
 local nodeTypes = {lang.constantText, lang.sensorText, lang.inputText, "ADD", "SUB", "MUL", "DIV", "MIN", "MAX", "=", "<", ">", "<=", ">=", "AND", "OR", "XOR", "IMPL", "NOT",

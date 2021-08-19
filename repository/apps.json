@@ -125,8 +125,8 @@
                 },
                 {
                     "destination": "Apps/ThermalAssist/lang.jsn",
-                    "hash": "ec069a88cdf813f30d234198e9c8dbad474ba052",
-                    "size": 3899,
+                    "hash": "f596e92baadf9691959ffc2fa5ad7eb975896f6a",
+                    "size": 3805,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/lang.jsn"
                 },
                 {
@@ -248,8 +248,8 @@
                 },
                 {
                     "destination": "Apps/VirtualSensor/lang.jsn",
-                    "hash": "2dd2c8b4a943a3d103655f2aa87e493dfff08d49",
-                    "size": 1944,
+                    "hash": "5528477c3a0644c4d88a167e130fb1ab5b56bfd7",
+                    "size": 1892,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/VirtualSensor/lang.jsn"
                 },
                 {

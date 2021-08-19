@@ -63,8 +63,8 @@ local lastTime
 local lastAnnouncement
 local lastAltitude
 
-local text = io.readall("Apps/ThermalAssist/lang.json")
-assert(text ~= nil, "The file ThermalAssist/lang.json is missing")
+local text = io.readall("Apps/ThermalAssist/lang.jsn")
+assert(text ~= nil, "The file ThermalAssist/lang.jsn is missing")
 text = json.decode(text)
 local lang = text[system.getLocale()] or text["en"]
 text = nil
