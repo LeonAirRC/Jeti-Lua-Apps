@@ -124,10 +124,10 @@
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/east-en.wav"
                 },
                 {
-                    "destination": "Apps/ThermalAssist/lang.json",
+                    "destination": "Apps/ThermalAssist/lang.jsn",
                     "hash": "ec069a88cdf813f30d234198e9c8dbad474ba052",
                     "size": 3899,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/lang.json"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/ThermalAssist/lang.jsn"
                 },
                 {
                     "destination": "Apps/ThermalAssist/north-de.wav",
@@ -247,10 +247,10 @@
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/virtsens.lc"
                 },
                 {
-                    "destination": "Apps/VirtualSensor/lang.json",
+                    "destination": "Apps/VirtualSensor/lang.jsn",
                     "hash": "2dd2c8b4a943a3d103655f2aa87e493dfff08d49",
                     "size": 1944,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/VirtualSensor/lang.json"
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/VirtualSensor/lang.jsn"
                 },
                 {
                     "destination": "Apps/VirtualSensor/sensors.json",
