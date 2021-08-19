@@ -3,104 +3,6 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/AudioPlayer-de.html",
-                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/AudioPlayer-en.html"
-            },
-            "files": [
-                {
-                    "destination": "Apps/audplayer.lc",
-                    "hash": "74f87729a5f57b0950fb776ea2e28ff779f0dfbe",
-                    "size": 6926,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/audplayer.lc"
-                }
-            ],
-            "hw": [
-                674,
-                675,
-                676,
-                677,
-                678,
-                679,
-                680
-            ],
-            "id": 0,
-            "name": {
-                "cz": "Audio přehrávač",
-                "de": "Audio Player",
-                "en": "Audio Player"
-            },
-            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
-            "version": "1.1"
-        },
-        {
-            "author": "LeonAir RC",
-            "description": {
-                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BeepEdit-de.html",
-                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BeepEdit-en.html"
-            },
-            "files": [
-                {
-                    "destination": "Apps/beepedit.lc",
-                    "hash": "1a920cf03b1d174d1c4abc258fcaee72fa63e55b",
-                    "size": 7802,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/beepedit.lc"
-                }
-            ],
-            "hw": [
-                674,
-                675,
-                676,
-                677,
-                678,
-                679,
-                680
-            ],
-            "id": 0,
-            "name": {
-                "cz": "Zvukový editor",
-                "de": "Beep Editor",
-                "en": "Beep Editor"
-            },
-            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
-            "version": "1.2.1"
-        },
-        {
-            "author": "LeonAir RC",
-            "description": {
-                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/Integrator-de.html",
-                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/Integrator-en.html"
-            },
-            "files": [
-                {
-                    "destination": "Apps/integrator.lc",
-                    "hash": "64f388e48698b2914c9a9b35fa3248de381307ef",
-                    "size": 4707,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/integrator.lc"
-                }
-            ],
-            "hw": [
-                674,
-                675,
-                676,
-                677,
-                678,
-                679,
-                680
-            ],
-            "id": 0,
-            "name": {
-                "de": "Vario Integrator",
-                "en": "Vario Integrator"
-            },
-            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
-            "version": "1.1"
-        },
-        {
-            "author": "LeonAir RC",
-            "description": {
                 "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/ThermalAssist-de.html",
                 "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/ThermalAssist-en.html"
             },
@@ -276,19 +178,20 @@
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
-            "version": "1.3.0"
+            "version": "1.4.0"
         },
         {
             "author": "LeonAir RC",
             "description": {
-                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/DJMTimer-de.html"
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BeepEdit-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BeepEdit-en.html"
             },
             "files": [
                 {
-                    "destination": "Apps/DJM Timer.lc",
-                    "hash": "bfe2cbea1c5f382729031be5aaa07b59c595fbcc",
-                    "size": 2839,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/DJM Timer.lc"
+                    "destination": "Apps/beepedit.lc",
+                    "hash": "1a920cf03b1d174d1c4abc258fcaee72fa63e55b",
+                    "size": 7802,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/beepedit.lc"
                 }
             ],
             "hw": [
@@ -302,10 +205,77 @@
             ],
             "id": 0,
             "name": {
-                "en": "DJM Timer"
+                "cz": "Zvukový editor",
+                "de": "Beep Editor",
+                "en": "Beep Editor"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Mi Mai 26 00:00:00 2021",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
+            "version": "1.2.1"
+        },
+        {
+            "author": "LeonAir RC",
+            "description": {
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/AudioPlayer-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/AudioPlayer-en.html"
+            },
+            "files": [
+                {
+                    "destination": "Apps/audplayer.lc",
+                    "hash": "74f87729a5f57b0950fb776ea2e28ff779f0dfbe",
+                    "size": 6926,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/audplayer.lc"
+                }
+            ],
+            "hw": [
+                674,
+                675,
+                676,
+                677,
+                678,
+                679,
+                680
+            ],
+            "id": 0,
+            "name": {
+                "cz": "Audio přehrávač",
+                "de": "Audio Player",
+                "en": "Audio Player"
+            },
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
+            "version": "1.1"
+        },
+        {
+            "author": "LeonAir RC",
+            "description": {
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/Integrator-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/Integrator-en.html"
+            },
+            "files": [
+                {
+                    "destination": "Apps/integrator.lc",
+                    "hash": "64f388e48698b2914c9a9b35fa3248de381307ef",
+                    "size": 4707,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/integrator.lc"
+                }
+            ],
+            "hw": [
+                674,
+                675,
+                676,
+                677,
+                678,
+                679,
+                680
+            ],
+            "id": 0,
+            "name": {
+                "de": "Vario Integrator",
+                "en": "Vario Integrator"
+            },
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.1"
         },
         {
@@ -376,14 +346,14 @@
         {
             "author": "LeonAir RC",
             "description": {
-                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/AltitudeGain-en.html"
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/DJMTimer-de.html"
             },
             "files": [
                 {
-                    "destination": "Apps/altgain.lc",
-                    "hash": "b9deea2b29ecab15139104137a9ed3616f67b119",
-                    "size": 5176,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/altgain.lc"
+                    "destination": "Apps/DJM Timer.lc",
+                    "hash": "bfe2cbea1c5f382729031be5aaa07b59c595fbcc",
+                    "size": 2839,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/DJM Timer.lc"
                 }
             ],
             "hw": [
@@ -397,12 +367,11 @@
             ],
             "id": 0,
             "name": {
-                "de": "Höhengewinn",
-                "en": "Altitude Gain"
+                "en": "DJM Timer"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "So Aug 1 00:00:00 2021",
-            "version": "1.1.3"
+            "releaseDate": "Mi Mai 26 00:00:00 2021",
+            "version": "1.1"
         }
     ]
 }
