@@ -1,7 +1,7 @@
 # Vitual Sensor
 ### [Installation](https://github.com/LeonAirRC/Jeti-Lua-Apps#installation)
 Calculates virtual telemetry values that can be composed of mathematical and boolean operations.\
-The numeric inputs can be constants, telemetry values, proportional controls, switches, trainer inputs, ppm inputs and servo outputs.\
+The numeric inputs can be constants, telemetry values, proportional controls and switches.\
 Numeric values are processed in a tree of mathematical operation that take either one or two operators, eg ADD, MIN, SQRT, SIN, ABS.\
 \
 Although constants can only be integers, floating point constants can be created with DIV elements:\
@@ -15,9 +15,9 @@ This sensor calculates the glide ratio:\
 <img src="https://user-images.githubusercontent.com/57962936/115624339-c70d6680-a2fa-11eb-9853-4edf9fe20384.png" width=500/>
 
 ## Screenshots
-![virtsens1](https://user-images.githubusercontent.com/57962936/115939243-d24cc780-a49d-11eb-8d96-382a423f099a.png)
-![virtsens2](https://user-images.githubusercontent.com/57962936/115939245-d2e55e00-a49d-11eb-8c6c-05a84021d94b.png)
-![virtsens3](https://user-images.githubusercontent.com/57962936/115939247-d37df480-a49d-11eb-9186-716df63b23ee.png)
+![virtsens1](https://raw.githubusercontent.com/LeonAirRC/Jeti-Lua-Apps/main/repository/doc/img/virtsens2.png)
+![virtsens2](https://raw.githubusercontent.com/LeonAirRC/Jeti-Lua-Apps/main/repository/doc/img/virtsens3.png)
+![virtsens3](https://raw.githubusercontent.com/LeonAirRC/Jeti-Lua-Apps/main/repository/doc/img/virtsens1.png)
 
 ### Control
 Each sensor can be assigned to one of the ten virtual controls, C1 - C10. These can be assigned wherever a control(-stick) can be assigned.
@@ -36,3 +36,7 @@ Integrates the parameter over time. All integrals can be reset with the integral
 #### v1.3
 - removed log variables and voice output to reduce memory usage
 - added integral node
+#### v1.4
+- sensors with parameters use other virtual sensors as inputs, removed child node architecture
+- new telemetry design: multiple sensors can be selected to be displayed in a frame
+- significant efficiency improvements
