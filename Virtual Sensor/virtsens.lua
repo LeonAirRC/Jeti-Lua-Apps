@@ -29,8 +29,11 @@ local controls = {"...", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "
 local sensors
 local sensorIndex
 local controlSelectIndex
+local telCheckboxIndex
 local integralResetSwitch
+local announcementSwitch
 local lastTime
+local lastAnnouncementVal
 
 local sensorIDs = {}
 local sensorParams = {}
@@ -53,9 +56,14 @@ local function controlRegistered(controlNo, limit)
     return false
 end
 
-local function onIntegralResetChanged(value)
+local function integralResetChanged(value)
     integralResetSwitch = system.getInputsVal(value) ~= 0.0 and value or nil
     system.pSave("int_reset", integralResetSwitch)
+end
+
+local function announcementSwitchChanged(value)
+    announcementSwitch = system.getInputsVal(value) ~= 0.0 and value or nil
+    system.pSave("voicesw", announcementSwitch)
 end
 
 local function onTypeChanged(value)
@@ -125,7 +133,7 @@ local function onKeyPressed(keyCode)
         local focused = form.getFocusedRow()
         if keyCode == KEY_1 and #sensors < 8 then
 
-            table.insert(sensors, { label = "vsensor " .. tostring(#sensors + 1), type = 1, unit = 1, decimals = 1, value = 0, control = 0, tel = false })
+            table.insert(sensors, { label = "vsensor " .. tostring(#sensors + 1), type = 1, unit = 1, decimals = 1, value = 0, control = 0, tel = false, prio = 0, voiceLabel = "" })
             form.reinit()
 
         elseif keyCode == KEY_2 and focused > 0 and focused <= #sensors then
@@ -156,7 +164,14 @@ local function onKeyPressed(keyCode)
         end
     elseif keyCode == KEY_5 or keyCode == KEY_ESC then
         form.preventDefault()
+        local idx = sensorIndex
         sensorIndex = nil
+        form.reinit(idx)
+    elseif keyCode == KEY_1 and sensors[sensorIndex].p1 and sensors[sensorIndex].p1 > 0 then
+        sensorIndex = sensors[sensorIndex].p1
+        form.reinit()
+    elseif keyCode == KEY_2 and sensors[sensorIndex].p2 and sensors[sensorIndex].p2 > 0 then
+        sensorIndex = sensors[sensorIndex].p2
         form.reinit()
     end
     collectgarbage()
@@ -189,7 +204,7 @@ local function printTelemetry(width, height)
     end
 end
 
-local function initForm()
+local function initForm(formID)
     if sensorIndex then
 
         local sensor = sensors[sensorIndex]
@@ -218,19 +233,22 @@ local function initForm()
                 form.addRow(2)
                 form.addLabel({ label = lang.operand .. " 2" })
                 form.addSelectbox(virtualSensorLabels, sensor.p2 + 1, true, function (value) sensor.p2 = value - 1 end)
+                form.setButton(1, "P1", ENABLED)
+                form.setButton(2, "P2", ENABLED)
             else
                 form.addRow(2)
                 form.addLabel({ label = lang.operand })
                 form.addSelectbox(virtualSensorLabels, sensor.p1 + 1, true, function (value) sensor.p1 = value - 1 end)
+                form.setButton(1, "P1", ENABLED)
             end
         end
         form.addSpacer(0, 15)
         form.addRow(2)
-        form.addLabel({ label = lang.sensorLabel, font = FONT_BOLD })
+        form.addLabel({ label = lang.sensorLabel })
         form.addTextbox(sensor.label, 20, function (value)
             sensor.label = value
             form.setTitle(sensor.label)
-        end, { font = FONT_BOLD })
+        end)
         form.addRow(2)
         form.addLabel({ label = lang.unit })
         form.addSelectbox(units, sensor.unit, true, function (value) sensor.unit = value end)
@@ -240,25 +258,50 @@ local function initForm()
         form.addRow(2)
         form.addLabel({ label = lang.control })
         controlSelectIndex = form.addSelectbox(controls, sensor.control + 1, true, onControlChanged)
+        form.addSpacer(0, 15)
+        form.addRow(2)
+        form.addLabel({ label = lang.showTel, width = 270 })
+        telCheckboxIndex = form.addCheckbox(sensor.tel, function (value)
+            sensor.tel = not value
+            form.setValue(telCheckboxIndex, not value)
+        end)
+        form.addRow(2)
+        form.addLabel({ label = lang.priority })
+        form.addIntbox(sensor.prio, 0, 5, 0, 0, 1, function (value) sensor.prio = value end)
+        form.addRow(2)
+        form.addLabel({ label = lang.voiceLabel })
+        form.addAudioFilebox(sensor.voiceLabel, function (value) sensor.voiceLabel = value end)
         form.setFocusedRow(1)
 
     else
 
         form.setTitle(lang.sensorsTitle)
         for i = 1, #sensors do
-            form.addRow(1)
+            form.addRow(3)
             form.addLink(function ()
                 sensorIndex = i
                 form.reinit()
-            end, { label = sensors[i].label .. " >>", font = sensors[i].tel and FONT_BOLD or FONT_NORMAL })
+            end, { label = sensors[i].label .. " >>", width = 265 })
+            if sensors[i].tel then
+                form.addIcon(":graph", { width = 20, enabled = false })
+            else
+                form.addSpacer(20, 20)
+            end
+            form.addIcon(sensors[i].prio == 0 and ":sndOff" or ":sndOn", { width = 20, enabled = false })
         end
-        form.addSpacer(0, 20)
+        --form.addSpacer(0, 20)
+        form.addLabel({ label = "_________________________________________", font = FONT_BIG })
         form.addRow(2)
         form.addLabel({ label = lang.integralResetSwitch, width = 220 })
-        form.addInputbox(integralResetSwitch, false, onIntegralResetChanged)
+        form.addInputbox(integralResetSwitch, false, integralResetChanged)
+        form.addRow(2)
+        form.addLabel({ label = lang.announcementSwitch, width = 220 })
+        form.addInputbox(announcementSwitch, false, announcementSwitchChanged)
         form.setButton(1, ":add", #sensors < 16 and ENABLED or DISABLED)
         form.setButton(2, ":delete", #sensors > 0 and ENABLED or DISABLED)
-        form.setButton(3, ":graphBig", #sensors > 0 and ENABLED or DISABLED)
+    end
+    if formID then
+        form.setFocusedRow(formID)
     end
     collectgarbage()
 end
@@ -281,6 +324,7 @@ local function init()
     end
 
     integralResetSwitch = system.pLoad("int_reset")
+    announcementSwitch = system.pLoad("voicesw")
 
     sensors = io.readall("Apps/VirtualSensor/sensors.json")
     sensors = (sensors and json.decode(sensors) or {}) or {}
@@ -363,6 +407,18 @@ local function loop()
             if sensors[i].type == #nodeTypes then sensors[i].value = 0 end
         end
     end
+    local announcementVal = system.getInputsVal(announcementSwitch)
+    if lastAnnouncementVal == -1 and announcementVal == 1 then
+        for prio = 5, 1, -1 do
+            for i = 1, #sensors do
+                if sensors[i].prio == prio and sensors[i].value then
+                    system.playFile(sensors[i].voiceLabel, AUDIO_QUEUE)
+                    system.playNumber(sensors[i].value, sensors[i].decimals, units[sensors[i].unit])
+                end
+            end
+        end
+    end
+    lastAnnouncementVal = announcementVal
     lastTime = time
     collectgarbage()
 end
@@ -382,4 +438,4 @@ local function destroy()
 end
 
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.4.0", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.4.1", name = lang.appName }

@@ -39,4 +39,6 @@ Integrates the parameter over time. All integrals can be reset with the integral
 #### v1.4
 - sensors with parameters use other virtual sensors as inputs, removed child node architecture
 - new telemetry design: multiple sensors can be selected to be displayed in a frame
+- added voice announcements
+- improved layout
 - significant efficiency improvements

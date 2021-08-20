@@ -12,9 +12,11 @@
         "operand" : "Parameter",
         "input" : "Input",
         "control" : "Control",
-        "value" : "Value",
-        "level" : "level",
+        "showTel" : "Show telemetry",
+        "priority" : "Priority",
+        "voiceLabel" : "Announcement label",
         "integralResetSwitch" : "Reset integrals",
+        "announcementSwitch" : "Announcement",
         "registerError" : "Control %d is already in use"
     },
     "de" : {
@@ -30,9 +32,11 @@
         "operand" : "Parameter",
         "input" : "Eingabe",
         "control" : "Geber",
-        "value" : "Wert",
-        "level" : "Ebene",
+        "showTel" : "Telemetrieanzeige",
+        "priority" : "Priorität",
+        "voiceLabel" : "Ansagebezeichnung",
         "integralResetSwitch" : "Integrale zurücksetzen",
+        "announcementSwitch" : "Sprachausgabe",
         "registerError" : "Geber %d wird bereits verwendet"
     }
 }

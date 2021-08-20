@@ -144,14 +144,14 @@
             "files": [
                 {
                     "destination": "Apps/virtsens.lc",
-                    "hash": "b40524c760d3975e05e8b365485a21ab1fe6d335",
-                    "size": 9676,
+                    "hash": "1f779325a92ce009514ae7905fcd4caa745c13a5",
+                    "size": 11154,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/virtsens.lc"
                 },
                 {
                     "destination": "Apps/VirtualSensor/lang.jsn",
-                    "hash": "af3b88c60beb10a828680c4723f0949a7f5f99e8",
-                    "size": 1191,
+                    "hash": "2e3a5c864ac70317fa7a54296e724f76603c032e",
+                    "size": 1415,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/VirtualSensor/lang.jsn"
                 },
                 {
@@ -177,8 +177,8 @@
                 "en": "Virtual Sensor"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
-            "version": "1.4.0"
+            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "version": "1.4.1"
         },
         {
             "author": "LeonAir RC",
