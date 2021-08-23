@@ -27,6 +27,8 @@ local lastVoiceVal
 local step
 local trim
 
+local trimIntboxIndex
+
 local function upSwitchChanged(value)
     upSwitch = value
     system.pSave("upsw", upSwitch)
@@ -68,6 +70,12 @@ local function initForm()
     form.addRow(2)
     form.addLabel({ label = "Step" })
     form.addIntbox(step, 1, 100, 1, 0, 1, stepChanged)
+    form.addRow(2)
+    form.addLabel({ label = "Value" })
+    trimIntboxIndex = form.addIntbox(trim, -32000, 32000, 0, 0, 1, function (value)
+        trim = value
+        system.pSave("trim", trim)
+    end)
 end
 
 local function init()
@@ -90,10 +98,12 @@ local function loop()
         trim = trim + step
         system.playNumber(trim, 0, "")
         system.pSave("trim", trim)
+        form.setValue(trimIntboxIndex, trim)
     elseif downVal == 1 and lastDownVal == -1 then
         trim = trim - step
         system.playNumber(trim, 0, "")
         system.pSave("trim", trim)
+        form.setValue(trimIntboxIndex, trim)
     end
     lastUpVal = upVal
     lastDownVal = downVal
@@ -104,4 +114,4 @@ local function loop()
     lastVoiceVal = voiceVal
 end
 
-return { init = init, loop = loop, author = "LeonAir RC", version = "0.0.3", name = "Trim steps" }
+return { init = init, loop = loop, author = "LeonAir RC", version = "0.0.4", name = "Trim steps" }
