@@ -39,8 +39,8 @@
             "files": [
                 {
                     "destination": "Apps/trimsteps.lc",
-                    "hash": "fc32c5a494538fb895753ee54f8f8c4ba6144dba",
-                    "size": 2104,
+                    "hash": "40430561719e683bac07b5d479a7510963746445",
+                    "size": 2235,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/trimsteps.lc"
                 }
             ],
@@ -58,8 +58,8 @@
                 "en": "Trim steps"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/logo.png",
-            "releaseDate": "Mi Aug 18 00:00:00 2021 GMT",
-            "version": "0.0.1"
+            "releaseDate": "Mi Aug 18 00:00:00 2021",
+            "version": "0.0.3"
         },
         {
             "author": "LeonAir RC",
