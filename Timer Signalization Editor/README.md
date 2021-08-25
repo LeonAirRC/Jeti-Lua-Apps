@@ -7,6 +7,8 @@ This app provides a simple interface to edit, add and delete those elements.\
 ![beepEdit2](https://user-images.githubusercontent.com/57962936/129450308-83d7218e-4070-4801-b8f5-0fb524820dd7.png)
 ![BeepEdit3](https://user-images.githubusercontent.com/57962936/129450314-3b2cf969-01bf-4bd0-b596-51b1bcc471eb.png)
 \
+Great [video](https://www.youtube.com/watch?v=xVmkDy7XcfY) by Harry Curzon\
+\
 **Select file**\
 The Jeti transmitters have three discrete signalization files. Here you can choose which one you want to edit.\
 \
