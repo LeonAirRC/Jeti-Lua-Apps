@@ -14,8 +14,8 @@ Die Energie in Wmin wird mit der Telemetrie eines Spannungs- und eines Stromsens
 </ul>
 Für die sichere Nutzung ist ein Setup mit Logischen Schaltern notwendig, um der App in Notsituationen die Kontrolle über den Gaskanal entziehen zu können. Seien <b>C1</b> der gewählte Gas-Output und <b>P4</b> der eigentliche Gas-Geber:</p>
 
-    L1 = Switch aus AND P4 (linear)<br>
-    L2 = Switch ein AND C1 (linear)<br>
+    L1 = Switch aus AND P4 (linear)
+    L2 = Switch ein AND C1 (linear)
     L3 = L1 OR L2
 
 <b>L3</b> sollte dann als Geber des Gaskanals zugewiesen werden. Somit hat die Ausgabe der App auf <b>C1</b> keinen Effekt, solange der Schalter in Aus-Position ist.
