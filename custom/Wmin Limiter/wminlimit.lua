@@ -144,7 +144,7 @@ local function initForm()
     form.addLabel({ label = "Alarmsound" })
     form.addAudioFilebox(alarmFile, onAlarmFileChanged)
     form.addRow(2)
-    form.addLabel({ label = "Gas-Geber" })
+    form.addLabel({ label = "Motorlaufzeit Trigger" })
     form.addInputbox(engineInput, true, onEngineInputChanged)
     form.addRow(2)
     form.addLabel({ label = "Gas-Output" })
@@ -180,12 +180,12 @@ local function loop()
             system.playNumber(runtime // 1000, 0, "s")
         end
         if engineControl > 0 then
-            system.setControl(engineControl, (not limited and engineInput) and system.getInputsVal(engineInput) or -1, 0)
+            system.setControl(engineControl, limited and 1 or -1, 0)
         end
     else
         limited = false
         if engineControl > 0 then
-            system.setControl(engineControl, engineInput and system.getInputsVal(engineInput) or -1, 0)
+            system.setControl(engineControl, -1, 0)
         end
     end
     lastSwitchVal = switchVal
@@ -213,7 +213,7 @@ local function init()
     system.registerForm(1, MENU_APPS, "Wmin Limiter", initForm)
     system.registerTelemetry(2, "Wmin Limiter", 0, printTelemetry)
     if engineControl ~= 0 then
-        system.registerControl(engineControl, "Wmi Limiter", controls[engineControl + 1])
+        system.registerControl(engineControl, "Wmin Limiter", controls[engineControl + 1])
     end
     energyLogID = system.registerLogVariable("Energie", "Wmi", getLogVariable)
     energyTotalLogID = system.registerLogVariable("Energie/Runde", "Wmi", getLogVariable)
@@ -233,4 +233,4 @@ local function destroy()
     end
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "0.1.1", name = "Wmin Limiter" }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "0.2.0", name = "Wmin Limiter" }

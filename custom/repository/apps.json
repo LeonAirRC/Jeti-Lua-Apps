@@ -58,7 +58,7 @@
                 "en": "Trim steps"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/logo.png",
-            "releaseDate": "Mi Aug 18 00:00:00 2021",
+            "releaseDate": "Mi Aug 18 00:00:00 2021 GMT",
             "version": "0.0.4"
         },
         {
@@ -69,8 +69,8 @@
             "files": [
                 {
                     "destination": "Apps/wminlimit.lc",
-                    "hash": "e321bbb70b71ae75ca85d0eafe85cbe52acfea83",
-                    "size": 5396,
+                    "hash": "a5bcfdc350e93bef05699cc4ccd9db8d1190ac69",
+                    "size": 5335,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/wminlimit.lc"
                 }
             ],
@@ -88,8 +88,8 @@
                 "en": "Wmin Limiter"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/logo.png",
-            "releaseDate": "Mi Aug 18 00:00:00 2021 GMT",
-            "version": "0.1.1"
+            "releaseDate": "Mi Aug 18 00:00:00 2021",
+            "version": "0.2.0"
         }
     ]
 }
