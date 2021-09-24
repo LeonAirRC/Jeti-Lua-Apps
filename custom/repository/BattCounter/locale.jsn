@@ -1,0 +1,35 @@
+{
+    "en" : {
+        "appName" : "Battery Counter",
+        "defaultLabel" : "New battery",
+        "delete1" : "Really delete?",
+        "delete2" : "Selected battery",
+        "cycles" : "Cycles",
+        "battery" : "Battery",
+        "capsens" : "Capacity sensor",
+        "selswitch" : "Selection switch",
+        "cellrange" : "Cells range",
+        "caprange" : "Capacity range",
+        "label" : "Label",
+        "cells" : "Cells",
+        "capacity" : "Capacity",
+        "batteries" : "Batteries"
+    },
+    "de" : {
+        "appName" : "Akku Counter",
+        "defaultLabel" : "Neuer Akku",
+        "delete1" : "Wirklich löschen?",
+        "delete2" : "Gewählter Akku",
+        "cycles" : "Zyklen",
+        "battery" : "Akku",
+        "capsens" : "Kapazitätssensor",
+        "selswitch" : "Auswahlschalter",
+        "cellrange" : "Zellen Bereich",
+        "caprange" : "Kapazitätsbereich",
+        "label" : "Bezeichnung",
+        "cells" : "Zellen",
+        "capacity" : "Kapazität",
+        "batteries" : "Akkus"
+    },
+    "default" : "en"
+}

@@ -88,8 +88,56 @@
                 "en": "Wmin Limiter"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/logo.png",
-            "releaseDate": "Mi Aug 18 00:00:00 2021",
+            "releaseDate": "Mi Aug 18 00:00:00 2021 GMT",
             "version": "0.2.0"
+        },
+        {
+            "author": "LeonAir RC",
+            "description": {
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/doc/BattCounter-de.html"
+            },
+            "files": [
+                {
+                    "destination": "Apps/battcount.lc",
+                    "hash": "6c08df50bd78429b98258766cf86c58f64054485",
+                    "size": 7377,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/battcount.lc"
+                },
+                {
+                    "destination": "Apps/BattCounter/batt.jsn",
+                    "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                    "size": 0,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/BattCounter/batt.jsn"
+                },
+                {
+                    "destination": "Apps/BattCounter/locale.jsn",
+                    "hash": "937969a104c4af3a3a04ac9e833dccf6e3fc89a6",
+                    "size": 1097,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/BattCounter/locale.jsn"
+                },
+                {
+                    "destination": "Apps/BattCounter/log.csv",
+                    "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
+                    "size": 0,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/BattCounter/log.csv"
+                }
+            ],
+            "hw": [
+                674,
+                675,
+                676,
+                677,
+                678,
+                679,
+                680
+            ],
+            "id": 0,
+            "name": {
+                "en": "Battery Counter"
+            },
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/logo.png",
+            "releaseDate": "Do Sep 23 00:00:00 2021",
+            "version": "0.0.1"
         }
     ]
 }
