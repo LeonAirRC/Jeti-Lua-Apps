@@ -111,8 +111,8 @@
                 },
                 {
                     "destination": "Apps/BattCounter/locale.jsn",
-                    "hash": "937969a104c4af3a3a04ac9e833dccf6e3fc89a6",
-                    "size": 1097,
+                    "hash": "3d41361a0163fdf769ef3e179be970ac5069bf52",
+                    "size": 1063,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/BattCounter/locale.jsn"
                 },
                 {
@@ -136,7 +136,7 @@
                 "en": "Battery Counter"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/logo.png",
-            "releaseDate": "Do Sep 23 00:00:00 2021",
+            "releaseDate": "Do Sep 23 00:00:00 2021 GMT",
             "version": "0.0.1"
         }
     ]
