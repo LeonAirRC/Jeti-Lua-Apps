@@ -105,8 +105,8 @@
                 },
                 {
                     "destination": "Apps/BattCounter/batt.jsn",
-                    "hash": "da39a3ee5e6b4b0d3255bfef95601890afd80709",
-                    "size": 0,
+                    "hash": "454dae4c2edf2c8ea4c7f57f8344f5f55842a865",
+                    "size": 4,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/BattCounter/batt.jsn"
                 },
                 {
