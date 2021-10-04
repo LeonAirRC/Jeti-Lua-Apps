@@ -1,0 +1,39 @@
+{
+    "en" : {
+        "appName" : "Battery Cycles",
+        "selectTitle" : "Select battery",
+        "defaultLabel" : "New battery",
+        "delete1" : "Really delete?",
+        "cycles" : "Cycles",
+        "selswitch" : "Selection switch",
+        "cellrange" : "Cells range",
+        "caprange" : "Capacity range",
+        "label" : "Label",
+        "cells" : "Cells",
+        "capacity" : "Capacity",
+        "batteries" : "Batteries",
+        "autoDetect" : "Automatic selection dialog",
+        "battTypesTitle" : "Battery types",
+        "battTypes" : ["Main battery", "Receiver supply 1", "Receiver supply 2", "Engine 1", "Engine 2", "Engine 3", "Engine 4", "Backup", "Retracts", "Light", "Other"],
+        "noTypesSelected" : "No battery types selected"
+    },
+    "de" : {
+        "appName" : "Akkuzyklen",
+        "selectTitle" : "Akku wählen",
+        "defaultLabel" : "Neuer Akku",
+        "delete1" : "Wirklich löschen?",
+        "cycles" : "Zyklen",
+        "selswitch" : "Auswahlschalter",
+        "cellrange" : "Zellen Bereich",
+        "caprange" : "Kapazitätsbereich",
+        "label" : "Bezeichnung",
+        "cells" : "Zellen",
+        "capacity" : "Kapazität",
+        "batteries" : "Akkus",
+        "autoDetect" : "Automatischer Auswahldialog",
+        "battTypesTitle" : "Akkutypen",
+        "battTypes" : ["Hauptakku", "Empfängerstromversorgung 1", "Empfängerstromversorgung 2", "Antrieb 1", "Antrieb 2", "Antrieb 3", "Antrieb 4", "Einziehfahrwerk", "Licht", "Sonstige"],
+        "noTypesSelected" : "Keine Akkutypen ausgewählt"
+    },
+    "default" : "en"
+}

@@ -132,7 +132,7 @@
                 "en": "Thermal Assistant"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
+            "releaseDate": "Do Apr 22 00:00:00 2021",
             "version": "1.4.2"
         },
         {
@@ -210,7 +210,7 @@
                 "en": "Beep Editor"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
+            "releaseDate": "Do Apr 22 00:00:00 2021",
             "version": "1.2.1"
         },
         {
@@ -243,7 +243,7 @@
                 "en": "Audio Player"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
+            "releaseDate": "Do Apr 22 00:00:00 2021",
             "version": "1.1"
         },
         {
@@ -372,6 +372,50 @@
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Mi Mai 26 00:00:00 2021",
             "version": "1.1"
+        },
+        {
+            "author": "LeonAir RC",
+            "description": {
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BattCycles-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BattCycles-en.html"
+            },
+            "files": [
+                {
+                    "destination": "Apps/battcycles.lc",
+                    "hash": "5859fc0691cb77b79fc8fb7acfcd1d0fc7072a1f",
+                    "size": 7526,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/battcycles.lc"
+                },
+                {
+                    "destination": "Apps/BattCycles/batteries.jsn",
+                    "hash": "97d170e1550eee4afc0af065b78cda302a97674c",
+                    "size": 2,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/BattCycles/batteries.jsn"
+                },
+                {
+                    "destination": "Apps/BattCycles/locale.jsn",
+                    "hash": "83c0dfdb7871ab8aecd7d02db7331fa9e8821508",
+                    "size": 1630,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/BattCycles/locale.jsn"
+                }
+            ],
+            "hw": [
+                674,
+                675,
+                676,
+                677,
+                678,
+                679,
+                680
+            ],
+            "id": 0,
+            "name": {
+                "de": "Akkuzyklen",
+                "en": "Battery Cycles"
+            },
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
+            "releaseDate": "Mo Okt 4 00:00:00 2021",
+            "version": "1.0.0"
         }
     ]
 }
