@@ -132,7 +132,7 @@
                 "en": "Thermal Assistant"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.4.2"
         },
         {
@@ -177,7 +177,7 @@
                 "en": "Virtual Sensor"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.4.1"
         },
         {
@@ -210,7 +210,7 @@
                 "en": "Beep Editor"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.2.1"
         },
         {
@@ -243,7 +243,7 @@
                 "en": "Audio Player"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.1"
         },
         {
@@ -394,8 +394,8 @@
                 },
                 {
                     "destination": "Apps/BattCycles/locale.jsn",
-                    "hash": "83c0dfdb7871ab8aecd7d02db7331fa9e8821508",
-                    "size": 1630,
+                    "hash": "d8a3956ace7891682a1e2339a7332690bae97296",
+                    "size": 1592,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/BattCycles/locale.jsn"
                 }
             ],
