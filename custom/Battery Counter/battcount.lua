@@ -26,8 +26,10 @@ local capacitySensor
 local currBattery
 local selectSwitch
 local minCells, maxCells
-local minCap, maxCap
+local minCapa, maxCapa
 local capacity
+local intboxIndices
+local currForm
 
 local battDisplay
 local lastSelectVal
@@ -45,8 +47,16 @@ lang = lang[system.getLocale()] or lang[lang.default]
 collectgarbage()
 
 local function battSelected(value)
+    if currBattery and capacity and capacity > 0 then
+        currBattery.lastCapacity = capacity
+        currBattery.lastUsage = system.getTime()
+    end
     currBattery = value ~= 0 and filteredBatteries[value - 1] or nil
     system.pSave("cbatID", currBattery and currBattery.id or nil)
+    if currBattery and currBattery.lastCapacity > 0 then
+        capacity = currBattery.lastCapacity
+        currBattery.lastUsage = system.getTime()
+    end
 end
 
 -- filters are not applied immediately but on form initialization
@@ -54,6 +64,9 @@ local function minCellsChanged(value)
     if value <= maxCells then
         minCells = value
         system.pSave("minCells", value)
+        form.setButton(3, ":refresh", ENABLED)
+    else
+        form.setValue(intboxIndices[1], minCells)
     end
 end
 
@@ -61,6 +74,9 @@ local function maxCellsChanged(value)
     if value >= minCells then
         maxCells = value
         system.pSave("maxCells", value)
+        form.setButton(3, ":refresh", ENABLED)
+    else
+        form.setValue(intboxIndices[2], maxCells)
     end
 end
 
@@ -68,6 +84,9 @@ local function minCapaChanged(value)
     if value <= maxCapa then
         minCapa = value
         system.pSave("minCapa", value)
+        form.setButton(3, ":refresh", ENABLED)
+    else
+        form.setValue(intboxIndices[3], minCapa)
     end
 end
 
@@ -75,6 +94,9 @@ local function maxCapaChanged(value)
     if value >= minCapa then
         maxCapa = value
         system.pSave("maxCapa", value)
+        form.setButton(3, ":refresh", ENABLED)
+    else
+        form.setValue(intboxIndices[4], maxCapa)
     end
 end
 
@@ -92,17 +114,16 @@ local function updateFiltered()
 end
 
 local function keyPressed(keyCode)
-    if battDisplay then
-        if (keyCode == KEY_5 or keyCode == KEY_ESC) then
-            form.preventDefault()
-            battDisplay = nil
+    if currForm == 1 then
+        if keyCode == KEY_2 then
             form.reinit(2)
+        elseif keyCode == KEY_3 then
+            updateFiltered()
+            form.reinit(1)
         end
-    else
+    elseif currForm == 2 and not battDisplay then
         if keyCode == KEY_1 then
             form.reinit(1)
-        elseif keyCode == KEY_2 then
-            form.reinit(2)
         elseif keyCode == KEY_3 and #batteries < 128 then
             local id = 0
             for i=1, #batteries do
@@ -110,7 +131,7 @@ local function keyPressed(keyCode)
                     id = batteries[i].id + 1
                 end
             end
-            batteries[#batteries+1] = { id = id, label = lang.defaultLabel, cells = 3, capacity = 1000, cycles = 0 }
+            batteries[#batteries+1] = { id = id, label = lang.defaultLabel, cells = 3, capacity = 1000, cycles = 0, lastCapacity = 0, lastUsage = 0 }
             if filter(batteries[#batteries]) then
                 filteredBatteries[#filteredBatteries+1] = batteries[#batteries]
             end
@@ -129,10 +150,15 @@ local function keyPressed(keyCode)
             end
             form.reinit(2)
         end
+    elseif keyCode == KEY_5 or keyCode == KEY_ESC then
+        form.preventDefault()
+        battDisplay = nil
+        updateFiltered()
+        form.reinit(2)
     end
 end
 
-local function printTelemetry(width, height)
+local function printTelemetry(width)
     if currBattery then
         lcd.drawText(5, 5, currBattery.label, lcd.getTextWidth(FONT_BIG, currBattery.label) + 10 > width and FONT_NORMAL or FONT_BIG)
         lcd.drawText(5, 30, string.format("%s: %d", lang.cycles, currBattery.cycles), FONT_BIG)
@@ -140,15 +166,16 @@ local function printTelemetry(width, height)
 end
 
 local function initForm(formID)
+    currForm = formID
     if formID == 1 then
         form.setTitle(lang.appName)
-        updateFiltered()
         local battLabels = {"..."}
         local index = 0
         for i=1, #filteredBatteries do
             battLabels[#battLabels+1] = filteredBatteries[i].label
             if currBattery and filteredBatteries[i].id == currBattery.id then
                 index = i
+                break
             end
         end
         form.addRow(2)
@@ -166,17 +193,19 @@ local function initForm(formID)
             selectSwitch = system.getInputsVal(value) ~= 0.0 and value or nil
             system.pSave("selectsw", selectSwitch)
         end)
+        intboxIndices = {}
         form.addRow(3)
         form.addLabel({ label = lang.cellrange, width = 130 })
-        form.addIntbox(minCells, 1, 64, 3, 0, 1, minCellsChanged)
-        form.addIntbox(maxCells, 1, 64, 3, 0, 1, maxCellsChanged)
+        intboxIndices[1] = form.addIntbox(minCells, 1, 64, 3, 0, 1, minCellsChanged)
+        intboxIndices[2] = form.addIntbox(maxCells, 1, 64, 3, 0, 1, maxCellsChanged)
         form.addRow(3)
         form.addLabel({ label = lang.caprange, width = 130 })
-        form.addIntbox(minCapa, 1, 32000, 1000, 0, 10, minCapaChanged)
-        form.addIntbox(maxCapa, 1, 32000, 1000, 0, 10, maxCapaChanged)
+        intboxIndices[3] = form.addIntbox(minCapa, 1, 32000, 1000, 0, 10, minCapaChanged)
+        intboxIndices[4] = form.addIntbox(maxCapa, 1, 32000, 1000, 0, 10, maxCapaChanged)
 
         form.setButton(1, "Set", DISABLED)
         form.setButton(2, "Batt", ENABLED)
+        form.setButton(3, ":refresh", DISABLED)
     elseif formID == 2 then
         if battDisplay then
             form.setTitle(battDisplay.label)
@@ -224,10 +253,9 @@ local function keyPressedSelect(keyCode)
 end
 
 local function initSelectForm()
-    updateFiltered()
     form.addRow(1)
     form.addLabel({ label = "..." })
-    for i,battery in ipairs(batteries) do
+    for i,battery in ipairs(filteredBatteries) do
         form.addRow(1)
         form.addLabel({ label = string.format("%s: %d", battery.label, battery.cycles) })
         if currBattery and battery.id == currBattery.id then
@@ -261,9 +289,13 @@ local function init()
     capacitySensor = system.pLoad("capsens", 0)
     local id = system.pLoad("cbatID")
 
-    logfile = io.open("Apps/BattCounter/log.csv", "a")
-
-    batteries = json.decode(io.readall("Apps/BattCounter/batt.jsn"))
+    local content = io.readall("Apps/BattCounter/batt.jsn")
+    if content then
+        batteries = json.decode(content)
+    else
+        io.close(io.open("Apps/BattCounter/batt.jsn", "w")) -- create the file if it does not exist
+        batteries = {}
+    end
     updateFiltered()
     for i=1, #batteries do
         if batteries[i].id == id then
@@ -271,7 +303,7 @@ local function init()
             break
         end
     end
-    system.registerForm(1, MENU_APPS, lang.appName, initForm, keyPressed)
+    system.registerForm(1, MENU_APPS, lang.appName, initForm, keyPressed, nil, updateFiltered)
     system.registerTelemetry(1, lang.appName, 2, printTelemetry)
 end
 
@@ -284,12 +316,12 @@ local function loop()
 
     local cap = capacitySensor ~= 0 and system.getSensorValueByID(sensorIDs[capacitySensor], sensorParams[capacitySensor]) or nil
     cap = (cap and cap.valid) and cap.value or capacity
-    if cap and capacity and cap < capacity and currBattery then
+    if cap and capacity and cap < capacity and cap > 0 and currBattery then
         currBattery.cycles = currBattery.cycles + 1
         local logfile = io.open("Apps/BattCounter/log.csv", "a")
         if logfile then
-            io.write(logfile, math.floor(system.getTime()), ",", system.getProperty("Model"), ",", currBattery.label, ",", math.floor(currBattery.cells), ",",
-            math.floor(currBattery.capacity), ",", math.floor(currBattery.cycles), ",", math.floor(capacity), "\n")
+            io.write(logfile, math.floor(currBattery.lastUsage), ",", system.getProperty("Model"), ",", currBattery.label, ",", math.floor(currBattery.cells), ",",
+            math.floor(currBattery.capacity), ",", math.floor(currBattery.cycles), ",", math.floor(currBattery.lastCapacity), "\n")
             io.close(logfile)
         end
     end
@@ -297,9 +329,14 @@ local function loop()
 end
 
 local function destroy()
+    if currBattery and capacity and capacity > 0 then
+        currBattery.lastCapacity = capacity
+        currBattery.lastUsage = system.getTime()
+    end
+
     local file = io.open("Apps/BattCounter/batt.jsn", "w")
     io.write(file, json.encode(batteries))
     io.close(file)
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "0.0.1", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "0.0.4", name = lang.appName }

@@ -103,31 +103,36 @@ end
 local function keyPressed(keyCode)
     if keyCode == KEY_1 then -- go to settings page
         form.reinit(1)
-    elseif keyCode == KEY_2 and currForm == 1 then -- go to battery list
-        form.reinit(2)
-    elseif keyCode == KEY_2 and currForm == 2 and #batteries < 512 then -- add new battery
-        batteries[#batteries+1] = { label = lang.defaultLabel, cycles = 0, capacity = 1000, cells = 3 }
-        form.reinit(2)
-    elseif keyCode == KEY_3 and #batteries > 0 and form.question(lang.delete1, nil, batteries[form.getFocusedRow()].label, 0, false, 1000) == 1 then -- delete focused battery
-        table.remove(batteries, form.getFocusedRow())
-        form.reinit(2)
-    elseif keyCode == KEY_4 and #batteries > 0 and form.getFocusedRow() > 1 then -- swap focused battery and the one above
-        local batt = table.remove(batteries, form.getFocusedRow())
-        table.insert(batteries, form.getFocusedRow() - 1, batt)
-        form.reinit(2)
-        form.setFocusedRow(form.getFocusedRow() - 1)
-    elseif keyCode == KEY_5 and currForm == 2 and not displayedBattery then -- swap focused battery and the one below
-        form.preventDefault()
-        if form.getFocusedRow() < #batteries then
-            local batt = table.remove(batteries, form.getFocusedRow())
-            table.insert(batteries, form.getFocusedRow() + 1, batt)
+    elseif currForm == 2 and not displayedBattery then
+        if keyCode == KEY_2 and #batteries < 512 then -- add new battery
+            batteries[#batteries+1] = { label = lang.defaultLabel, cycles = 0, capacity = 1000, cells = 3 }
             form.reinit(2)
-            form.setFocusedRow(form.getFocusedRow() + 1)
+        elseif keyCode == KEY_3 and #batteries > 0 and form.question(lang.delete1, nil, batteries[form.getFocusedRow()].label, 0, false, 1000) == 1 then -- delete focused battery
+            table.remove(batteries, form.getFocusedRow())
+            form.reinit(2)
+        elseif keyCode == KEY_4 and #batteries > 0 and form.getFocusedRow() > 1 then -- swap focused battery and the one above
+            local index = form.getFocusedRow()
+            local batt = batteries[index]
+            batteries[index] = batteries[index - 1]
+            batteries[index - 1] = batt
+            form.reinit(2)
+            form.setFocusedRow(index - 1)
+        elseif keyCode == KEY_5 then -- swap focused battery and the one below
+            form.preventDefault()
+            if form.getFocusedRow() < #batteries then
+                local index = form.getFocusedRow()
+                local batt = batteries[index]
+                batteries[index] = batteries[index + 1]
+                batteries[index + 1] = batt
+                form.reinit(2)
+                form.setFocusedRow(index + 1)
+            end
         end
-    elseif (keyCode == KEY_ESC or keyCode == KEY_5) and currForm == 2 and displayedBattery then -- close the battery details and show the list
-        form.preventDefault()
-        displayedBattery = nil
-        updateFiltered()
+    elseif currForm == 2 and (keyCode == KEY_ESC or keyCode == KEY_5) and displayedBattery then -- close the battery details and show the list
+            form.preventDefault()
+            displayedBattery = nil
+            form.reinit(2)
+    elseif keyCode == KEY_2 then -- go to battery list
         form.reinit(2)
     end
 end
@@ -136,7 +141,6 @@ local function initForm(formID)
     currForm = formID
     if formID == 1 then
         form.setTitle(lang.appName)
-        updateFiltered()
         form.addRow(2)
         form.addLabel({ label = lang.selswitch })
         form.addInputbox(selectSwitch, false, function(value)
@@ -145,13 +149,13 @@ local function initForm(formID)
         end)
         intboxIndices = {}
         form.addRow(3)
-        form.addLabel({ label = lang.cellrange, width = 130 })
-        intboxIndices[1] = form.addIntbox(minCells, 1, 64, 3, 0, 1, minCellsChanged)
-        intboxIndices[2] = form.addIntbox(maxCells, 1, 64, 3, 0, 1, maxCellsChanged)
+        form.addLabel({ label = lang.cellrange, width = 170 })
+        intboxIndices[1] = form.addIntbox(minCells, 1, 64, 3, 0, 1, minCellsChanged, { width = 70 })
+        intboxIndices[2] = form.addIntbox(maxCells, 1, 64, 3, 0, 1, maxCellsChanged, { width = 70 })
         form.addRow(3)
-        form.addLabel({ label = lang.caprange, width = 130 })
-        intboxIndices[3] = form.addIntbox(minCapacity, 1, 32000, 1000, 0, 10, minCapacityChanged)
-        intboxIndices[4] = form.addIntbox(maxCapacity, 1, 32000, 1000, 0, 10, maxCapacityChanged)
+        form.addLabel({ label = lang.caprange, width = 170 })
+        intboxIndices[3] = form.addIntbox(minCapacity, 1, 32000, 1000, 0, 10, minCapacityChanged, { width = 70 })
+        intboxIndices[4] = form.addIntbox(maxCapacity, 1, 32000, 1000, 0, 10, maxCapacityChanged, { width = 70 })
         form.addRow(2)
         form.addLabel({ label = lang.autoDetect, width = 280 })
         autoDetectIndex = form.addCheckbox(autoDetect, function(value)
@@ -258,7 +262,13 @@ local function init()
     selectSwitch = system.pLoad("selectsw")
     autoDetect = system.pLoad("autodec", 1) == 1
     battTypes = system.pLoad("batttypes") or getDefaultTypeSelection()
-    batteries = json.decode(io.readall("Apps/BattCycles/batteries.jsn"))
+    local content = io.readall("Apps/BattCycles/batteries.jsn")
+    if content then
+        batteries = json.decode(content)
+    else
+        io.close(io.open("Apps/BattCycles/batteries.jsn", "w"))
+        batteries = {}
+    end
     updateFiltered()
     system.registerForm(1, MENU_APPS, lang.appName, initForm, keyPressed, nil, updateFiltered) -- updateFiltered is passed as the close-form callback
 end
@@ -293,4 +303,4 @@ local function destroy()
     end
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0.0", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0.2", name = lang.appName }

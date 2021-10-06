@@ -287,15 +287,9 @@
             "files": [
                 {
                     "destination": "Apps/battcycles.lc",
-                    "hash": "d56deeb3be18b088971f25284922890bf7bf23ca",
-                    "size": 7394,
+                    "hash": "9a672bd8d629c72a95e4acd1ebab9ca639a30087",
+                    "size": 7503,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/battcycles.lc"
-                },
-                {
-                    "destination": "Apps/BattCycles/batteries.jsn",
-                    "hash": "97d170e1550eee4afc0af065b78cda302a97674c",
-                    "size": 2,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/BattCycles/batteries.jsn"
                 },
                 {
                     "destination": "Apps/BattCycles/locale.jsn",
@@ -320,7 +314,7 @@
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Mo Okt 4 00:00:00 2021",
-            "version": "1.0.1"
+            "version": "1.0.2"
         },
         {
             "author": "LeonAir RC",
