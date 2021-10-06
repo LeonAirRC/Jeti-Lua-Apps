@@ -153,12 +153,6 @@
                     "hash": "2e3a5c864ac70317fa7a54296e724f76603c032e",
                     "size": 1415,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/VirtualSensor/lang.jsn"
-                },
-                {
-                    "destination": "Apps/VirtualSensor/sensors.json",
-                    "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
-                    "size": 2,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/VirtualSensor/sensors.json"
                 }
             ],
             "hw": [
