@@ -281,6 +281,50 @@
         {
             "author": "LeonAir RC",
             "description": {
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BattCycles-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BattCycles-en.html"
+            },
+            "files": [
+                {
+                    "destination": "Apps/battcycles.lc",
+                    "hash": "d56deeb3be18b088971f25284922890bf7bf23ca",
+                    "size": 7394,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/battcycles.lc"
+                },
+                {
+                    "destination": "Apps/BattCycles/batteries.jsn",
+                    "hash": "97d170e1550eee4afc0af065b78cda302a97674c",
+                    "size": 2,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/BattCycles/batteries.jsn"
+                },
+                {
+                    "destination": "Apps/BattCycles/locale.jsn",
+                    "hash": "d8a3956ace7891682a1e2339a7332690bae97296",
+                    "size": 1592,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/BattCycles/locale.jsn"
+                }
+            ],
+            "hw": [
+                674,
+                675,
+                676,
+                677,
+                678,
+                679,
+                680
+            ],
+            "id": 0,
+            "name": {
+                "de": "Akkuzyklen",
+                "en": "Battery Cycles"
+            },
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
+            "releaseDate": "Mo Okt 4 00:00:00 2021",
+            "version": "1.0.1"
+        },
+        {
+            "author": "LeonAir RC",
+            "description": {
                 "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/PropSwitch-de.html",
                 "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/PropSwitch-en.html"
             },
@@ -372,50 +416,6 @@
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Mi Mai 26 00:00:00 2021",
             "version": "1.1"
-        },
-        {
-            "author": "LeonAir RC",
-            "description": {
-                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BattCycles-de.html",
-                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/BattCycles-en.html"
-            },
-            "files": [
-                {
-                    "destination": "Apps/battcycles.lc",
-                    "hash": "5859fc0691cb77b79fc8fb7acfcd1d0fc7072a1f",
-                    "size": 7526,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/battcycles.lc"
-                },
-                {
-                    "destination": "Apps/BattCycles/batteries.jsn",
-                    "hash": "97d170e1550eee4afc0af065b78cda302a97674c",
-                    "size": 2,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/BattCycles/batteries.jsn"
-                },
-                {
-                    "destination": "Apps/BattCycles/locale.jsn",
-                    "hash": "d8a3956ace7891682a1e2339a7332690bae97296",
-                    "size": 1592,
-                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/BattCycles/locale.jsn"
-                }
-            ],
-            "hw": [
-                674,
-                675,
-                676,
-                677,
-                678,
-                679,
-                680
-            ],
-            "id": 0,
-            "name": {
-                "de": "Akkuzyklen",
-                "en": "Battery Cycles"
-            },
-            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Mo Okt 4 00:00:00 2021",
-            "version": "1.0.0"
         }
     ]
 }

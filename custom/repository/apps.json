@@ -99,8 +99,8 @@
             "files": [
                 {
                     "destination": "Apps/battcount.lc",
-                    "hash": "0831ad91698d343fb56ad7b4bb0ae8d7676d4b8f",
-                    "size": 7767,
+                    "hash": "57bb3abb6662c3c794daa930483a5ab3e2e113d8",
+                    "size": 8130,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/battcount.lc"
                 },
                 {
@@ -136,7 +136,7 @@
                 "en": "Battery Counter"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/logo.png",
-            "releaseDate": "Do Sep 23 00:00:00 2021",
+            "releaseDate": "Do Sep 23 00:00:00 2021 GMT",
             "version": "0.0.2"
         }
     ]
