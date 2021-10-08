@@ -281,7 +281,7 @@
             "files": [
                 {
                     "destination": "Apps/battcycles.lc",
-                    "hash": "9a672bd8d629c72a95e4acd1ebab9ca639a30087",
+                    "hash": "72dc346fbbe545402de8da09a6e7e1f93a0194cf",
                     "size": 7503,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/battcycles.lc"
                 },
@@ -308,7 +308,7 @@
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Mo Okt 4 00:00:00 2021",
-            "version": "1.0.2"
+            "version": "1.0.3"
         },
         {
             "author": "LeonAir RC",

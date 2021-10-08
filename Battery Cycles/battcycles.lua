@@ -275,9 +275,9 @@ end
 
 local function loop()
     local selectVal = selectSwitch and system.getInputsVal(selectSwitch) or nil
-    local on = autoDetect and system.getTxTelemetry().rx1Voltage > 0
+    local on = system.getTxTelemetry().rx1Voltage > 0
     -- show selection form if it is not already active and the switch was enabled or the receiver voltage is positive
-    if form.getActiveForm() ~= 2 and ((selectVal == 1 and lastSelectVal == -1) or (on and not modelOn)) then
+    if autoDetect and form.getActiveForm() ~= 2 and ((selectVal == 1 and lastSelectVal == -1) or (on and not modelOn)) then
         typeIndices = {}
         for i = 1, #battTypes do
             if battTypes[i] == 1 then
@@ -303,4 +303,4 @@ local function destroy()
     end
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0.2", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0.3", name = lang.appName }
