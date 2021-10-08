@@ -12,7 +12,7 @@
         "cells" : "Cells",
         "capacity" : "Capacity",
         "batteries" : "Batteries",
-        "autoDetect" : "Automatic selection dialog",
+        "autoDetect" : "Detect power-on",
         "battTypesTitle" : "Battery types",
         "battTypes" : ["Main battery", "Receiver supply 1", "Receiver supply 2", "Engine 1", "Engine 2", "Engine 3", "Engine 4", "Backup", "Retracts", "Light", "Other"],
         "noTypesSelected" : "No battery types selected"
@@ -30,7 +30,7 @@
         "cells" : "Zellen",
         "capacity" : "Kapazität",
         "batteries" : "Akkus",
-        "autoDetect" : "Automatischer Auswahldialog",
+        "autoDetect" : "Einschalten erkennen",
         "battTypesTitle" : "Akkutypen",
         "battTypes" : ["Hauptakku", "Empfängerstromversorgung 1", "Empfängerstromversorgung 2", "Antrieb 1", "Antrieb 2", "Antrieb 3", "Antrieb 4", "Einziehfahrwerk", "Licht", "Sonstige"],
         "noTypesSelected" : "Keine Akkutypen ausgewählt"
