@@ -99,8 +99,8 @@
             "files": [
                 {
                     "destination": "Apps/battcount.lc",
-                    "hash": "75c7017a947b86d38eb1f4b54d974f411bee3a75",
-                    "size": 8202,
+                    "hash": "43b2fad8cc28fa42e5779505ee488a591e98b804",
+                    "size": 8211,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/battcount.lc"
                 },
                 {
@@ -131,7 +131,7 @@
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/custom/repository/logo.png",
             "releaseDate": "Do Sep 23 00:00:00 2021",
-            "version": "0.0.4"
+            "version": "0.0.5"
         }
     ]
 }
