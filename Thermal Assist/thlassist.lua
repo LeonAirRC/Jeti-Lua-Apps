@@ -217,7 +217,7 @@ end
 
 -------------------------------------------------------------------------------------------------------
 -- Announcement of the bearing and distance to the optimal point.
--- The expected climb rate at that point is also annouced if the best-subsequence algorith is selected.
+-- The expected climb rate at that point is also announced if the best-subsequence algorith is selected.
 -------------------------------------------------------------------------------------------------------
 local function voiceOutput()
     if avgPoint and bestPoint then

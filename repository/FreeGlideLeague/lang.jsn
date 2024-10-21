@@ -1,0 +1,36 @@
+{
+  "en": {
+    "appName": "Free Glide League",
+    "enlSensor": "ENL Sensor",
+    "altSensor": "Altitude Sensor",
+    "gpsLatitude": "GPS Latitude",
+    "gpsLongitude": "GPS Longitude",
+    "startSwitch": "Start Switch",
+    "resetSwitch": "Reset Switch",
+    "enlAlarmFile": "ENL Alarm",
+    "climbAlarmFile": "Climb Alarm",
+    "entryTime": "Entry time",
+    "distanceLabel": "Distance",
+    "distance": "Distance",
+    "avgSpeed": "Ø Speed",
+    "altitude": "Altitude",
+    "time": "Time"
+  },
+  "de": {
+    "appName": "Free Glide League",
+    "enlSensor": "ENL Sensor",
+    "altSensor": "Höhe Sensor",
+    "gpsLatitude": "GPS Breitengrad",
+    "gpsLongitude": "GPS Längengrad",
+    "startSwitch": "Start Schalter",
+    "resetSwitch": "Reset Schalter",
+    "enlAlarmFile": "ENL Alarm",
+    "climbAlarmFile": "Steigen Alarm",
+    "entryTime": "Einflugzeit",
+    "distanceLabel": "Strecke",
+    "distance": "Strecke",
+    "avgSpeed": "Ø Geschwindigkeit",
+    "altitude": "Höhe",
+    "time": "Zeit"
+  }
+}

@@ -123,7 +123,11 @@
                 677,
                 678,
                 679,
-                680
+                680,
+                652,
+                653,
+                3857,
+                3858
             ],
             "id": 0,
             "name": {
@@ -132,7 +136,7 @@
                 "en": "Thermal Assistant"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
+            "releaseDate": "Do Apr 22 00:00:00 2021",
             "version": "1.4.2"
         },
         {
@@ -162,7 +166,11 @@
                 677,
                 678,
                 679,
-                680
+                680,
+                652,
+                653,
+                3857,
+                3858
             ],
             "id": 0,
             "name": {
@@ -171,7 +179,7 @@
                 "en": "Virtual Sensor"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
+            "releaseDate": "Do Apr 22 00:00:00 2021",
             "version": "1.4.1"
         },
         {
@@ -195,7 +203,11 @@
                 677,
                 678,
                 679,
-                680
+                680,
+                652,
+                653,
+                3857,
+                3858
             ],
             "id": 0,
             "name": {
@@ -204,7 +216,7 @@
                 "en": "Beep Editor"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
+            "releaseDate": "Do Apr 22 00:00:00 2021",
             "version": "1.2.1"
         },
         {
@@ -228,7 +240,11 @@
                 677,
                 678,
                 679,
-                680
+                680,
+                652,
+                653,
+                3857,
+                3858
             ],
             "id": 0,
             "name": {
@@ -237,7 +253,7 @@
                 "en": "Audio Player"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
+            "releaseDate": "Do Apr 22 00:00:00 2021",
             "version": "1.1"
         },
         {
@@ -261,7 +277,11 @@
                 677,
                 678,
                 679,
-                680
+                680,
+                652,
+                653,
+                3857,
+                3858
             ],
             "id": 0,
             "name": {
@@ -269,7 +289,7 @@
                 "en": "Vario Integrator"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
+            "releaseDate": "Do Apr 22 00:00:00 2021",
             "version": "1.1"
         },
         {
@@ -299,7 +319,11 @@
                 677,
                 678,
                 679,
-                680
+                680,
+                652,
+                653,
+                3857,
+                3858
             ],
             "id": 0,
             "name": {
@@ -331,7 +355,11 @@
                 677,
                 678,
                 679,
-                680
+                680,
+                652,
+                653,
+                3857,
+                3858
             ],
             "id": 0,
             "name": {
@@ -364,7 +392,11 @@
                 677,
                 678,
                 679,
-                680
+                680,
+                652,
+                653,
+                3857,
+                3858
             ],
             "id": 0,
             "name": {
@@ -374,6 +406,48 @@
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Di Jun 1 00:00:00 2021",
             "version": "1.0"
+        },
+        {
+            "author": "LeonAir RC",
+            "description": {
+                "de": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/FreeGlideLeague-de.html",
+                "en": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/doc/FreeGlideLeague-en.html"
+            },
+            "files": [
+                {
+                    "destination": "Apps/fgleague.lc",
+                    "hash": "b2a13a4620d9079d62a327d7a5c2edeec8c05761",
+                    "size": 5933,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/fgleague.lc"
+                },
+                {
+                    "destination": "Apps/FreeGlideLeague/lang.jsn",
+                    "hash": "fb3ac43e5e78b644723b319fc238d776e9808826",
+                    "size": 1045,
+                    "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/FreeGlideLeague/lang.jsn"
+                }
+            ],
+            "hw": [
+                674,
+                675,
+                676,
+                677,
+                678,
+                679,
+                680,
+                652,
+                653,
+                3857,
+                3858
+            ],
+            "id": 0,
+            "name": {
+                "de": "Free Glide League",
+                "en": "Free Glide League"
+            },
+            "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
+            "releaseDate": "Mo Okt 21 00:00:00 2024",
+            "version": "1.0.0"
         },
         {
             "author": "LeonAir RC",
@@ -395,10 +469,15 @@
                 677,
                 678,
                 679,
-                680
+                680,
+                652,
+                653,
+                3857,
+                3858
             ],
             "id": 0,
             "name": {
+                "de": "DJM Timer",
                 "en": "DJM Timer"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
