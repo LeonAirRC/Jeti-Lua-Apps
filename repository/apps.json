@@ -136,7 +136,7 @@
                 "en": "Thermal Assistant"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.4.2"
         },
         {
@@ -179,7 +179,7 @@
                 "en": "Virtual Sensor"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.4.1"
         },
         {
@@ -216,7 +216,7 @@
                 "en": "Beep Editor"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.2.1"
         },
         {
@@ -253,7 +253,7 @@
                 "en": "Audio Player"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.1"
         },
         {
@@ -289,7 +289,7 @@
                 "en": "Vario Integrator"
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
-            "releaseDate": "Do Apr 22 00:00:00 2021",
+            "releaseDate": "Do Apr 22 00:00:00 2021 GMT",
             "version": "1.1"
         },
         {
@@ -422,8 +422,8 @@
                 },
                 {
                     "destination": "Apps/FreeGlideLeague/lang.jsn",
-                    "hash": "fb3ac43e5e78b644723b319fc238d776e9808826",
-                    "size": 1045,
+                    "hash": "5bb4de6a85407f85fbe43a338a2693a7df4d5650",
+                    "size": 1010,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/FreeGlideLeague/lang.jsn"
                 }
             ],
