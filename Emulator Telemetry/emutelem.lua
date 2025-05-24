@@ -112,7 +112,7 @@ end
 system.playFile = function(fileName, playbackType)
     assert(type(fileName) == "string", "Error in system.playFile: expected string: fileName")
     assert(type(playbackType) == "number" and playbackType == math.ceil(playbackType), "Error in system.playFile: expected integer: playbackType")
-    assert(playbackType == AUDIO_BACKGROUND or playbackType == AUDIO_QUEUE or playbackType == AUDIO_QUEUE, "Error in system.playFile: playbackType " .. tostring(playbackType) .. " not allowed")
+    assert(playbackType == AUDIO_BACKGROUND or playbackType == AUDIO_IMMEDIATE or playbackType == AUDIO_QUEUE, "Error in system.playFile: playbackType " .. tostring(playbackType) .. " not allowed")
     print(string.format("playFile(fileName : %s, playbackType : %s)", tostring(fileName), tostring(playbackType or "nil")))
 end
 
@@ -196,4 +196,4 @@ local function destroy()
     collectgarbage()
 end
 
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.1", name = "Emulated Telemetry" }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.2", name = "Emulated Telemetry" }

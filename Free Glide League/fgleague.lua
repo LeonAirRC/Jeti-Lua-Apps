@@ -11,6 +11,8 @@ local resetSwitch
 local enlAlarmFile
 local climbAlarmFile
 local entryTime
+local avgSpeedAnnouncementSwitch
+local lastAvgSpeedAnnouncementVal
 
 local gpsSensorLabels
 local otherSensorLabels
@@ -82,6 +84,11 @@ local function onEntryTimeChanged(value)
     system.pSave("entrytime", entryTime)
 end
 
+local function onAvgSpeedAnnouncementSwitchChanged(value)
+    avgSpeedAnnouncementSwitch = value
+    system.pSave("avgspeedsw", avgSpeedAnnouncementSwitch)
+end
+
 local function printTelemetryRow(row, width, label, value, unit)
     local y = row * ROW_HEIGHT
     value = value or "-"
@@ -111,6 +118,10 @@ local function printTelemetry(width, _)
 end
 
 local function loop()
+    local avgSpeedAnnouncementVal = avgSpeedAnnouncementSwitch and system.getInputsVal(avgSpeedAnnouncementSwitch) or nil
+    local announceAvgSpeed = avgSpeedAnnouncementVal == 1 and lastAvgSpeedAnnouncementVal ~= 1
+    lastAvgSpeedAnnouncementVal = avgSpeedAnnouncementVal
+
     if resetSwitch and system.getInputsVal(resetSwitch) == 1 then
         distance = 0
         lastAltitude = nil
@@ -159,7 +170,7 @@ local function loop()
         else
             firstEnlExceedTime = nil
         end
-        if lastLoopTime ~= nil and currentTime // 1000 > lastLoopTime // 1000 then
+        if lastLoopTime ~= nil and (currentTime - startTime) // 1000 > (lastLoopTime - startTime) // 1000 then
             local gpsPoint = (latSensorIndex ~= 0 and lonSensorIndex ~= 0) and
                     gps.getPosition(gpsSensorIDs[latSensorIndex], gpsSensorParams[latSensorIndex], gpsSensorParams[lonSensorIndex])
                     or nil
@@ -175,6 +186,11 @@ local function loop()
                 end
                 lastGpsPoint = gpsPoint
             end
+        end
+
+        if announceAvgSpeed then
+            local avgSpeed = distance * 3600 / ((currentTime - startTime) - entryTime * 1000)
+            system.playNumber(avgSpeed, 0, "km/h", "Speed")
         end
     end
 
@@ -211,6 +227,9 @@ local function initForm()
     form.addRow(2)
     form.addLabel({ label = lang.entryTime })
     form.addIntbox(entryTime, 1, 60, 10, 0, 1, onEntryTimeChanged, { label = "s" })
+    form.addRow(2)
+    form.addLabel({ label = lang.avgSpeedAnnouncementSwitch, width = 240 })
+    form.addInputbox(avgSpeedAnnouncementSwitch, false, onAvgSpeedAnnouncementSwitchChanged)
 end
 
 local function init()
@@ -242,6 +261,7 @@ local function init()
     enlAlarmFile = system.pLoad("enlalarm", "")
     climbAlarmFile = system.pLoad("climbalarm", "")
     entryTime = system.pLoad("entrytime", 10)
+    avgSpeedAnnouncementSwitch = system.pLoad("avgspeedsw")
 
     if enlSensorIndex > #otherSensorIDs then
         enlSensorIndex = 0
@@ -265,4 +285,4 @@ local function destroy()
 end
 
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.0.0", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.0", name = lang.appName }
