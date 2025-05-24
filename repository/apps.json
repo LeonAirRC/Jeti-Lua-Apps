@@ -416,14 +416,14 @@
             "files": [
                 {
                     "destination": "Apps/fgleague.lc",
-                    "hash": "b2a13a4620d9079d62a327d7a5c2edeec8c05761",
-                    "size": 5933,
+                    "hash": "eab4fa82843e8230ead5286fcd29e0b6773794bb",
+                    "size": 6360,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/fgleague.lc"
                 },
                 {
                     "destination": "Apps/FreeGlideLeague/lang.jsn",
-                    "hash": "5bb4de6a85407f85fbe43a338a2693a7df4d5650",
-                    "size": 1010,
+                    "hash": "c94e94e229f8f8f202793b2cf902636b1009ffa0",
+                    "size": 1128,
                     "url": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/FreeGlideLeague/lang.jsn"
                 }
             ],
@@ -447,7 +447,7 @@
             },
             "previewIcon": "https://leonairrc.github.io/Jeti-Lua-Apps/repository/logo.png",
             "releaseDate": "Mo Okt 21 00:00:00 2024",
-            "version": "1.0.0"
+            "version": "1.1.0"
         },
         {
             "author": "LeonAir RC",
