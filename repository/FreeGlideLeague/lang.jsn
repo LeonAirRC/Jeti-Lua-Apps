@@ -1,6 +1,10 @@
 {
   "en": {
     "appName": "Free Glide League",
+    "sensors": "Sensors",
+    "switches": "Switches",
+    "audio": "Audio and Alarms",
+    "parameters": "Other Parameters",
     "enlSensor": "ENL Sensor",
     "altSensor": "Altitude Sensor",
     "gpsLatitude": "GPS Latitude",
@@ -9,6 +13,13 @@
     "resetSwitch": "Reset Switch",
     "enlAlarmFile": "ENL Alarm",
     "climbAlarmFile": "Climb Alarm",
+    "startSound": "Start Sound",
+    "countdownStart": "Start countdown",
+    "countdownStartModes": [
+      "Off",
+      "Voice",
+      "Beep"
+    ],
     "entryTime": "Entry time",
     "avgSpeedAnnouncementSwitch": "Announce Ø Speed",
     "distanceLabel": "Distance",
@@ -19,6 +30,10 @@
   },
   "de": {
     "appName": "Free Glide League",
+    "sensors": "Sensoren",
+    "switches": "Schalter",
+    "audio": "Audio and Alarme",
+    "parameters": "Weitere Parameter",
     "enlSensor": "ENL Sensor",
     "altSensor": "Höhe Sensor",
     "gpsLatitude": "GPS Breitengrad",
@@ -27,6 +42,13 @@
     "resetSwitch": "Reset Schalter",
     "enlAlarmFile": "ENL Alarm",
     "climbAlarmFile": "Steigen Alarm",
+    "startSound": "Start Sound",
+    "countdownStart": "Start Countdown",
+    "countdownStartModes": [
+      "Aus",
+      "Stimme",
+      "Beep"
+    ],
     "entryTime": "Einflugzeit",
     "avgSpeedAnnouncementSwitch": "Ansage Ø Geschwindigkeit",
     "distanceLabel": "Strecke",

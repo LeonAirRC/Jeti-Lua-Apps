@@ -2,17 +2,26 @@
 Copyright (c) 2024 LeonAirRC
 ]]
 
+local IDLE = 0
+local ENTRY = 1
+local FLIGHT = 2
+
 local enlSensorIndex
 local altSensorIndex
 local latSensorIndex
 local lonSensorIndex
 local startSwitch
 local resetSwitch
+local avgSpeedSwitch
 local enlAlarmFile
 local climbAlarmFile
+local startSound
+local countdownStart
 local entryTime
-local avgSpeedAnnouncementSwitch
-local lastAvgSpeedAnnouncementVal
+
+local lastStartSwVal
+local lastResetSwVal
+local lastAvgSpeedSwVal
 
 local gpsSensorLabels
 local otherSensorLabels
@@ -21,6 +30,7 @@ local gpsSensorParams
 local otherSensorIDs
 local otherSensorParams
 
+local state
 local lastGpsPoint
 local lastAltitude
 local lastLoopTime
@@ -40,53 +50,99 @@ local TELEM_UNIT_Y_OFFSET = (ROW_HEIGHT + lcd.getTextHeight(FONT_BIG)) // 2 - 1 
 local TELEM_UNIT_WIDTH = lcd.getTextWidth(FONT_NORMAL, "km/h")
 
 local function onEnlSensorChanged(value)
+    if state ~= IDLE then
+        return
+    end
     enlSensorIndex = value - 1
     system.pSave("enl", enlSensorIndex)
 end
 
 local function onAltSensorChanged(value)
+    if state ~= IDLE then
+        return
+    end
     altSensorIndex = value - 1
     system.pSave("alt", altSensorIndex)
 end
 
 local function onLatSensorChanged(value)
+    if state ~= IDLE then
+        return
+    end
     latSensorIndex = value - 1
     system.pSave("lat", latSensorIndex)
 end
 
 local function onLonSensorChanged(value)
+    if state ~= IDLE then
+        return
+    end
     lonSensorIndex = value - 1
     system.pSave("lon", lonSensorIndex)
 end
 
 local function onStartSwitchChanged(value)
+    if state ~= IDLE then
+        return
+    end
     startSwitch = system.getInputsVal(value) ~= 0.0 and value or nil
     system.pSave("startsw", startSwitch)
 end
 
 local function onResetSwitchChanged(value)
+    if state ~= IDLE then
+        return
+    end
     resetSwitch = system.getInputsVal(value) ~= 0.0 and value or nil
     system.pSave("resetsw", resetSwitch)
 end
 
+local function onAvgSpeedSwitchChanged(value)
+    if state ~= IDLE then
+        return
+    end
+    avgSpeedSwitch = value
+    system.pSave("avgspeedsw", avgSpeedSwitch)
+end
+
 local function onEnlAlarmFileChanged(value)
+    if state ~= IDLE then
+        return
+    end
     enlAlarmFile = value
     system.pSave("enlalarm", enlAlarmFile)
 end
 
 local function onClimbAlarmFileChanged(value)
+    if state ~= IDLE then
+        return
+    end
     climbAlarmFile = value
     system.pSave("climbalarm", climbAlarmFile)
 end
 
-local function onEntryTimeChanged(value)
-    entryTime = value
-    system.pSave("entrytime", entryTime)
+local function onStartSoundChanged(value)
+    if state ~= IDLE then
+        return
+    end
+    startSound = value
+    system.pSave("startSound", startSound)
 end
 
-local function onAvgSpeedAnnouncementSwitchChanged(value)
-    avgSpeedAnnouncementSwitch = value
-    system.pSave("avgspeedsw", avgSpeedAnnouncementSwitch)
+local function onCountdownStartChanged(value)
+    if state ~= IDLE then
+        return
+    end
+    countdownStart = value - 1
+    system.pSave("countdownStart", countdownStart)
+end
+
+local function onEntryTimeChanged(value)
+    if state ~= IDLE then
+        return
+    end
+    entryTime = value
+    system.pSave("entrytime", entryTime)
 end
 
 local function printTelemetryRow(row, width, label, value, unit)
@@ -100,16 +156,16 @@ local function printTelemetryRow(row, width, label, value, unit)
 end
 
 local function printTelemetry(width, _)
-    local flightDuration = startTime and (system.getTimeCounter() - startTime) / 1000 - entryTime or nil
-    local dist = startTime and string.format("%d", distance) or nil
-    local avgSpeed = (startTime and flightDuration > 0) and string.format("%.1f", distance * 3.6 / flightDuration) or nil
+    local flightDuration = (state ~= IDLE) and (system.getTimeCounter() - startTime) / 1000 or nil
+    local dist = (state == FLIGHT) and string.format("%d", distance) or nil
+    local avgSpeed = (state == FLIGHT) and string.format("%.1f", distance * 3.6 / flightDuration) or nil
     local altitude = altSensorIndex ~= 0 and system.getSensorValueByID(otherSensorIDs[altSensorIndex], otherSensorParams[altSensorIndex]) or nil
     altitude = (altitude and altitude.valid) and string.format("%d", altitude.value) or nil
     local time
-    if startTime and flightDuration >= 0 then
+    if state == FLIGHT then
         time = string.format("%d:%02d:%02d", flightDuration // 3600, (flightDuration // 60) % 60, flightDuration % 60)
-    elseif startTime then
-        time = string.format("%d", flightDuration)
+    elseif state == ENTRY then
+        time = string.format("%d", flightDuration - entryTime)
     end
     printTelemetryRow(0, width, lang.distance, dist, "m")
     printTelemetryRow(1, width, lang.avgSpeed, avgSpeed, "km/h")
@@ -117,89 +173,137 @@ local function printTelemetry(width, _)
     printTelemetryRow(3, width, lang.time, time, nil)
 end
 
-local function loop()
-    local avgSpeedAnnouncementVal = avgSpeedAnnouncementSwitch and system.getInputsVal(avgSpeedAnnouncementSwitch) or nil
-    local announceAvgSpeed = avgSpeedAnnouncementVal == 1 and lastAvgSpeedAnnouncementVal ~= 1
-    lastAvgSpeedAnnouncementVal = avgSpeedAnnouncementVal
+local function reset()
+    distance = 0
+    lastAltitude = nil
+    lastGpsPoint = nil
+    firstEnlExceedTime = nil
+    startTime = nil
+    state = IDLE
+end
 
-    if resetSwitch and system.getInputsVal(resetSwitch) == 1 then
-        distance = 0
-        lastAltitude = nil
-        lastGpsPoint = nil
-        firstEnlExceedTime = nil
-        startTime = nil
-        lastLoopTime = nil
-        return
+local function transitionToEntry(currentTime)
+    startTime = currentTime
+    distance = 0
+    state = ENTRY
+end
+
+local function loopIdle(startSwTriggered, currentTime)
+    if startSwTriggered then
+        transitionToEntry(currentTime)
     end
-    if startTime == nil then
-        if startSwitch and system.getInputsVal(startSwitch) == 1 then
-            distance = 0
-            lastAltitude = nil
-            lastGpsPoint = nil
-            firstEnlExceedTime = nil
-            startTime = system.getTimeCounter()
-            lastLoopTime = startTime
-        else
+end
+
+local function transitionToFlight()
+    lastGpsPoint = (latSensorIndex ~= 0 and lonSensorIndex ~= 0) and
+            gps.getPosition(gpsSensorIDs[latSensorIndex], gpsSensorParams[latSensorIndex], gpsSensorParams[lonSensorIndex])
+            or nil
+    startTime = startTime + 1000 * entryTime
+    state = FLIGHT
+
+    system.playFile(startSound, AUDIO_IMMEDIATE)
+end
+
+local function loopEntry(currentTime)
+    local enl = enlSensorIndex ~= 0 and system.getSensorValueByID(otherSensorIDs[enlSensorIndex], otherSensorParams[enlSensorIndex]) or nil
+    if enl and enl.valid and enl.value > 300 then
+        system.playFile(enlAlarmFile, AUDIO_IMMEDIATE)
+    end
+
+    local altitude = altSensorIndex ~= 0 and system.getSensorValueByID(otherSensorIDs[altSensorIndex], otherSensorParams[altSensorIndex]) or nil
+    if altitude and altitude.valid then
+        if lastAltitude and altitude.value > lastAltitude then
+            system.playFile(climbAlarmFile, AUDIO_IMMEDIATE)
+            lastAltitude = altitude.value
+            transitionToEntry(currentTime)
             return
         end
+        lastAltitude = altitude.value
     end
+
+    if countdownStart ~= 0 and (currentTime - startTime) // 1000 > (lastLoopTime - startTime) // 1000 then
+        local secondsUntilStart = (startTime + 1000 * entryTime - lastLoopTime) // 1000
+        if secondsUntilStart <= 5 then
+            if countdownStart == 1 then
+                system.playNumber(secondsUntilStart, 0, nil, nil)
+            else
+                system.playBeep(1, 4186, 200)
+            end
+        end
+    end
+
+    if currentTime >= startTime + 1000 * entryTime then
+        transitionToFlight()
+    end
+end
+
+local function loopFlight(avgSpeedSwTriggered, currentTime)
     local enl = enlSensorIndex ~= 0 and system.getSensorValueByID(otherSensorIDs[enlSensorIndex], otherSensorParams[enlSensorIndex]) or nil
-    enl = (enl and enl.valid) and enl.value or nil
-    local altitude = altSensorIndex ~= 0 and system.getSensorValueByID(otherSensorIDs[altSensorIndex], otherSensorParams[altSensorIndex]) or nil
-    altitude = (altitude and altitude.valid) and altitude.value or nil
+    if enl and enl.valid and enl.value > 300 then
+        if firstEnlExceedTime == nil then
+            firstEnlExceedTime = currentTime
+        elseif currentTime >= firstEnlExceedTime + 5000 then
+            system.playFile(enlAlarmFile, AUDIO_IMMEDIATE)
+            firstEnlExceedTime = firstEnlExceedTime + 5000
+        end
+    else
+        firstEnlExceedTime = nil
+    end
+
+    if (currentTime - startTime) // 1000 > (lastLoopTime - startTime) // 1000 then
+        local gpsPoint = (latSensorIndex ~= 0 and lonSensorIndex ~= 0) and
+                gps.getPosition(gpsSensorIDs[latSensorIndex], gpsSensorParams[latSensorIndex], gpsSensorParams[lonSensorIndex])
+                or nil
+        if lastGpsPoint ~= nil and gpsPoint ~= nil then
+            local distanceToLastPoint = gps.getDistance(lastGpsPoint, gpsPoint)
+            local kmBefore = distance // 1000
+            distance = distance + distanceToLastPoint
+            local kmNow = distance // 1000
+            if kmBefore < kmNow and kmNow >= 5 then
+                system.playNumber(kmNow, 0, "km", lang.distanceLabel)
+            end
+        end
+
+        if gpsPoint ~= nil then
+            lastGpsPoint = gpsPoint
+        end
+    end
+
+    if avgSpeedSwTriggered then
+        local avgSpeed = distance * 3600 / (currentTime - startTime)
+        system.playNumber(avgSpeed, 0, "km/h", "Speed")
+    end
+end
+
+local function loop()
+    local startSwVal = startSwitch and system.getInputsVal(startSwitch) or nil
+    local startSwTriggered = startSwVal == 1 and lastStartSwVal ~= 1
+    lastStartSwVal = startSwVal
+    local resetSwVal = resetSwitch and system.getInputsVal(resetSwitch) or nil
+    local resetSwTriggered = resetSwVal == 1 and lastResetSwVal ~= 1
+    lastResetSwVal = resetSwVal
+    local avgSpeedSwVal = avgSpeedSwitch and system.getInputsVal(avgSpeedSwitch) or nil
+    local avgSpeedSwTriggered = avgSpeedSwVal == 1 and lastAvgSpeedSwVal ~= 1
+    lastAvgSpeedSwVal = avgSpeedSwVal
 
     local currentTime = system.getTimeCounter()
 
-    if currentTime < startTime + 1000 * entryTime then
-        -- before start
-        if enl and enl > 300 then
-            system.playFile(enlAlarmFile, AUDIO_IMMEDIATE)
-        end
-        if lastAltitude and altitude and altitude > lastAltitude then
-            system.playFile(climbAlarmFile, AUDIO_IMMEDIATE)
-        end
-    else
-        -- after start
-        if enl and enl > 300 then
-            if firstEnlExceedTime == nil then
-                firstEnlExceedTime = currentTime
-            elseif currentTime >= firstEnlExceedTime + 5000 then
-                system.playFile(enlAlarmFile, AUDIO_IMMEDIATE)
-                firstEnlExceedTime = firstEnlExceedTime + 5000
-            end
-        else
-            firstEnlExceedTime = nil
-        end
-        if lastLoopTime ~= nil and (currentTime - startTime) // 1000 > (lastLoopTime - startTime) // 1000 then
-            local gpsPoint = (latSensorIndex ~= 0 and lonSensorIndex ~= 0) and
-                    gps.getPosition(gpsSensorIDs[latSensorIndex], gpsSensorParams[latSensorIndex], gpsSensorParams[lonSensorIndex])
-                    or nil
-            if lastGpsPoint == nil then
-                lastGpsPoint = gpsPoint
-            elseif gpsPoint ~= nil then
-                local distanceToLastPoint = gps.getDistance(lastGpsPoint, gpsPoint)
-                local kmBefore = distance // 1000
-                distance = distance + distanceToLastPoint
-                local kmNow = distance // 1000
-                if kmBefore < kmNow and kmNow >= 5 then
-                    system.playNumber(kmNow, 0, "km", lang.distanceLabel)
-                end
-                lastGpsPoint = gpsPoint
-            end
-        end
-
-        if announceAvgSpeed then
-            local avgSpeed = distance * 3600 / ((currentTime - startTime) - entryTime * 1000)
-            system.playNumber(avgSpeed, 0, "km/h", "Speed")
-        end
+    if state == IDLE then
+        loopIdle(startSwTriggered, currentTime)
+    elseif resetSwTriggered then
+        reset()
+    elseif state == ENTRY then
+        loopEntry(currentTime)
+    elseif state == FLIGHT then
+        loopFlight(avgSpeedSwTriggered, currentTime)
     end
 
-    lastAltitude = altitude
     lastLoopTime = currentTime
 end
 
 local function initForm()
     form.setTitle(lang.appName)
+    form.addLabel({ label = lang.sensors, font = FONT_BOLD })
     form.addRow(2)
     form.addLabel({ label = lang.enlSensor })
     form.addSelectbox(otherSensorLabels, enlSensorIndex + 1, true, onEnlSensorChanged)
@@ -212,6 +316,7 @@ local function initForm()
     form.addRow(2)
     form.addLabel({ label = lang.gpsLongitude })
     form.addSelectbox(gpsSensorLabels, lonSensorIndex + 1, true, onLonSensorChanged)
+    form.addLabel({ label = lang.switches, font = FONT_BOLD })
     form.addRow(2)
     form.addLabel({ label = lang.startSwitch })
     form.addInputbox(startSwitch, false, onStartSwitchChanged)
@@ -219,20 +324,29 @@ local function initForm()
     form.addLabel({ label = lang.resetSwitch })
     form.addInputbox(resetSwitch, false, onResetSwitchChanged)
     form.addRow(2)
+    form.addLabel({ label = lang.avgSpeedAnnouncementSwitch, width = 240 })
+    form.addInputbox(avgSpeedSwitch, false, onAvgSpeedSwitchChanged)
+    form.addLabel({ label = lang.audio, font = FONT_BOLD })
+    form.addRow(2)
     form.addLabel({ label = lang.enlAlarmFile })
     form.addAudioFilebox(enlAlarmFile, onEnlAlarmFileChanged)
     form.addRow(2)
     form.addLabel({ label = lang.climbAlarmFile })
     form.addAudioFilebox(climbAlarmFile, onClimbAlarmFileChanged)
     form.addRow(2)
+    form.addLabel({ label = lang.startSound })
+    form.addAudioFilebox(startSound, onStartSoundChanged)
+    form.addRow(2)
+    form.addLabel({ label = lang.countdownStart })
+    form.addSelectbox(lang.countdownStartModes, countdownStart + 1, false, onCountdownStartChanged)
+    form.addLabel({ label = lang.parameters, font = FONT_BOLD })
+    form.addRow(2)
     form.addLabel({ label = lang.entryTime })
     form.addIntbox(entryTime, 1, 60, 10, 0, 1, onEntryTimeChanged, { label = "s" })
-    form.addRow(2)
-    form.addLabel({ label = lang.avgSpeedAnnouncementSwitch, width = 240 })
-    form.addInputbox(avgSpeedAnnouncementSwitch, false, onAvgSpeedAnnouncementSwitchChanged)
 end
 
 local function init()
+    state = IDLE
     gpsSensorLabels = { "..." }
     otherSensorLabels = { "..." }
     gpsSensorIDs = {}
@@ -260,8 +374,10 @@ local function init()
     resetSwitch = system.pLoad("resetsw")
     enlAlarmFile = system.pLoad("enlalarm", "")
     climbAlarmFile = system.pLoad("climbalarm", "")
+    startSound = system.pLoad("startSound", "")
+    countdownStart = system.pLoad("countdownStart", 0)
     entryTime = system.pLoad("entrytime", 10)
-    avgSpeedAnnouncementSwitch = system.pLoad("avgspeedsw")
+    avgSpeedSwitch = system.pLoad("avgspeedsw")
 
     if enlSensorIndex > #otherSensorIDs then
         enlSensorIndex = 0
@@ -285,4 +401,4 @@ local function destroy()
 end
 
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.1.0", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.2.0", name = lang.appName }

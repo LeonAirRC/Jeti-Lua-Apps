@@ -60,9 +60,9 @@
         "type" : 1,
         "label" : "Vario",
         "unit" : "m/s",
-        "sensorName" : "Altitude Sensor",
-        "lowerBound" : -1,
-        "upperBound" : 1,
+        "sensorName" : "Vario Sensor",
+        "lowerBound" : 0,
+        "upperBound" : 500,
         "input" : "P6"
     },
     {
