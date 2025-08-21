@@ -13,6 +13,7 @@ local lonSensorIndex
 local startSwitch
 local resetSwitch
 local avgSpeedSwitch
+local flightDurationSwitch
 local enlAlarmFile
 local climbAlarmFile
 local startSound
@@ -22,6 +23,7 @@ local entryTime
 local lastStartSwVal
 local lastResetSwVal
 local lastAvgSpeedSwVal
+local lastFlightDurationSwVal
 
 local gpsSensorLabels
 local otherSensorLabels
@@ -103,6 +105,14 @@ local function onAvgSpeedSwitchChanged(value)
     end
     avgSpeedSwitch = value
     system.pSave("avgspeedsw", avgSpeedSwitch)
+end
+
+local function onFlightDurationSwitchChanged(value)
+    if state ~= IDLE then
+        return
+    end
+    flightDurationSwitch = value
+    system.pSave("flightdurationsw", flightDurationSwitch)
 end
 
 local function onEnlAlarmFileChanged(value)
@@ -223,11 +233,11 @@ local function loopEntry(currentTime)
 
     if countdownStart ~= 0 and (currentTime - startTime) // 1000 > (lastLoopTime - startTime) // 1000 then
         local secondsUntilStart = (startTime + 1000 * entryTime - lastLoopTime) // 1000
-        if secondsUntilStart <= 5 then
+        if secondsUntilStart <= 5 and secondsUntilStart > 0 then
             if countdownStart == 1 then
                 system.playNumber(secondsUntilStart, 0, nil, nil)
             else
-                system.playBeep(1, 4186, 200)
+                system.playBeep(0, 4186, 200)
             end
         end
     end
@@ -237,7 +247,7 @@ local function loopEntry(currentTime)
     end
 end
 
-local function loopFlight(avgSpeedSwTriggered, currentTime)
+local function loopFlight(avgSpeedSwTriggered, flightDurationSwTriggered, currentTime)
     local enl = enlSensorIndex ~= 0 and system.getSensorValueByID(otherSensorIDs[enlSensorIndex], otherSensorParams[enlSensorIndex]) or nil
     if enl and enl.valid and enl.value > 300 then
         if firstEnlExceedTime == nil then
@@ -273,6 +283,14 @@ local function loopFlight(avgSpeedSwTriggered, currentTime)
         local avgSpeed = distance * 3600 / (currentTime - startTime)
         system.playNumber(avgSpeed, 0, "km/h", "Speed")
     end
+
+    if flightDurationSwTriggered then
+        local flightDuration = (currentTime - startTime) // 1000
+        local minutes = flightDuration // 60
+        local seconds = flightDuration % 60
+        system.playNumber(minutes, 0, "min", "T")
+        system.playNumber(seconds, 0, "s")
+    end
 end
 
 local function loop()
@@ -285,6 +303,9 @@ local function loop()
     local avgSpeedSwVal = avgSpeedSwitch and system.getInputsVal(avgSpeedSwitch) or nil
     local avgSpeedSwTriggered = avgSpeedSwVal == 1 and lastAvgSpeedSwVal ~= 1
     lastAvgSpeedSwVal = avgSpeedSwVal
+    local flightDurationSwVal = flightDurationSwitch and system.getInputsVal(flightDurationSwitch) or nil
+    local flightDurationSwTriggered = flightDurationSwVal == 1 and lastFlightDurationSwVal ~= 1
+    lastFlightDurationSwVal = flightDurationSwVal
 
     local currentTime = system.getTimeCounter()
 
@@ -295,7 +316,7 @@ local function loop()
     elseif state == ENTRY then
         loopEntry(currentTime)
     elseif state == FLIGHT then
-        loopFlight(avgSpeedSwTriggered, currentTime)
+        loopFlight(avgSpeedSwTriggered, flightDurationSwTriggered, currentTime)
     end
 
     lastLoopTime = currentTime
@@ -326,6 +347,9 @@ local function initForm()
     form.addRow(2)
     form.addLabel({ label = lang.avgSpeedAnnouncementSwitch, width = 240 })
     form.addInputbox(avgSpeedSwitch, false, onAvgSpeedSwitchChanged)
+    form.addRow(2)
+    form.addLabel({ label = lang.flightDurationAnnouncementSwitch, width = 240 })
+    form.addInputbox(flightDurationSwitch, false, onFlightDurationSwitchChanged)
     form.addLabel({ label = lang.audio, font = FONT_BOLD })
     form.addRow(2)
     form.addLabel({ label = lang.enlAlarmFile })
@@ -378,6 +402,7 @@ local function init()
     countdownStart = system.pLoad("countdownStart", 0)
     entryTime = system.pLoad("entrytime", 10)
     avgSpeedSwitch = system.pLoad("avgspeedsw")
+    flightDurationSwitch = system.pLoad("flightdurationsw")
 
     if enlSensorIndex > #otherSensorIDs then
         enlSensorIndex = 0
@@ -401,4 +426,4 @@ local function destroy()
 end
 
 collectgarbage()
-return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.2.0", name = lang.appName }
+return { init = init, loop = loop, destroy = destroy, author = "LeonAir RC", version = "1.2.1", name = lang.appName }
